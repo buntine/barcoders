@@ -1,0 +1,4 @@
+[package]
+name = "barcoders"
+version = "0.1.0"
+authors = ["Andrew Buntine Of Doom <bunts@hhd.com.au>"]
