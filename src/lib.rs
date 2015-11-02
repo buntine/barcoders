@@ -1,7 +1,8 @@
 pub mod sym;
 
+#[cfg(test)]
 mod tests {
-    use super::sym::*;
+    use ::sym::upca::UPCA;
 
     #[test]
     fn new_upca() {
