@@ -6,8 +6,8 @@ pub struct UPCA {
 
 impl UPCA {
 
-    pub fn new(data: String) -> UPCA {
-        UPCA{data: data}
+    pub fn parse<'a>(data: String) -> Result<UPCA, &'a str> {
+        Ok(UPCA{data: data})
     }
 
 }
