@@ -14,8 +14,15 @@ mod tests {
     }
 
     #[test]
-    fn invalid_upca() {
+    fn invalid_data_upca() {
         let upca = UPCA::new("1212s".to_string());
+
+        assert!(upca.is_err());
+    }
+
+    #[test]
+    fn invalid_len_upca() {
+        let upca = UPCA::new("1111112222222333333".to_string());
 
         assert!(upca.is_err());
     }
@@ -35,8 +42,15 @@ mod tests {
     }
 
     #[test]
-    fn invalid_code39() {
+    fn invalid_data_code39() {
         let code39 = Code39::new("1212s".to_string());
+
+        assert!(code39.is_err());
+    }
+
+    #[test]
+    fn invalid_len_code39() {
+        let code39 = Code39::new("1111112222222333333".to_string());
 
         assert!(code39.is_err());
     }

@@ -1,5 +1,6 @@
 use ::sym::ToASCII;
 use ::sym::Parse;
+use std::ops::Range;
 
 pub struct Code39 {
     pub data: String,
@@ -15,6 +16,10 @@ impl Code39 {
 }
 
 impl Parse for Code39 {
+    fn valid_len() -> Range<i32> {
+        0..6
+    }
+
     fn valid_chars() -> Vec<char> {
         vec!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     }

@@ -1,5 +1,6 @@
 use ::sym::ToASCII;
 use ::sym::Parse;
+use std::ops::Range;
 
 pub struct UPCA {
     pub data: String,
@@ -15,6 +16,10 @@ impl UPCA {
 }
 
 impl Parse for UPCA {
+    fn valid_len() -> Range<i32> {
+        0..6
+    }
+
     fn valid_chars() -> Vec<char> {
         vec!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     }
