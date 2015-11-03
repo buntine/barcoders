@@ -14,9 +14,9 @@ pub const ENCODINGS: [[&'static str; 10]; 2] = [
 ];
 
 pub const GUARDS: [&'static str; 3] = [
-    "010",    // Left.
+    "101",    // Left.
     "010101", // Middle.
-    "010",    // right.
+    "101",    // Right.
 ];
 
 pub struct UPCA {
@@ -39,7 +39,9 @@ impl UPCA {
     }
 
     fn char_encoding(&self, side: usize, c: &char) -> &'static str {
-        ENCODINGS[side][c.to_digit(10).expect("Invalid data") as usize]
+        let digit = c.to_digit(10).expect("Invalid UPC-A digit.");
+
+        ENCODINGS[side][digit as usize]
     }
 
     fn left_digits(&self) -> &str {
@@ -51,13 +53,17 @@ impl UPCA {
     }
 
     fn left_payload(&self) -> String {
-        self.left_digits().chars().map(|_d| ENCODINGS[0][0]).collect::<Vec<&str>>().concat()
+        self.left_digits()
+            .chars()
+            .map(|d| self.char_encoding(0, &d))
+            .collect::<Vec<&str>>()
+            .concat()
     }
 
     fn right_payload(&self) -> String {
         self.right_digits()
             .chars()
-            .map(|d| self.char_encoding(0, &d))
+            .map(|d| self.char_encoding(1, &d))
             .collect::<Vec<&str>>()
             .concat()
     }
