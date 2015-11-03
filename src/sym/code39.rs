@@ -16,7 +16,7 @@ impl Code39 {
 }
 
 impl Parse for Code39 {
-    fn valid_len() -> Range<i32> {
+    fn valid_len() -> Range<u32> {
         0..6
     }
 

@@ -8,14 +8,14 @@ mod tests {
 
     #[test]
     fn new_upca() {
-        let upca = UPCA::new("123412".to_string());
+        let upca = UPCA::new("123456123456".to_string());
 
         assert!(upca.is_ok());
     }
 
     #[test]
     fn invalid_data_upca() {
-        let upca = UPCA::new("1212s".to_string());
+        let upca = UPCA::new("1234er123412".to_string());
 
         assert!(upca.is_err());
     }
@@ -29,14 +29,14 @@ mod tests {
 
     #[test]
     fn upca_to_ascii() {
-        let upca = UPCA::new("123412".to_string()).unwrap();
+        let upca = UPCA::new("123456123456".to_string()).unwrap();
 
         assert_eq!(upca.to_ascii(), "SWAG".to_string());
     }
 
     #[test]
     fn new_code39() {
-        let code39 = UPCA::new("123412".to_string());
+        let code39 = UPCA::new("123456123456".to_string());
 
         assert!(code39.is_ok());
     }
