@@ -5,6 +5,7 @@ mod tests {
     use ::sym::upca::*;
     use ::sym::code39::*;
     use ::sym::ToASCII;
+    use ::sym::Encode;
 
     #[test]
     fn new_upca() {
@@ -32,6 +33,13 @@ mod tests {
         let upca = UPCA::new("123456123456".to_string()).unwrap();
 
         assert_eq!(upca.raw_data(), "123456123456");
+    }
+
+    #[test]
+    fn upca_encode() {
+        let upca = UPCA::new("123456123456".to_string()).unwrap();
+
+        assert_eq!(upca.encode(), "01010101010".to_string());
     }
 
     #[test]

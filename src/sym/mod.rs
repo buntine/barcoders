@@ -29,3 +29,7 @@ pub trait Parse {
         }
     }
 }
+
+pub trait Encode {
+    fn encode(&self) -> String;
+}
