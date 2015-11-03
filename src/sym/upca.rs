@@ -4,7 +4,7 @@ use std::ops::Range;
 use std::char;
 
 pub struct UPCA {
-    pub data: String,
+    data: String,
 }
 
 impl UPCA {
@@ -13,6 +13,10 @@ impl UPCA {
             Ok(d) => Ok(UPCA{data: d}),
             Err(e) => Err(e),
         }
+    }
+
+    pub fn raw_data(&self) -> &str {
+        &self.data[..]
     }
 }
 

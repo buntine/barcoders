@@ -28,6 +28,13 @@ mod tests {
     }
 
     #[test]
+    fn upca_raw_data() {
+        let upca = UPCA::new("123456123456".to_string()).unwrap();
+
+        assert_eq!(upca.raw_data(), "123456123456");
+    }
+
+    #[test]
     fn upca_to_ascii() {
         let upca = UPCA::new("123456123456".to_string()).unwrap();
 
@@ -53,6 +60,13 @@ mod tests {
         let code39 = Code39::new("1111112222222333333".to_string());
 
         assert!(code39.is_err());
+    }
+
+    #[test]
+    fn code39_raw_data() {
+        let code39 = UPCA::new("123456123456".to_string()).unwrap();
+
+        assert_eq!(code39.raw_data(), "123456123456");
     }
 
     #[test]

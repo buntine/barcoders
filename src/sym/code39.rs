@@ -1,9 +1,10 @@
 use ::sym::ToASCII;
 use ::sym::Parse;
 use std::ops::Range;
+use std::char;
 
 pub struct Code39 {
-    pub data: String,
+    data: String,
 }
 
 impl Code39 {
@@ -13,6 +14,10 @@ impl Code39 {
             Err(e) => Err(e),
         }
     }
+
+    pub fn raw_data(&self) -> &str {
+        &self.data[..]
+    }
 }
 
 impl Parse for Code39 {
@@ -21,7 +26,7 @@ impl Parse for Code39 {
     }
 
     fn valid_chars() -> Vec<char> {
-        vec!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 
