@@ -14,9 +14,9 @@ pub const ENCODINGS: [[&'static str; 10]; 2] = [
 ];
 
 pub const GUARDS: [&'static str; 3] = [
-    "101",    // Left.
-    "010101", // Middle.
-    "101",    // Right.
+    "101",   // Left.
+    "01010", // Middle.
+    "101",   // Right.
 ];
 
 pub struct UPCA {
