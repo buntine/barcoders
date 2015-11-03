@@ -37,10 +37,10 @@ mod tests {
 
     #[test]
     fn upca_encode() {
-        let upca1 = UPCA::new("123456123456".to_string()).unwrap();
-        let upca2 = UPCA::new("001189995612".to_string()).unwrap();
+        let upca1 = UPCA::new("12345612345".to_string()).unwrap();
+        let upca2 = UPCA::new("00118999561".to_string()).unwrap();
 
-        assert_eq!(upca1.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101010000101".to_string());
+        assert_eq!(upca1.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101101100101".to_string());
         assert_eq!(upca2.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101101100101".to_string());
     }
 

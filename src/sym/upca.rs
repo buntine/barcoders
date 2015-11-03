@@ -38,6 +38,15 @@ impl UPCA {
         &self.data[..]
     }
 
+    // TODO: Implement as per https://en.wikipedia.org/wiki/Universal_Product_Code#Numbering
+    fn checksum_digit(&self) -> char {
+        '2'
+    }
+
+    fn checksum_encoding(&self) -> &'static str {
+        self.char_encoding(1, &self.checksum_digit())
+    }
+
     fn char_encoding(&self, side: usize, c: &char) -> &'static str {
         let digit = c.to_digit(10).expect("Invalid UPC-A digit.");
 
@@ -71,7 +80,7 @@ impl UPCA {
 
 impl Parse for UPCA {
     fn valid_len() -> Range<u32> {
-        12..13
+        11..12
     }
 
     fn valid_chars() -> Vec<char> {
@@ -81,7 +90,7 @@ impl Parse for UPCA {
 
 impl Encode for UPCA {
     fn encode(&self) -> String {
-        format!("{}{}{}{}{}", GUARDS[0], self.left_payload(), GUARDS[1], self.right_payload(), GUARDS[2])
+        format!("{}{}{}{}{}{}", GUARDS[0], self.left_payload(), GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
     }
 }
 
