@@ -19,47 +19,50 @@ pub const GUARDS: [&'static str; 3] = [
 ];
 
 pub struct UPCA {
-    data: String,
+    data: Vec<u32>,
 }
 
 impl UPCA {
     pub fn new(data: String) -> Result<UPCA, String> {
         match UPCA::parse(data) {
-            Ok(d) => Ok(UPCA{data: d}),
+            Ok(d) => {
+                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character")).collect();
+                Ok(UPCA{data: digits})
+            }
             Err(e) => Err(e),
         }
     }
 
-    pub fn raw_data(&self) -> &str {
-        &self.data[..]
+    pub fn raw_data(&self) -> String {
+        self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
-    // TODO: Implement as per https://en.wikipedia.org/wiki/Universal_Product_Code#Numbering
-    fn checksum_digit(&self) -> char {
-        '2'
+    fn checksum_digit(&self) -> u32 {
+        let mut odds = 0;
+        let mut evens = 0;
+
+        6 
     }
 
     fn checksum_encoding(&self) -> &'static str {
         self.char_encoding(1, &self.checksum_digit())
     }
 
-    fn char_encoding(&self, side: usize, c: &char) -> &'static str {
-        let digit = c.to_digit(10).expect("Invalid UPC-A digit.");
-
-        ENCODINGS[side][digit as usize]
+    fn char_encoding(&self, side: usize, d: &u32) -> &'static str {
+        ENCODINGS[side][*d as usize]
     }
 
-    fn left_digits(&self) -> &str {
+    fn left_digits(&self) -> &[u32] {
         &self.data[0..6]
     }
 
-    fn right_digits(&self) -> &str {
+    fn right_digits(&self) -> &[u32] {
         &self.data[6..]
     }
 
     fn left_payload(&self) -> String {
         self.left_digits()
-            .chars()
+            .iter()
             .map(|d| self.char_encoding(0, &d))
             .collect::<Vec<&str>>()
             .concat()
@@ -67,7 +70,7 @@ impl UPCA {
 
     fn right_payload(&self) -> String {
         self.right_digits()
-            .chars()
+            .iter()
             .map(|d| self.char_encoding(1, &d))
             .collect::<Vec<&str>>()
             .concat()
@@ -121,7 +124,7 @@ mod tests {
     fn upca_raw_data() {
         let upca = UPCA::new("123456123456".to_string()).unwrap();
 
-        assert_eq!(upca.raw_data(), "123456123456");
+        assert_eq!(upca.raw_data(), "123456123456".to_string());
     }
 
     #[test]
@@ -131,6 +134,16 @@ mod tests {
 
         assert_eq!(upca1.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101101100101".to_string());
         assert_eq!(upca2.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101101100101".to_string());
+    }
+
+    #[test]
+    fn upca_checksum_calculation() {
+        let upca1 = UPCA::new("03600029145".to_string()).unwrap();
+        let two_encoding = ENCODINGS[1][2];
+        let checksum_digit = &upca1.encode()[85..92];
+
+
+        assert_eq!(checksum_digit, two_encoding);
     }
 
     #[test]
