@@ -1,10 +1,11 @@
 pub mod sym;
+pub mod generators;
 
 #[cfg(test)]
 mod tests {
     use ::sym::upca::*;
     use ::sym::code39::*;
-    use ::generators::ASCII;
+    use ::generators::ascii::*;
     use ::sym::Encode;
 
     #[test]
@@ -49,7 +50,7 @@ mod tests {
         let upca = UPCA::new("123456123456".to_string()).unwrap();
         let ascii = ASCII::new();
 
-        assert_eq!(ascii.generate(upca), "SWAG".to_string());
+        assert_eq!(ascii.generate(&upca), "SWAG".to_string());
     }
 
     #[test]
@@ -80,12 +81,12 @@ mod tests {
         assert_eq!(code39.raw_data(), "123456123456");
     }
 
-    #[test]
-    fn code39_to_ascii() {
-        let code39 = Code39::new("123412".to_string()).unwrap();
-        let ascii = ASCII::new();
-
-        assert_eq!(ascii.generate(code39), "SWAG".to_string());
-    }
+//    #[test]
+//    fn code39_to_ascii() {
+//        let code39 = Code39::new("123412".to_string()).unwrap();
+//        let ascii = ASCII::new();
+//
+//        assert_eq!(ascii.generate(&code39), "SWAG".to_string());
+//    }
 
 }

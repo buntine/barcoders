@@ -20,15 +20,12 @@ pub const GUARDS: [&'static str; 3] = [
 
 pub struct UPCA {
     data: String,
-    pub xdim: u32,
-    pub ydim: u32,
-    pub height: u32,
 }
 
 impl UPCA {
     pub fn new(data: String) -> Result<UPCA, String> {
         match UPCA::parse(data) {
-            Ok(d) => Ok(UPCA{data: d, xdim: 1, ydim: 1, height: 100}),
+            Ok(d) => Ok(UPCA{data: d}),
             Err(e) => Err(e),
         }
     }
