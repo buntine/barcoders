@@ -3,6 +3,8 @@ use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
+// TODO: Replace with EAN-13 and allow for leading 0 for UPC-A.
+
 pub const ENCODINGS: [[&'static str; 10]; 2] = [
     // Left.
     ["0001101", "0011001", "0010011", "0111101", "0100011",
@@ -136,8 +138,8 @@ mod tests {
 
     #[test]
     fn upca_encode() {
-        let upca1 = UPCA::new("12345612345".to_string()).unwrap();
-        let upca2 = UPCA::new("00118999561".to_string()).unwrap();
+        let upca1 = UPCA::new("12345612345".to_string()).unwrap(); // Check digit: 8
+        let upca2 = UPCA::new("00118999561".to_string()).unwrap(); // Chcek digit: 3
 
         assert_eq!(upca1.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
         assert_eq!(upca2.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
