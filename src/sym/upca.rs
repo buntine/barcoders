@@ -41,7 +41,14 @@ impl UPCA {
         let mut odds = 0;
         let mut evens = 0;
 
-        6 
+        for (i, d) in self.data.iter().enumerate() {
+            match i % 2 {
+                1 => { odds += *d }
+                _ => { evens += *d }
+            }
+        }
+
+        10 - (((odds * 3) + evens) % 10)
     }
 
     fn checksum_encoding(&self) -> &'static str {
