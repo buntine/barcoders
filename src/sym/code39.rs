@@ -1,4 +1,3 @@
-use ::sym::ToASCII;
 use ::sym::Parse;
 use std::ops::Range;
 use std::char;
@@ -27,11 +26,5 @@ impl Parse for Code39 {
 
     fn valid_chars() -> Vec<char> {
         (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
-    }
-}
-
-impl ToASCII for Code39 {
-    fn to_ascii(&self) -> String {
-        "SWOLE".to_string()
     }
 }

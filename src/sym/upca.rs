@@ -1,4 +1,3 @@
-use ::sym::ToASCII;
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
@@ -91,11 +90,5 @@ impl Parse for UPCA {
 impl Encode for UPCA {
     fn encode(&self) -> String {
         format!("{}{}{}{}{}{}", GUARDS[0], self.left_payload(), GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
-    }
-}
-
-impl ToASCII for UPCA {
-    fn to_ascii(&self) -> String {
-        "SWAG".to_string()
     }
 }

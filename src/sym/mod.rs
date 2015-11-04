@@ -3,10 +3,6 @@ pub mod code39;
 
 use std::ops::Range;
 
-pub trait ToASCII {
-    fn to_ascii(&self) -> String;
-}
-
 pub trait Parse {
     fn valid_chars() -> Vec<char>;
     fn valid_len() -> Range<u32>;

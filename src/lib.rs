@@ -4,7 +4,7 @@ pub mod sym;
 mod tests {
     use ::sym::upca::*;
     use ::sym::code39::*;
-    use ::sym::ToASCII;
+    use ::generators::ASCII;
     use ::sym::Encode;
 
     #[test]
@@ -47,8 +47,9 @@ mod tests {
     #[test]
     fn upca_to_ascii() {
         let upca = UPCA::new("123456123456".to_string()).unwrap();
+        let ascii = ASCII::new();
 
-        assert_eq!(upca.to_ascii(), "SWAG".to_string());
+        assert_eq!(ascii.generate(upca), "SWAG".to_string());
     }
 
     #[test]
@@ -82,8 +83,9 @@ mod tests {
     #[test]
     fn code39_to_ascii() {
         let code39 = Code39::new("123412".to_string()).unwrap();
+        let ascii = ASCII::new();
 
-        assert_eq!(code39.to_ascii(), "SWOLE".to_string());
+        assert_eq!(ascii.generate(code39), "SWAG".to_string());
     }
 
 }
