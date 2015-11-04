@@ -1,9 +1,9 @@
 use ::sym::Encode;
 
 pub struct ASCII {
-    height: u32,
-    xdim: u32,
-    ydim: u32,
+    pub height: u32,
+    pub xdim: u32,
+    pub ydim: u32,
 }
 
 impl ASCII {
