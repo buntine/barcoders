@@ -54,6 +54,16 @@ mod tests {
     }
 
     #[test]
+    fn upca_to_ascii_with_large_height() {
+        let upca = UPCA::new("123456123456".to_string()).unwrap();
+        let ascii = ASCII::new().height(40).xdim(2);
+
+        assert_eq!(ascii.height, 40);
+        assert_eq!(ascii.xdim, 2);
+        assert_eq!(ascii.generate(&upca), "SWAG".to_string());
+    }
+
+    #[test]
     fn new_code39() {
         let code39 = UPCA::new("123456123456".to_string());
 
