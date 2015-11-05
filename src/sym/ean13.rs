@@ -3,12 +3,13 @@ use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
-// TODO: Replace with EAN-13 and allow for leading 0 for UPC-A.
-
 pub const ENCODINGS: [[&'static str; 10]; 2] = [
-    // Left.
+    // Left odd parity.
     ["0001101", "0011001", "0010011", "0111101", "0100011",
      "0110001", "0101111", "0111011", "0110111", "0001011",],
+    // Left even parity.
+    ["0100111", "0110011", "0011011", "0100001", "0011101",
+     "0111001", "0000101", "0010001", "0001001", "0010111",],
     // Right.
     ["0001101", "1100110", "1101100", "1000010", "1011100",
      "1001110", "1010000", "1000100", "1001000", "1110100",],
@@ -20,16 +21,16 @@ pub const GUARDS: [&'static str; 3] = [
     "101",   // Right.
 ];
 
-pub struct UPCA {
+pub struct EAN13 {
     data: Vec<u32>,
 }
 
-impl UPCA {
-    pub fn new(data: String) -> Result<UPCA, String> {
-        match UPCA::parse(data) {
+impl EAN13 {
+    pub fn new(data: String) -> Result<EAN13, String> {
+        match EAN13::parse(data) {
             Ok(d) => {
                 let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character")).collect();
-                Ok(UPCA{data: digits})
+                Ok(EAN13{data: digits})
             }
             Err(e) => Err(e),
         }
@@ -86,7 +87,7 @@ impl UPCA {
     }
 }
 
-impl Parse for UPCA {
+impl Parse for EAN13 {
     fn valid_len() -> Range<u32> {
         11..12
     }
@@ -96,7 +97,7 @@ impl Parse for UPCA {
     }
 }
 
-impl Encode for UPCA {
+impl Encode for EAN13 {
     fn encode(&self) -> String {
         format!("{}{}{}{}{}{}", GUARDS[0], self.left_payload(), GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
     }
@@ -104,72 +105,72 @@ impl Encode for UPCA {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::upca::*;
+    use ::sym::ean13::*;
     use ::generators::ascii::*;
     use ::sym::Encode;
 
     #[test]
-    fn new_upca() {
-        let upca = UPCA::new("123456123456".to_string());
+    fn new_ean13() {
+        let ean13 = EAN13::new("123456123456".to_string());
 
-        assert!(upca.is_ok());
+        assert!(ean13.is_ok());
     }
 
     #[test]
-    fn invalid_data_upca() {
-        let upca = UPCA::new("1234er123412".to_string());
+    fn invalid_data_ean13() {
+        let ean13 = EAN13::new("1234er123412".to_string());
 
-        assert!(upca.is_err());
+        assert!(ean13.is_err());
     }
 
     #[test]
-    fn invalid_len_upca() {
-        let upca = UPCA::new("1111112222222333333".to_string());
+    fn invalid_len_ean13() {
+        let ean13 = EAN13::new("1111112222222333333".to_string());
 
-        assert!(upca.is_err());
+        assert!(ean13.is_err());
     }
 
     #[test]
-    fn upca_raw_data() {
-        let upca = UPCA::new("123456123456".to_string()).unwrap();
+    fn ean13_raw_data() {
+        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
 
-        assert_eq!(upca.raw_data(), "123456123456".to_string());
+        assert_eq!(ean13.raw_data(), "123456123456".to_string());
     }
 
     #[test]
-    fn upca_encode() {
-        let upca1 = UPCA::new("12345612345".to_string()).unwrap(); // Check digit: 8
-        let upca2 = UPCA::new("00118999561".to_string()).unwrap(); // Chcek digit: 3
+    fn ean13_encode() {
+        let ean131 = EAN13::new("12345612345".to_string()).unwrap(); // Check digit: 8
+        let ean132 = EAN13::new("00118999561".to_string()).unwrap(); // Chcek digit: 3
 
-        assert_eq!(upca1.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
-        assert_eq!(upca2.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
+        assert_eq!(ean131.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
+        assert_eq!(ean132.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
     }
 
     #[test]
-    fn upca_checksum_calculation() {
-        let upca1 = UPCA::new("03600029145".to_string()).unwrap();
+    fn ean13_checksum_calculation() {
+        let ean131 = EAN13::new("03600029145".to_string()).unwrap();
         let two_encoding = ENCODINGS[1][2];
-        let checksum_digit = &upca1.encode()[85..92];
+        let checksum_digit = &ean131.encode()[85..92];
 
 
         assert_eq!(checksum_digit, two_encoding);
     }
 
     #[test]
-    fn upca_to_ascii() {
-        let upca = UPCA::new("123456123456".to_string()).unwrap();
+    fn ean13_to_ascii() {
+        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
         let ascii = ASCII::new();
 
-        assert_eq!(ascii.generate(&upca), "SWAG".to_string());
+        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
     }
 
     #[test]
-    fn upca_to_ascii_with_large_height() {
-        let upca = UPCA::new("123456123456".to_string()).unwrap();
+    fn ean13_to_ascii_with_large_height() {
+        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
         let ascii = ASCII::new().height(40).xdim(2);
 
         assert_eq!(ascii.height, 40);
         assert_eq!(ascii.xdim, 2);
-        assert_eq!(ascii.generate(&upca), "SWAG".to_string());
+        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
     }
 }

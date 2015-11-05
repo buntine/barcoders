@@ -1,4 +1,4 @@
-pub mod upca;
+pub mod ean13;
 pub mod code39;
 
 use std::ops::Range;
