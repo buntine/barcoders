@@ -16,16 +16,16 @@ pub const ENCODINGS: [[&'static str; 10]; 3] = [
 ];
 
 pub const PARITY: [[usize; 6]; 10] = [
-    [0, 0, 0, 0, 0, 0], # 0
-    [0, 0, 1, 0, 1, 1], # 1
-    [0, 0, 1, 1, 0, 1], # 2
-    [0, 0, 1, 1, 1, 0], # 3
-    [0, 1, 0, 0, 1, 1], # 4
-    [0, 1, 1, 0, 0, 1], # 5
-    [0, 1, 1, 1, 0, 0], # 6
-    [0, 1, 0, 1, 0, 1], # 7
-    [0, 1, 0, 1, 1, 0], # 8
-    [0, 1, 1, 0, 1, 0], # 9
+    [0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 1, 1],
+    [0, 0, 1, 1, 0, 1],
+    [0, 0, 1, 1, 1, 0],
+    [0, 1, 0, 0, 1, 1],
+    [0, 1, 1, 0, 0, 1],
+    [0, 1, 1, 1, 0, 0],
+    [0, 1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 1, 0],
+    [0, 1, 1, 0, 1, 0],
 ];
 
 pub const GUARDS: [&'static str; 3] = [
@@ -53,6 +53,7 @@ impl EAN13 {
         self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
+    // TODO: Recalculate using weighting algorithm.
     fn checksum_digit(&self) -> u32 {
         let mut odds = 0;
         let mut evens = 0;
@@ -67,6 +68,14 @@ impl EAN13 {
         10 - (((odds * 3) + evens) % 10)
     }
 
+    fn number_system_digit(&self) -> u32 {
+        self.data[1]
+    }
+
+    fn number_system_encoding(&self) -> &'static str {
+        self.char_encoding(0, &self.number_system_digit())
+    }
+
     fn checksum_encoding(&self) -> &'static str {
         self.char_encoding(2, &self.checksum_digit())
     }
@@ -76,11 +85,11 @@ impl EAN13 {
     }
 
     fn left_digits(&self) -> &[u32] {
-        &self.data[0..6]
+        &self.data[1..7]
     }
 
     fn right_digits(&self) -> &[u32] {
-        &self.data[6..]
+        &self.data[7..]
     }
 
     fn left_payload(&self) -> String {
@@ -102,7 +111,7 @@ impl EAN13 {
 
 impl Parse for EAN13 {
     fn valid_len() -> Range<u32> {
-        11..12
+        12..13
     }
 
     fn valid_chars() -> Vec<char> {
@@ -112,7 +121,8 @@ impl Parse for EAN13 {
 
 impl Encode for EAN13 {
     fn encode(&self) -> String {
-        format!("{}{}{}{}{}{}", GUARDS[0], self.left_payload(), GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
+        format!("{}{}{}{}{}{}{}", GUARDS[0], self.number_system_encoding(), self.left_payload(),
+                                  GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
     }
 }
 
@@ -152,8 +162,8 @@ mod tests {
 
     #[test]
     fn ean13_encode() {
-        let ean131 = EAN13::new("12345612345".to_string()).unwrap(); // Check digit: 8
-        let ean132 = EAN13::new("00118999561".to_string()).unwrap(); // Chcek digit: 3
+        let ean131 = EAN13::new("012345612345".to_string()).unwrap(); // Check digit: 8
+        let ean132 = EAN13::new("000118999561".to_string()).unwrap(); // Chcek digit: 3
 
         assert_eq!(ean131.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
         assert_eq!(ean132.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
