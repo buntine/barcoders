@@ -116,96 +116,72 @@ mod tests {
     use ::sym::Encode;
 
     #[test]
-    fn new_ean13() {
-        let ean13 = EAN13::new("123456123456".to_string());
+    fn new_ean8() {
+        let ean8 = EAN13::new("123456123456".to_string());
 
-        assert!(ean13.is_ok());
+        assert!(ean8.is_ok());
     }
 
     #[test]
-    fn invalid_data_ean13() {
-        let ean13 = EAN13::new("1234er123412".to_string());
+    fn invalid_data_ean8() {
+        let ean8 = EAN13::new("1234er123412".to_string());
 
-        assert!(ean13.is_err());
+        assert!(ean8.is_err());
     }
 
     #[test]
-    fn invalid_len_ean13() {
-        let ean13 = EAN13::new("1111112222222333333".to_string());
+    fn invalid_len_ean8() {
+        let ean8 = EAN13::new("1111112222222333333".to_string());
 
-        assert!(ean13.is_err());
+        assert!(ean8.is_err());
     }
 
     #[test]
-    fn ean13_raw_data() {
-        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
+    fn ean8_raw_data() {
+        let ean8 = EAN13::new("123456123456".to_string()).unwrap();
 
-        assert_eq!(ean13.raw_data(), "123456123456".to_string());
+        assert_eq!(ean8.raw_data(), "123456123456".to_string());
     }
 
     #[test]
-    fn ean13_encode_as_upca() {
-        let ean131 = EAN13::new("012345612345".to_string()).unwrap(); // Check digit: 8
-        let ean132 = EAN13::new("000118999561".to_string()).unwrap(); // Check digit: 3
+    fn ean8_encode() {
+        let ean81 = EAN13::new("750103131130".to_string()).unwrap(); // Check digit: 8
+        let ean82 = EAN13::new("983465123499".to_string()).unwrap(); // Check digit: 3
 
-        assert_eq!(ean131.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
-        assert_eq!(ean132.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
+        assert_eq!(ean81.encode(), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
+        assert_eq!(ean82.encode(), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
     }
 
     #[test]
-    fn ean13_encode() {
-        let ean131 = EAN13::new("750103131130".to_string()).unwrap(); // Check digit: 8
-        let ean132 = EAN13::new("983465123499".to_string()).unwrap(); // Check digit: 3
+    fn ean8_checksum_calculation() {
+        let ean81 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 6
+        let ean82 = EAN13::new("953476324586".to_string()).unwrap(); // Check digit: 2
+        let six_encoding = ENCODINGS[1][6];
+        let two_encoding = ENCODINGS[1][2];
+        let checksum_digit1 = &ean81.encode()[85..92];
+        let checksum_digit2 = &ean82.encode()[85..92];
 
-        assert_eq!(ean131.encode(), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
-        assert_eq!(ean132.encode(), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
-    }
-
-    #[test]
-    fn ean13_as_upca_checksum_calculation() {
-        let ean131 = EAN13::new("003600029145".to_string()).unwrap(); // Check digit: 2
-        let ean132 = EAN13::new("012345612345".to_string()).unwrap(); // Check digit: 8
-        let two_encoding = ENCODINGS[2][2];
-        let eight_encoding = ENCODINGS[2][8];
-        let checksum_digit1 = &ean131.encode()[85..92];
-        let checksum_digit2 = &ean132.encode()[85..92];
-
-        assert_eq!(ean131.checksum_digit(), 2);
-        assert_eq!(ean132.checksum_digit(), 8);
-        assert_eq!(checksum_digit1, two_encoding);
-        assert_eq!(checksum_digit2, eight_encoding);
-    }
-
-    #[test]
-    fn ean13_checksum_calculation() {
-        let ean131 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 6
-        let ean132 = EAN13::new("953476324586".to_string()).unwrap(); // Check digit: 2
-        let six_encoding = ENCODINGS[2][6];
-        let two_encoding = ENCODINGS[2][2];
-        let checksum_digit1 = &ean131.encode()[85..92];
-        let checksum_digit2 = &ean132.encode()[85..92];
-
-        assert_eq!(ean131.checksum_digit(), 6);
-        assert_eq!(ean132.checksum_digit(), 2);
+        assert_eq!(ean81.checksum_digit(), 6);
+        assert_eq!(ean82.checksum_digit(), 2);
         assert_eq!(checksum_digit1, six_encoding);
         assert_eq!(checksum_digit2, two_encoding);
     }
 
     #[test]
-    fn ean13_to_ascii() {
-        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
+    fn ean8_to_ascii() {
+        let ean8 = EAN13::new("123456123456".to_string()).unwrap();
         let ascii = ASCII::new();
 
-        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
+        assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
     }
 
     #[test]
-    fn ean13_to_ascii_with_large_height() {
-        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
+    fn ean8_to_ascii_with_large_height() {
+        let ean8 = EAN13::new("123456123456".to_string()).unwrap();
         let ascii = ASCII::new().height(40).xdim(2);
 
         assert_eq!(ascii.height, 40);
         assert_eq!(ascii.xdim, 2);
-        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
+        assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
     }
 }
