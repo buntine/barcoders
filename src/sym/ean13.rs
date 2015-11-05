@@ -58,7 +58,7 @@ impl EAN13 {
         let mut odds = 0;
         let mut evens = 0;
 
-        for (i, d) in self.data.iter().enumerate() {
+        for (i, d) in self.data.iter().skip(1).enumerate() {
             match i % 2 {
                 0 => { odds += *d }
                 _ => { evens += *d }
@@ -92,10 +92,15 @@ impl EAN13 {
         &self.data[7..]
     }
 
+    fn parity_mapping(&self) -> [usize; 6] {
+        PARITY[self.data[0] as usize]
+    }
+
     fn left_payload(&self) -> String {
         self.left_digits()
             .iter()
-            .map(|d| self.char_encoding(0, &d))
+            .zip(self.parity_mapping().iter())
+            .map(|d| self.char_encoding(*d.1, &d.0))
             .collect::<Vec<&str>>()
             .concat()
     }
@@ -165,15 +170,15 @@ mod tests {
         let ean131 = EAN13::new("012345612345".to_string()).unwrap(); // Check digit: 8
         let ean132 = EAN13::new("000118999561".to_string()).unwrap(); // Chcek digit: 3
 
-        assert_eq!(ean131.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
-        assert_eq!(ean132.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
+        assert_eq!(ean131.encode(), "101001100100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
+        assert_eq!(ean132.encode(), "101000110100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
     }
 
     #[test]
     fn ean13_checksum_calculation() {
-        let ean131 = EAN13::new("03600029145".to_string()).unwrap(); // Check digit: 2
+        let ean131 = EAN13::new("003600029145".to_string()).unwrap(); // Check digit: 2
         let two_encoding = ENCODINGS[2][2];
-        let checksum_digit = &ean131.encode()[85..92];
+        let checksum_digit = &ean131.encode()[92..99];
 
 
         assert_eq!(checksum_digit, two_encoding);
