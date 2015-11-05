@@ -15,17 +15,17 @@ pub const ENCODINGS: [[&'static str; 10]; 3] = [
      "1001110", "1010000", "1000100", "1001000", "1110100",],
 ];
 
-pub const PARITY: [[usize; 6]; 10] = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 1, 1],
-    [0, 0, 1, 1, 0, 1],
-    [0, 0, 1, 1, 1, 0],
-    [0, 1, 0, 0, 1, 1],
-    [0, 1, 1, 0, 0, 1],
-    [0, 1, 1, 1, 0, 0],
-    [0, 1, 0, 1, 0, 1],
-    [0, 1, 0, 1, 1, 0],
-    [0, 1, 1, 0, 1, 0],
+pub const PARITY: [[usize; 5]; 10] = [
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 1],
+    [0, 1, 1, 0, 1],
+    [0, 1, 1, 1, 0],
+    [1, 0, 0, 1, 1],
+    [1, 1, 0, 0, 1],
+    [1, 1, 1, 0, 0],
+    [1, 0, 1, 0, 1],
+    [1, 0, 1, 1, 0],
+    [1, 1, 0, 1, 0],
 ];
 
 pub const GUARDS: [&'static str; 3] = [
@@ -85,14 +85,14 @@ impl EAN13 {
     }
 
     fn left_digits(&self) -> &[u32] {
-        &self.data[1..7]
+        &self.data[2..8]
     }
 
     fn right_digits(&self) -> &[u32] {
-        &self.data[7..]
+        &self.data[8..]
     }
 
-    fn parity_mapping(&self) -> [usize; 6] {
+    fn parity_mapping(&self) -> [usize; 5] {
         PARITY[self.data[0] as usize]
     }
 
@@ -166,7 +166,7 @@ mod tests {
     }
 
     #[test]
-    fn ean13_encode() {
+    fn ean13_encode_as_upca() {
         let ean131 = EAN13::new("012345612345".to_string()).unwrap(); // Check digit: 8
         let ean132 = EAN13::new("000118999561".to_string()).unwrap(); // Chcek digit: 3
 
@@ -175,11 +175,28 @@ mod tests {
     }
 
     #[test]
-    fn ean13_checksum_calculation() {
+    fn ean13_encode() {
+        let ean131 = EAN13::new("7501031311309".to_string()).unwrap(); // Check digit: 8
+        let ean132 = EAN13::new("983465123499".to_string()).unwrap(); // Chcek digit: 3
+
+        assert_eq!(ean131.encode(), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
+        assert_eq!(ean132.encode(), "101000110100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
+    }
+
+    #[test]
+    fn ean13_as_upca_checksum_calculation() {
         let ean131 = EAN13::new("003600029145".to_string()).unwrap(); // Check digit: 2
         let two_encoding = ENCODINGS[2][2];
         let checksum_digit = &ean131.encode()[92..99];
 
+        assert_eq!(checksum_digit, two_encoding);
+    }
+
+    #[test]
+    fn ean13_checksum_calculation() {
+        let ean131 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 2
+        let two_encoding = ENCODINGS[2][6];
+        let checksum_digit = &ean131.encode()[92..99];
 
         assert_eq!(checksum_digit, two_encoding);
     }
