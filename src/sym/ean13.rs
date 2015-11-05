@@ -53,7 +53,7 @@ impl EAN13 {
         self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
-    fn checksum_digit(&self) -> u32 {
+    pub fn checksum_digit(&self) -> u32 {
         let mut odds = 0;
         let mut evens = 0;
 
@@ -191,6 +191,8 @@ mod tests {
         let checksum_digit1 = &ean131.encode()[85..92];
         let checksum_digit2 = &ean132.encode()[85..92];
 
+        assert_eq!(ean131.checksum_digit(), 2);
+        assert_eq!(ean132.checksum_digit(), 8);
         assert_eq!(checksum_digit1, two_encoding);
         assert_eq!(checksum_digit2, eight_encoding);
     }
@@ -204,6 +206,8 @@ mod tests {
         let checksum_digit1 = &ean131.encode()[85..92];
         let checksum_digit2 = &ean132.encode()[85..92];
 
+        assert_eq!(ean131.checksum_digit(), 6);
+        assert_eq!(ean132.checksum_digit(), 2);
         assert_eq!(checksum_digit1, six_encoding);
         assert_eq!(checksum_digit2, two_encoding);
     }
