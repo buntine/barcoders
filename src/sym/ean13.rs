@@ -3,7 +3,7 @@ use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
-pub const ENCODINGS: [[&'static str; 10]; 2] = [
+pub const ENCODINGS: [[&'static str; 10]; 3] = [
     // Left odd parity.
     ["0001101", "0011001", "0010011", "0111101", "0100011",
      "0110001", "0101111", "0111011", "0110111", "0001011",],
@@ -55,7 +55,7 @@ impl EAN13 {
     }
 
     fn checksum_encoding(&self) -> &'static str {
-        self.char_encoding(1, &self.checksum_digit())
+        self.char_encoding(2, &self.checksum_digit())
     }
 
     fn char_encoding(&self, side: usize, d: &u32) -> &'static str {
@@ -81,7 +81,7 @@ impl EAN13 {
     fn right_payload(&self) -> String {
         self.right_digits()
             .iter()
-            .map(|d| self.char_encoding(1, &d))
+            .map(|d| self.char_encoding(2, &d))
             .collect::<Vec<&str>>()
             .concat()
     }
@@ -148,8 +148,8 @@ mod tests {
 
     #[test]
     fn ean13_checksum_calculation() {
-        let ean131 = EAN13::new("03600029145".to_string()).unwrap();
-        let two_encoding = ENCODINGS[1][2];
+        let ean131 = EAN13::new("03600029145".to_string()).unwrap(); // Check digit: 2
+        let two_encoding = ENCODINGS[2][2];
         let checksum_digit = &ean131.encode()[85..92];
 
 
