@@ -53,14 +53,13 @@ impl EAN13 {
         self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
-    // TODO: Recalculate using weighting algorithm.
     fn checksum_digit(&self) -> u32 {
         let mut odds = 0;
         let mut evens = 0;
 
-        for (i, d) in self.data.iter().skip(1).enumerate() {
+        for (i, d) in self.data.iter().enumerate() {
             match i % 2 {
-                0 => { odds += *d }
+                1 => { odds += *d }
                 _ => { evens += *d }
             }
         }
@@ -198,11 +197,15 @@ mod tests {
 
     #[test]
     fn ean13_checksum_calculation() {
-        let ean131 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 2
-        let two_encoding = ENCODINGS[2][6];
-        let checksum_digit = &ean131.encode()[92..99];
+        let ean131 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 6
+        let ean132 = EAN13::new("953476324586".to_string()).unwrap(); // Check digit: 2
+        let six_encoding = ENCODINGS[2][6];
+        let two_encoding = ENCODINGS[2][2];
+        let checksum_digit1 = &ean131.encode()[85..92];
+        let checksum_digit2 = &ean132.encode()[85..92];
 
-        assert_eq!(checksum_digit, two_encoding);
+        assert_eq!(checksum_digit1, six_encoding);
+        assert_eq!(checksum_digit2, two_encoding);
     }
 
     #[test]
