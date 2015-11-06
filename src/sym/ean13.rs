@@ -1,3 +1,10 @@
+//! This module provides types for encoding UPC and EAN barcodes.
+//! Specifically:
+//!   * UPC-A
+//!   * EAN-13
+//!   * Bookland
+//!   * JAN
+
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
