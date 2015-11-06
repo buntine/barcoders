@@ -3,19 +3,25 @@ use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
+/// Encoding mappings for EAN barcodes.
+/// 1 = bar, 0 = no bar.
+///
+/// The three indices are:
+/// * Left side A (odd parity).
+/// * Left side B (even parity).
+/// * Right side encodings.
 pub const ENCODINGS: [[&'static str; 10]; 3] = [
-    // Left odd parity.
     ["0001101", "0011001", "0010011", "0111101", "0100011",
      "0110001", "0101111", "0111011", "0110111", "0001011",],
-    // Left even parity.
     ["0100111", "0110011", "0011011", "0100001", "0011101",
      "0111001", "0000101", "0010001", "0001001", "0010111",],
-    // Right.
     ["1110010", "1100110", "1101100", "1000010", "1011100",
      "1001110", "1010000", "1000100", "1001000", "1110100",],
 ];
 
-pub const PARITY: [[usize; 5]; 10] = [
+/// Maps parity (odd/even) for the left-side digits based on the first digit in
+/// the number system portion of the barcode data.
+const PARITY: [[usize; 5]; 10] = [
     [0, 0, 0, 0, 0],
     [0, 1, 0, 1, 1],
     [0, 1, 1, 0, 1],
@@ -28,20 +34,34 @@ pub const PARITY: [[usize; 5]; 10] = [
     [1, 1, 0, 1, 0],
 ];
 
-pub const GUARDS: [&'static str; 3] = [
+/// The patterns for the guards. These are the separators that often stick down when
+/// a barcode is printed.
+const GUARDS: [&'static str; 3] = [
     "101",   // Left.
     "01010", // Middle.
     "101",   // Right.
 ];
 
+/// The EAN-13 barcode type.
 pub struct EAN13 {
     data: Vec<u32>,
 }
 
+/// The Bookland barcode type.
+/// Bookland are EAN-13 that use number system 978.
 pub type Bookland = EAN13;
+
+/// The UPC-A barcode type.
+/// UPC-A are EAN-13 that start with a 0.
 pub type UPCA = EAN13;
 
+/// The JAN barcode type.
+/// JAN are EAN-13 that use number system of 49.
+pub type JAN = EAN13;
+
 impl EAN13 {
+    /// Creates a new barcode.
+    /// Returns Result<EAN13, String> indicating parse success.
     pub fn new(data: String) -> Result<EAN13, String> {
         match EAN13::parse(data) {
             Ok(d) => {
@@ -52,10 +72,12 @@ impl EAN13 {
         }
     }
 
+    /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> String {
         self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
+    /// Calculates the checksum digit using a weighting algorithm.
     pub fn checksum_digit(&self) -> u32 {
         let mut odds = 0;
         let mut evens = 0;
@@ -117,16 +139,20 @@ impl EAN13 {
 }
 
 impl Parse for EAN13 {
+    /// Returns the valid length of data acceptable in this type of barcode.
     fn valid_len() -> Range<u32> {
         12..13
     }
 
+    /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
         (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 
 impl Encode for EAN13 {
+    /// Encodes the barcode.
+    /// Returns a String.
     fn encode(&self) -> String {
         format!("{}{}{}{}{}{}{}", GUARDS[0], self.number_system_encoding(), self.left_payload(),
                                   GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
