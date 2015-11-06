@@ -117,7 +117,7 @@ mod tests {
 
     #[test]
     fn new_ean8() {
-        let ean8 = EAN13::new("123456123456".to_string());
+        let ean8 = EAN13::new("1234567".to_string());
 
         assert!(ean8.is_ok());
     }
@@ -138,9 +138,9 @@ mod tests {
 
     #[test]
     fn ean8_raw_data() {
-        let ean8 = EAN13::new("123456123456".to_string()).unwrap();
+        let ean8 = EAN13::new("1234567".to_string()).unwrap();
 
-        assert_eq!(ean8.raw_data(), "123456123456".to_string());
+        assert_eq!(ean8.raw_data(), "1234567".to_string());
     }
 
     #[test]
@@ -149,27 +149,27 @@ mod tests {
         let ean82 = EAN13::new("9834651".to_string()).unwrap(); // Check digit: 3
 
         assert_eq!(ean81.encode(), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
-        //assert_eq!(ean82.encode(), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
+        assert_eq!(ean82.encode(), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
     }
 
     #[test]
     fn ean8_checksum_calculation() {
-        let ean81 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 6
-        let ean82 = EAN13::new("953476324586".to_string()).unwrap(); // Check digit: 2
-        let six_encoding = ENCODINGS[1][6];
-        let two_encoding = ENCODINGS[1][2];
-        let checksum_digit1 = &ean81.encode()[85..92];
-        let checksum_digit2 = &ean82.encode()[85..92];
+        let ean81 = EAN13::new("4575678".to_string()).unwrap(); // Check digit: 8
+        let ean82 = EAN13::new("9534763".to_string()).unwrap(); // Check digit: 9
+        let eight_encoding = ENCODINGS[1][8];
+        let nine_encoding = ENCODINGS[1][9];
+        let checksum_digit1 = &ean81.encode()[57..64];
+        let checksum_digit2 = &ean82.encode()[57..64];
 
-        assert_eq!(ean81.checksum_digit(), 6);
-        assert_eq!(ean82.checksum_digit(), 2);
-        assert_eq!(checksum_digit1, six_encoding);
-        assert_eq!(checksum_digit2, two_encoding);
+        assert_eq!(ean81.checksum_digit(), 8);
+        assert_eq!(ean82.checksum_digit(), 9);
+        assert_eq!(checksum_digit1, eight_encoding);
+        assert_eq!(checksum_digit2, nine_encoding);
     }
 
     #[test]
     fn ean8_to_ascii() {
-        let ean8 = EAN13::new("123456123456".to_string()).unwrap();
+        let ean8 = EAN13::new("1234567".to_string()).unwrap();
         let ascii = ASCII::new();
 
         assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn ean8_to_ascii_with_large_height() {
-        let ean8 = EAN13::new("123456123456".to_string()).unwrap();
+        let ean8 = EAN13::new("1234567".to_string()).unwrap();
         let ascii = ASCII::new().height(40).xdim(2);
 
         assert_eq!(ascii.height, 40);
