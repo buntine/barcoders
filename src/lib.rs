@@ -30,4 +30,16 @@ mod tests {
 
         assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
     }
+
+    #[test]
+    fn upca_usage() {
+        let upca = UPCA::new("012345123456".to_string());
+
+        assert!(upca.is_ok());
+
+        let upca = upca.unwrap();
+        let ascii = ASCII::new();
+
+        assert_eq!(ascii.generate(&upca), "SWAG".to_string());
+    }
 }
