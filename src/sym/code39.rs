@@ -2,6 +2,9 @@ use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
+pub const CODE39_CHARS: [&'static str] = [
+];
+
 pub struct Code39 {
     data: String,
 }
@@ -20,12 +23,12 @@ impl Code39 {
 }
 
 impl Parse for Code39 {
+    // Code-39 is variable-length.
     fn valid_len() -> Range<u32> {
-        0..6
+        1..128
     }
 
     fn valid_chars() -> Vec<char> {
-        (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 
@@ -51,7 +54,7 @@ mod tests {
 
     #[test]
     fn invalid_len_code39() {
-        let code39 = Code39::new("1111112222222333333".to_string());
+        let code39 = Code39::new("".to_string());
 
         assert!(code39.is_err());
     }
