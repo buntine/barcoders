@@ -159,7 +159,7 @@ impl Parse for EAN13 {
 
 impl Encode for EAN13 {
     /// Encodes the barcode.
-    /// Returns a String.
+    /// Returns a String of binary digits.
     fn encode(&self) -> String {
         format!("{}{}{}{}{}{}{}", EAN13_GUARDS[0], self.number_system_encoding(), self.left_payload(),
                                   EAN13_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN13_GUARDS[2])

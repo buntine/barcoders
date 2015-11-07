@@ -1,28 +1,40 @@
+//! This module provides types for EAN-8 barcodes, which are EAN style barcodes for smaller
+//! packages on products like cigaretts, chewing gum, etc.
+
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
+/// Encoding mappings for EAN barcodes.
+/// 1 = bar, 0 = no bar.
+///
+/// The indices are:
+/// * Left side (4 digits)
+/// * Right side (4 digits)
 pub const EAN8_ENCODINGS: [[&'static str; 10]; 2] = [
-    // Left.
     ["0001101", "0011001", "0010011", "0111101", "0100011",
      "0110001", "0101111", "0111011", "0110111", "0001011",],
-    // Right.
     ["1110010", "1100110", "1101100", "1000010", "1011100",
      "1001110", "1010000", "1000100", "1001000", "1110100",],
 ];
 
+/// The patterns for the guards. These are the separators that often stick down when
+/// a barcode is printed.
 pub const EAN8_GUARDS: [&'static str; 3] = [
     "101",   // Left.
     "01010", // Middle.
     "101",   // Right.
 ];
 
+/// The EAN-8 barcode type.
 pub struct EAN8 {
     data: Vec<u32>,
 }
 
 impl EAN8 {
+    /// Creates a new barcode.
+    /// Returns Result<EAN8, String> indicating parse success.
     pub fn new(data: String) -> Result<EAN8, String> {
         match EAN8::parse(data) {
             Ok(d) => {
@@ -33,10 +45,12 @@ impl EAN8 {
         }
     }
 
+    /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> String {
         self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
+    /// Calculates the checksum digit using a weighting algorithm.
     pub fn checksum_digit(&self) -> u32 {
         let mut odds = 0;
         let mut evens = 0;
@@ -93,16 +107,20 @@ impl EAN8 {
 }
 
 impl Parse for EAN8 {
+    /// Returns the valid length of data acceptable in this type of barcode.
     fn valid_len() -> Range<u32> {
         7..8
     }
 
+    /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
         (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 
 impl Encode for EAN8 {
+    /// Encodes the barcode.
+    /// Returns a String of binary digits.
     fn encode(&self) -> String {
         format!("{}{}{}{}{}{}{}", EAN8_GUARDS[0], self.number_system_encoding(), self.left_payload(),
                                   EAN8_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN8_GUARDS[2])
