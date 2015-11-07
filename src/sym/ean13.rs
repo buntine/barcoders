@@ -17,7 +17,7 @@ use std::char;
 /// * Left side A (odd parity).
 /// * Left side B (even parity).
 /// * Right side encodings.
-pub const ENCODINGS: [[&'static str; 10]; 3] = [
+pub const EAN13_ENCODINGS: [[&'static str; 10]; 3] = [
     ["0001101", "0011001", "0010011", "0111101", "0100011",
      "0110001", "0101111", "0111011", "0110111", "0001011",],
     ["0100111", "0110011", "0011011", "0100001", "0011101",
@@ -43,7 +43,7 @@ const PARITY: [[usize; 5]; 10] = [
 
 /// The patterns for the guards. These are the separators that often stick down when
 /// a barcode is printed.
-const GUARDS: [&'static str; 3] = [
+const EAN13_GUARDS: [&'static str; 3] = [
     "101",   // Left.
     "01010", // Middle.
     "101",   // Right.
@@ -112,7 +112,7 @@ impl EAN13 {
     }
 
     fn char_encoding(&self, side: usize, d: &u32) -> &'static str {
-        ENCODINGS[side][*d as usize]
+        EAN13_ENCODINGS[side][*d as usize]
     }
 
     fn left_digits(&self) -> &[u32] {
@@ -161,8 +161,8 @@ impl Encode for EAN13 {
     /// Encodes the barcode.
     /// Returns a String.
     fn encode(&self) -> String {
-        format!("{}{}{}{}{}{}{}", GUARDS[0], self.number_system_encoding(), self.left_payload(),
-                                  GUARDS[1], self.right_payload(), self.checksum_encoding(), GUARDS[2])
+        format!("{}{}{}{}{}{}{}", EAN13_GUARDS[0], self.number_system_encoding(), self.left_payload(),
+                                  EAN13_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN13_GUARDS[2])
     }
 }
 
@@ -238,8 +238,8 @@ mod tests {
     fn ean13_as_upca_checksum_calculation() {
         let ean131 = UPCA::new("003600029145".to_string()).unwrap(); // Check digit: 2
         let ean132 = UPCA::new("012345612345".to_string()).unwrap(); // Check digit: 8
-        let two_encoding = ENCODINGS[2][2];
-        let eight_encoding = ENCODINGS[2][8];
+        let two_encoding = EAN13_ENCODINGS[2][2];
+        let eight_encoding = EAN13_ENCODINGS[2][8];
         let checksum_digit1 = &ean131.encode()[85..92];
         let checksum_digit2 = &ean132.encode()[85..92];
 
@@ -253,8 +253,8 @@ mod tests {
     fn ean13_as_bookland_checksum_calculation() {
         let bookland1 = Bookland::new("978600029145".to_string()).unwrap(); // Check digit: 7
         let bookland2 = Bookland::new("978345612345".to_string()).unwrap(); // Check digit: 5
-        let seven_encoding = ENCODINGS[2][7];
-        let five_encoding = ENCODINGS[2][5];
+        let seven_encoding = EAN13_ENCODINGS[2][7];
+        let five_encoding = EAN13_ENCODINGS[2][5];
         let checksum_digit1 = &bookland1.encode()[85..92];
         let checksum_digit2 = &bookland2.encode()[85..92];
 
@@ -268,8 +268,8 @@ mod tests {
     fn ean13_checksum_calculation() {
         let ean131 = EAN13::new("457567816412".to_string()).unwrap(); // Check digit: 6
         let ean132 = EAN13::new("953476324586".to_string()).unwrap(); // Check digit: 2
-        let six_encoding = ENCODINGS[2][6];
-        let two_encoding = ENCODINGS[2][2];
+        let six_encoding = EAN13_ENCODINGS[2][6];
+        let two_encoding = EAN13_ENCODINGS[2][2];
         let checksum_digit1 = &ean131.encode()[85..92];
         let checksum_digit2 = &ean132.encode()[85..92];
 
