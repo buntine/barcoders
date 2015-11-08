@@ -46,8 +46,19 @@ impl Code39 {
         &self.data[..]
     }
 
+    // TODO: Implement.
+    pub fn checksum_char(&self) -> char {
+        '6'
+    }
+
+    // TODO: Implement.
+    fn char_encoding(&self, d: &u32) -> &'static str {
+        "101010101010"
+    }
+
+    // TODO: Implement, considering check char.
     fn payload(&self) -> String {
-        "101010".to_string()
+        "101010101010".to_string()
     }
 }
 
@@ -103,5 +114,50 @@ mod tests {
         let code39 = Code39::new("12345".to_string()).unwrap();
 
         assert_eq!(code39.raw_data(), "12345");
+    }
+
+    #[test]
+    fn code39_encode() {
+        let code391 = Code39::new("750103131130".to_string()).unwrap();
+        let code392 = Code39::new("983465123499".to_string()).unwrap();
+
+        assert_eq!(code391.encode(), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
+        assert_eq!(code392.encode(), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
+    }
+
+    #[test]
+    fn code39_encode_with_checksum() {
+        let code391 = Code39::with_checksum("750103131130".to_string()).unwrap(); // Check char: X
+        let code392 = Code39::with_checksum("983465123499".to_string()).unwrap(); // Check char: X
+
+        assert_eq!(code391.encode(), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
+        assert_eq!(code392.encode(), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
+    }
+
+    #[test]
+    fn code39_checksum_calculation() {
+        let code391 = Code39::new("457567816412".to_string()).unwrap(); // Check char: X
+        let code392 = Code39::new("953476324586".to_string()).unwrap(); // Check char: X
+
+        assert_eq!(code391.checksum_char(), '6');
+        assert_eq!(code392.checksum_char(), '2');
+    }
+
+    #[test]
+    fn code39_to_ascii() {
+        let code39 = Code39::new("123456123456".to_string()).unwrap();
+        let ascii = ASCII::new();
+
+        assert_eq!(ascii.generate(&code39), "SWAG".to_string());
+    }
+
+    #[test]
+    fn code39_to_ascii_with_large_height() {
+        let code39 = Code39::new("123456123456".to_string()).unwrap();
+        let ascii = ASCII::new().height(40).xdim(2);
+
+        assert_eq!(ascii.height, 40);
+        assert_eq!(ascii.xdim, 2);
+        assert_eq!(ascii.generate(&code39), "SWAG".to_string());
     }
 }
