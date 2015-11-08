@@ -2,19 +2,39 @@ use ::sym::Parse;
 use std::ops::Range;
 use std::char;
 
-pub const CODE39_CHARS: [&'static str] = [
+pub const CODE39_CHARS: [(char, &'static str); 10] = [
+    ('0', "101010"),
+    ('1', "101011"),
+    ('2', "101011"),
+    ('3', "101011"),
+    ('4', "101011"),
+    ('5', "101011"),
+    ('6', "101011"),
+    ('7', "101011"),
+    ('8', "101011"),
+    ('9', "101011"),
 ];
 
 pub struct Code39 {
     data: String,
+    checksum_required: bool,
 }
 
 impl Code39 {
-    pub fn new(data: String) -> Result<Code39, String> {
+    fn init(data: String, checksum_required: bool) -> Result<Code39, String> {
         match Code39::parse(data) {
-            Ok(d) => Ok(Code39{data: d}),
+            Ok(d) => Ok(Code39{data: d, checksum_required: checksum_required}),
             Err(e) => Err(e),
         }
+    }
+
+    pub fn new(data: String) -> Result<Code39, String> {
+        Code39::init(data, false)
+    }
+
+
+    pub fn with_checksum(data: String) -> Result<Code39, String> {
+        Code39::init(data, true)
     }
 
     pub fn raw_data(&self) -> &str {
@@ -29,6 +49,8 @@ impl Parse for Code39 {
     }
 
     fn valid_chars() -> Vec<char> {
+        let (chars, _): (Vec<_>, Vec<_>) = CODE39_CHARS.iter().cloned().unzip();
+        chars
     }
 }
 
