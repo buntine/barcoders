@@ -2,7 +2,7 @@ use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
 
-pub const CODE39_CHARS: [(char, &'static str); 44] = [
+pub const CODE39_CHARS: [(char, &'static str); 43] = [
     ('0', "101010"), ('1', "101011"), ('2', "101011"),
     ('3', "101011"), ('4', "101011"), ('5', "101011"),
     ('6', "101011"), ('7', "101011"), ('8', "101011"),
@@ -17,8 +17,10 @@ pub const CODE39_CHARS: [(char, &'static str); 44] = [
     ('X', "101011"), ('Y', "101011"), ('Z', "101011"),
     ('-', "101011"), ('.', "101011"), (' ', "101011"),
     ('$', "101011"), ('/', "101011"), ('+', "101011"),
-    ('%', "101011"), ('*', "101010"),
+    ('%', "101011"),
 ];
+
+pub const CODE39_GUARD: &'static str = "101010"; // Char: '*'
 
 pub struct Code39 {
     data: String,
@@ -99,12 +101,7 @@ impl Encode for Code39 {
     /// Encodes the barcode.
     /// Returns a String of binary digits.
     fn encode(&self) -> String {
-        let wrap_char = match CODE39_CHARS.last() {
-            Some(&(_, enc)) => enc,
-            None => "",
-        };
-
-        format!("{}{}{}", wrap_char, self.payload(), wrap_char)
+        format!("{}{}{}", CODE39_GUARD, self.payload(), CODE39_GUARD)
     }
 }
 

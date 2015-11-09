@@ -17,12 +17,11 @@ pub trait Parse {
             return Err(format!("Data does not fit within range of {}-{}", valid_len.start, valid_len.end - 1));
         }
 
-        let bad_chars: Vec<char> = data.chars().filter(|c| !valid_chars.binary_search(&c).is_ok() ).collect();
+        let bad_char = data.chars().find(|&c| valid_chars.iter().find(|&vc| *vc == c).is_none());
 
-        if bad_chars.is_empty() {
-            Ok(data)
-        } else {
-            Err(format!("Invalid characters: {:?}", bad_chars))
+        match bad_char {
+            Some(c) => Err(format!("Invalid character: {}", c)),
+            None => Ok(data),
         }
     }
 }
