@@ -1,7 +1,6 @@
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
-use std::char;
 
 pub const CODE39_CHARS: [(char, &'static str); 44] = [
     ('*', "101010"), ('0', "101010"), ('1', "101011"),
@@ -51,14 +50,27 @@ impl Code39 {
         '6'
     }
 
-    // TODO: Implement.
-    fn char_encoding(&self, d: &u32) -> &'static str {
-        "101010101010"
+    fn checksum_encoding(&self) -> &'static str {
+        self.char_encoding(&self.checksum_char())
     }
 
-    // TODO: Implement, considering check char.
+    fn char_encoding(&self, c: &char) -> &'static str {
+        match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
+            Some(ch) => ch.1,
+            None => panic!(format!("Unknown char: {}", c)),
+        }
+    }
+
     fn payload(&self) -> String {
-        "101010101010".to_string()
+        let chars = self.data.chars()
+                             .map(|c| self.char_encoding(&c))
+                             .collect();
+
+        if self.checksum_required {
+            format!("{}{}", chars, self.checksum_encoding())
+        } else {
+            chars
+        }
     }
 }
 
