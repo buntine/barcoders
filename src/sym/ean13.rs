@@ -84,7 +84,7 @@ impl EAN13 {
         self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
     }
 
-    /// Calculates the checksum digit using a weighting algorithm.
+    /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     pub fn checksum_digit(&self) -> u32 {
         let mut odds = 0;
         let mut evens = 0;

@@ -1,7 +1,12 @@
+//! This module provides types for encoding Code39 barcodes. Also known as 3-of-9 barcodes.
+//! Code39 is the standard barcode used by the United States Department of Defense and is also
+//! popular in non-retail environments. 
+
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
 
+/// Character -> Binary mappings for each of the 43 allowable character.
 pub const CODE39_CHARS: [(char, &'static str); 43] = [
     ('0', "101001101101"), ('1', "110100101011"), ('2', "101100101011"),
     ('3', "110110010101"), ('4', "101001101011"), ('5', "110100110101"),
@@ -20,33 +25,41 @@ pub const CODE39_CHARS: [(char, &'static str); 43] = [
     ('%', "101001001001"),
 ];
 
-pub const CODE39_GUARD: &'static str = "100101101101"; // Char: '*'
+/// Code39 barcodes must start and end with the '*' special character.
+pub const CODE39_GUARD: &'static str = "100101101101";
 
+/// The Code39 barcode type.
 pub struct Code39 {
     data: String,
     checksum_required: bool,
 }
 
 impl Code39 {
-    fn init(data: String, checksum_required: bool) -> Result<Code39, String> {
+   fn init(data: String, checksum_required: bool) -> Result<Code39, String> {
         match Code39::parse(data) {
             Ok(d) => Ok(Code39{data: d, checksum_required: checksum_required}),
             Err(e) => Err(e),
         }
     }
 
+    /// Creates a new barcode.
+    /// Returns Result<Code39, String> indicating parse success.
     pub fn new(data: String) -> Result<Code39, String> {
         Code39::init(data, false)
     }
 
+    /// Creates a new barcode with an appended check-digit, calculated using modulo-43..
+    /// Returns Result<Code39, String> indicating parse success.
     pub fn with_checksum(data: String) -> Result<Code39, String> {
         Code39::init(data, true)
     }
 
+    /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &str {
         &self.data[..]
     }
 
+    /// Calculates the checksum character using a modulo-43 algorithm.
     pub fn checksum_char(&self) -> Option<char> {
         let get_char_pos = |c| CODE39_CHARS.iter().position(|t| t.0 == c).unwrap();
         let indices = self.data.chars().map(&get_char_pos);
@@ -86,11 +99,13 @@ impl Code39 {
 }
 
 impl Parse for Code39 {
-    // Code-39 is variable-length.
+    /// Returns the valid length of data acceptable in this type of barcode.
+    /// Code-39 is variable-length.
     fn valid_len() -> Range<u32> {
         1..128
     }
 
+    /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
         let (chars, _): (Vec<_>, Vec<_>) = CODE39_CHARS.iter().cloned().unzip();
         chars
