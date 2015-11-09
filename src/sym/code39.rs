@@ -45,18 +45,27 @@ impl Code39 {
         &self.data[..]
     }
 
-    // TODO: Implement.
-    pub fn checksum_char(&self) -> char {
-        '6'
+    pub fn checksum_char(&self) -> Option<char> {
+        let get_char_pos = |c| CODE39_CHARS.iter().position(|t| t.0 == c).unwrap();
+        let indices = self.data.chars().map(&get_char_pos);
+        let index = indices.fold(0, |acc, i| acc + i) % CODE39_CHARS.len();
+
+        match CODE39_CHARS.get(index) {
+            Some(&(c, _)) => Some(c),
+            None => None,
+        }
     }
 
     fn checksum_encoding(&self) -> &'static str {
-        self.char_encoding(&self.checksum_char())
+        match self.checksum_char() {
+            Some(c) => self.char_encoding(&c),
+            None => "",
+        }
     }
 
     fn char_encoding(&self, c: &char) -> &'static str {
         match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
-            Some(ch) => ch.1,
+            Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
     }
@@ -91,7 +100,7 @@ impl Encode for Code39 {
     /// Returns a String of binary digits.
     fn encode(&self) -> String {
         let wrap_char = match CODE39_CHARS.last() {
-            Some(n) => n.1,
+            Some(&(_, enc)) => enc,
             None => "",
         };
 
@@ -153,11 +162,11 @@ mod tests {
 
     #[test]
     fn code39_checksum_calculation() {
-        let code391 = Code39::new("457567816412".to_string()).unwrap(); // Check char: X
-        let code392 = Code39::new("953476324586".to_string()).unwrap(); // Check char: X
+        let code391 = Code39::new("1234".to_string()).unwrap(); // Check char: 'A'
+        let code392 = Code39::new("159AZ".to_string()).unwrap(); // Check char: 'H'
 
-        assert_eq!(code391.checksum_char(), '6');
-        assert_eq!(code392.checksum_char(), '2');
+        assert_eq!(code391.checksum_char().unwrap(), 'A');
+        assert_eq!(code392.checksum_char().unwrap(), 'H');
     }
 
     #[test]
