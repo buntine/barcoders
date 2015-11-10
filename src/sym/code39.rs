@@ -5,7 +5,6 @@
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
-use std::char;
 
 /// Character -> Binary mappings for each of the 43 allowable character.
 pub const CODE39_CHARS: [(char, &'static str); 43] = [
