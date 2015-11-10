@@ -99,7 +99,10 @@ impl EAN13 {
             }
         }
 
-        10 - (((odds * 3) + evens) % 10)
+        match 10 - (((odds * 3) + evens) % 10) {
+            10    => 0,
+            n @ _ => n,
+        }
     }
 
     fn number_system_digit(&self) -> u32 {

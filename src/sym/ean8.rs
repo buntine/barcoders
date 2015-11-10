@@ -62,7 +62,10 @@ impl EAN8 {
             }
         }
 
-        10 - (((odds * 3) + evens) % 10)
+        match 10 - (((odds * 3) + evens) % 10) {
+            10    => 0,
+            n @ _ => n,
+        }
     }
 
     fn number_system_digits(&self) -> &[u32] {

@@ -29,9 +29,10 @@ impl ASCII {
             for d in &payload {
                 match d {
                     &0 => output.push_str(" "),
-                    _ => output.push_str("#"),
+                    _  => output.push_str("#"),
                 }
             }
+
             output.push_str("\n");
         }
 
