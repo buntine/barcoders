@@ -175,6 +175,12 @@ impl Encode for EAN13 {
 mod tests {
     use ::sym::ean13::*;
     use ::sym::Encode;
+    use std::char;
+
+    fn collapse_vec(v: Vec<u8>) -> String {
+        let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
+        chars.collect()
+    }
 
     #[test]
     fn new_ean13() {
@@ -216,8 +222,8 @@ mod tests {
         let ean131 = UPCA::new("012345612345".to_string()).unwrap(); // Check digit: 8
         let ean132 = UPCA::new("000118999561".to_string()).unwrap(); // Check digit: 3
 
-        assert_eq!(format!("{:?}", ean131.encode()), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
-        assert_eq!(format!("{:?}", ean132.encode()), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
+        assert_eq!(collapse_vec(ean131.encode()), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
+        assert_eq!(collapse_vec(ean132.encode()), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
     }
 
     #[test]
@@ -225,8 +231,8 @@ mod tests {
         let bookland1 = Bookland::new("978345612345".to_string()).unwrap(); // Check digit: 5
         let bookland2 = Bookland::new("978118999561".to_string()).unwrap(); // Check digit: 5
 
-        assert_eq!(format!("{:?}", bookland1.encode()), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101".to_string());
-        assert_eq!(format!("{:?}", bookland2.encode()), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101".to_string());
+        assert_eq!(collapse_vec(bookland1.encode()), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101".to_string());
+        assert_eq!(collapse_vec(bookland2.encode()), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101".to_string());
     }
 
     #[test]
@@ -234,8 +240,8 @@ mod tests {
         let ean131 = EAN13::new("750103131130".to_string()).unwrap(); // Check digit: 5
         let ean132 = EAN13::new("983465123499".to_string()).unwrap(); // Check digit: 5
 
-        assert_eq!(format!("{:?}", ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
-        assert_eq!(format!("{:?}", ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
+        assert_eq!(collapse_vec(ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
+        assert_eq!(collapse_vec(ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
     }
 
     #[test]
@@ -249,8 +255,8 @@ mod tests {
 
         assert_eq!(ean131.checksum_digit(), 2);
         assert_eq!(ean132.checksum_digit(), 8);
-        assert_eq!(format!("{:?}", checksum_digit1), two_encoding);
-        assert_eq!(format!("{:?}", checksum_digit2), eight_encoding);
+        assert_eq!(collapse_vec(checksum_digit1.to_vec()), two_encoding);
+        assert_eq!(collapse_vec(checksum_digit2.to_vec()), eight_encoding);
     }
 
     #[test]
@@ -264,8 +270,8 @@ mod tests {
 
         assert_eq!(bookland1.checksum_digit(), 7);
         assert_eq!(bookland2.checksum_digit(), 5);
-        assert_eq!(format!("{:?}", checksum_digit1), seven_encoding);
-        assert_eq!(format!("{:?}", checksum_digit2), five_encoding);
+        assert_eq!(collapse_vec(checksum_digit1.to_vec()), seven_encoding);
+        assert_eq!(collapse_vec(checksum_digit2.to_vec()), five_encoding);
     }
 
     #[test]
@@ -279,7 +285,7 @@ mod tests {
 
         assert_eq!(ean131.checksum_digit(), 6);
         assert_eq!(ean132.checksum_digit(), 2);
-        assert_eq!(format!("{:?}", checksum_digit1), six_encoding);
-        assert_eq!(format!("{:?}", checksum_digit2), two_encoding);
+        assert_eq!(collapse_vec(checksum_digit1.to_vec()), six_encoding);
+        assert_eq!(collapse_vec(checksum_digit2.to_vec()), two_encoding);
     }
 }

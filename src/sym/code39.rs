@@ -127,6 +127,12 @@ impl Encode for Code39 {
 mod tests {
     use ::sym::code39::*;
     use ::sym::Encode;
+    use std::char;
+
+    fn collapse_vec(v: Vec<u8>) -> String {
+        let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
+        chars.collect()
+    }
 
     #[test]
     fn new_code39() {
@@ -161,8 +167,8 @@ mod tests {
         let code391 = Code39::new("1234".to_string()).unwrap();
         let code392 = Code39::new("983RD512".to_string()).unwrap();
 
-        assert_eq!(format!("{:?}", code391.encode()), "100101101101110100101011101100101011110110010101101001101011100101101101".to_string());
-        assert_eq!(format!("{:?}", code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011100101101101".to_string());
+        assert_eq!(collapse_vec(code391.encode()), "100101101101110100101011101100101011110110010101101001101011100101101101".to_string());
+        assert_eq!(collapse_vec(code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011100101101101".to_string());
     }
 
     #[test]
@@ -170,8 +176,8 @@ mod tests {
         let code391 = Code39::with_checksum("1234".to_string()).unwrap();
         let code392 = Code39::with_checksum("983RD512".to_string()).unwrap();
 
-        assert_eq!(format!("{:?}", code391.encode()), "100101101101110100101011101100101011110110010101101001101011110101001011100101101101".to_string());
-        assert_eq!(format!("{:?}", code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011101101101001100101101101".to_string());
+        assert_eq!(collapse_vec(code391.encode()), "100101101101110100101011101100101011110110010101101001101011110101001011100101101101".to_string());
+        assert_eq!(collapse_vec(code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011101101101001100101101101".to_string());
     }
 
     #[test]

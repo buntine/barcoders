@@ -133,6 +133,12 @@ impl Encode for EAN8 {
 mod tests {
     use ::sym::ean8::*;
     use ::sym::Encode;
+    use std::char;
+
+    fn collapse_vec(v: Vec<u8>) -> String {
+        let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
+        chars.collect()
+    }
 
     #[test]
     fn new_ean8() {
@@ -167,8 +173,8 @@ mod tests {
         let ean81 = EAN8::new("5512345".to_string()).unwrap(); // Check digit: 7
         let ean82 = EAN8::new("9834651".to_string()).unwrap(); // Check digit: 3
 
-        assert_eq!(format!("{:?}", ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
-        assert_eq!(format!("{:?}", ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
+        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
+        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
     }
 
     #[test]
@@ -182,7 +188,7 @@ mod tests {
 
         assert_eq!(ean81.checksum_digit(), 8);
         assert_eq!(ean82.checksum_digit(), 9);
-        assert_eq!(format!("{:?}", checksum_digit1), eight_encoding);
-        assert_eq!(format!("{:?}", checksum_digit2), nine_encoding);
+        assert_eq!(collapse_vec(checksum_digit1.to_vec()), eight_encoding);
+        assert_eq!(collapse_vec(checksum_digit2.to_vec()), nine_encoding);
     }
 }
