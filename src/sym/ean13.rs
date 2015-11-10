@@ -54,7 +54,7 @@ const EAN13_GUARDS: [&'static str; 3] = [
 
 /// The EAN-13 barcode type.
 pub struct EAN13 {
-    data: Vec<u32>,
+    data: Vec<u8>,
 }
 
 /// The Bookland barcode type.
@@ -75,7 +75,7 @@ impl EAN13 {
     pub fn new(data: String) -> Result<EAN13, String> {
         match EAN13::parse(data) {
             Ok(d) => {
-                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character")).collect();
+                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
                 Ok(EAN13{data: digits})
             }
             Err(e) => Err(e),
@@ -84,11 +84,11 @@ impl EAN13 {
 
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> String {
-        self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
+        self.data.iter().map(|d| char::from_digit(*d as u32, 10).unwrap()).collect::<String>()
     }
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
-    pub fn checksum_digit(&self) -> u32 {
+    pub fn checksum_digit(&self) -> u8 {
         let mut odds = 0;
         let mut evens = 0;
 
@@ -105,7 +105,7 @@ impl EAN13 {
         }
     }
 
-    fn number_system_digit(&self) -> u32 {
+    fn number_system_digit(&self) -> u8 {
         self.data[1]
     }
 
@@ -117,15 +117,15 @@ impl EAN13 {
         self.char_encoding(2, &self.checksum_digit())
     }
 
-    fn char_encoding(&self, side: usize, d: &u32) -> &'static str {
+    fn char_encoding(&self, side: usize, d: &u8) -> &'static str {
         EAN13_ENCODINGS[side][*d as usize]
     }
 
-    fn left_digits(&self) -> &[u32] {
+    fn left_digits(&self) -> &[u8] {
         &self.data[2..7]
     }
 
-    fn right_digits(&self) -> &[u32] {
+    fn right_digits(&self) -> &[u8] {
         &self.data[7..]
     }
 
@@ -165,7 +165,7 @@ impl Parse for EAN13 {
 
 impl Encode for EAN13 {
     /// Encodes the barcode.
-    /// Returns a Vec<u32> of binary digits.
+    /// Returns a Vec<u8> of binary digits.
     fn encode(&self) -> Vec<u8> {
         let s = format!("{}{}{}{}{}{}{}", EAN13_GUARDS[0], self.number_system_encoding(), self.left_payload(),
                                   EAN13_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN13_GUARDS[2]);

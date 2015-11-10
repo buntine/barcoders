@@ -114,7 +114,7 @@ impl Parse for Code39 {
 
 impl Encode for Code39 {
     /// Encodes the barcode.
-    /// Returns a Vec<u32> of binary digits.
+    /// Returns a Vec<u8> of binary digits.
     fn encode(&self) -> Vec<u8> {
         let s = format!("{}{}{}", CODE39_GUARD, self.payload(), CODE39_GUARD);
 

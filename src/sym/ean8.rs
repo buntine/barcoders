@@ -29,7 +29,7 @@ pub const EAN8_GUARDS: [&'static str; 3] = [
 
 /// The EAN-8 barcode type.
 pub struct EAN8 {
-    data: Vec<u32>,
+    data: Vec<u8>,
 }
 
 impl EAN8 {
@@ -38,7 +38,7 @@ impl EAN8 {
     pub fn new(data: String) -> Result<EAN8, String> {
         match EAN8::parse(data) {
             Ok(d) => {
-                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character")).collect();
+                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
                 Ok(EAN8{data: digits})
             }
             Err(e) => Err(e),
@@ -47,11 +47,11 @@ impl EAN8 {
 
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> String {
-        self.data.iter().map(|d| char::from_digit(*d, 10).unwrap()).collect::<String>()
+        self.data.iter().map(|d| char::from_digit(*d as u32, 10).unwrap()).collect::<String>()
     }
 
     /// Calculates the checksum digit using a weighting algorithm.
-    pub fn checksum_digit(&self) -> u32 {
+    pub fn checksum_digit(&self) -> u8 {
         let mut odds = 0;
         let mut evens = 0;
 
@@ -68,7 +68,7 @@ impl EAN8 {
         }
     }
 
-    fn number_system_digits(&self) -> &[u32] {
+    fn number_system_digits(&self) -> &[u8] {
         &self.data[0..2]
     }
 
@@ -80,15 +80,15 @@ impl EAN8 {
         self.char_encoding(1, &self.checksum_digit())
     }
 
-    fn char_encoding(&self, side: usize, d: &u32) -> &'static str {
+    fn char_encoding(&self, side: usize, d: &u8) -> &'static str {
         EAN8_ENCODINGS[side][*d as usize]
     }
 
-    fn left_digits(&self) -> &[u32] {
+    fn left_digits(&self) -> &[u8] {
         &self.data[2..4]
     }
 
-    fn right_digits(&self) -> &[u32] {
+    fn right_digits(&self) -> &[u8] {
         &self.data[4..]
     }
 
@@ -123,7 +123,7 @@ impl Parse for EAN8 {
 
 impl Encode for EAN8 {
     /// Encodes the barcode.
-    /// Returns a Vec<u32> of binary digits.
+    /// Returns a Vec<u8> of binary digits.
     fn encode(&self) -> Vec<u8> {
         let s = format!("{}{}{}{}{}{}{}", EAN8_GUARDS[0], self.number_system_encoding(), self.left_payload(),
                                   EAN8_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN8_GUARDS[2]);
