@@ -27,8 +27,8 @@ impl ASCII {
 
         for _l in 0..self.height {
             for d in &payload {
-                match *d {
-                    0 => output.push_str(" "),
+                match d {
+                    &0 => output.push_str(" "),
                     _ => output.push_str("#"),
                 }
             }
