@@ -30,14 +30,14 @@ pub const CODE39_GUARD: &'static str = "100101101101";
 
 /// The Code39 barcode type.
 pub struct Code39 {
-    data: String,
+    data: Vec<char>,
     checksum_required: bool,
 }
 
 impl Code39 {
    fn init(data: String, checksum_required: bool) -> Result<Code39, String> {
         match Code39::parse(data) {
-            Ok(d) => Ok(Code39{data: d, checksum_required: checksum_required}),
+            Ok(d) => Ok(Code39{data: d.chars().collect(), checksum_required: checksum_required}),
             Err(e) => Err(e),
         }
     }
@@ -55,14 +55,14 @@ impl Code39 {
     }
 
     /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> &str {
+    pub fn raw_data(&self) -> &[char] {
         &self.data[..]
     }
 
     /// Calculates the checksum character using a modulo-43 algorithm.
     pub fn checksum_char(&self) -> Option<char> {
-        let get_char_pos = |c| CODE39_CHARS.iter().position(|t| t.0 == c).unwrap();
-        let indices = self.data.chars().map(&get_char_pos);
+        let get_char_pos = |&c| CODE39_CHARS.iter().position(|t| t.0 == c).unwrap();
+        let indices = self.data.iter().map(&get_char_pos);
         let index = indices.fold(0, |acc, i| acc + i) % CODE39_CHARS.len();
 
         match CODE39_CHARS.get(index) {
@@ -86,7 +86,7 @@ impl Code39 {
     }
 
     fn payload(&self) -> String {
-        let chars = self.data.chars()
+        let chars = self.data.iter()
                              .map(|c| self.char_encoding(&c))
                              .collect();
 
@@ -158,7 +158,7 @@ mod tests {
     fn code39_raw_data() {
         let code39 = Code39::new("12345".to_string()).unwrap();
 
-        assert_eq!(code39.raw_data(), "12345");
+        assert_eq!(code39.raw_data(), &['1', '2', '3', '4', '5']);
     }
 
     #[test]
