@@ -1,0 +1,3 @@
+- Replace str/String inside symbologies to use arrays of u8.
+  - Maybe use binary literals: 0b10101
+- Return iterators from encode() instead of Vecs
