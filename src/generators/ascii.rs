@@ -21,7 +21,7 @@ impl ASCII {
     }
 
     // TODO: Implement.
-    pub fn generate<T: Encode>(&self, barcode: &T) -> String {
+    pub fn generate<T: Encode>(&self, barcode: &T) -> Result<String, String> {
         let payload = barcode.encode();
         let mut output = String::new();
 
@@ -36,6 +36,6 @@ impl ASCII {
             output.push_str("\n");
         }
 
-        output
+        Ok(output)
     }
 }

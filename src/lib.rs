@@ -16,7 +16,7 @@ mod tests {
         let ean13 = ean13.unwrap();
         let ascii = ASCII::new();
 
-        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
+        assert!(ascii.generate(&ean13).is_ok());
     }
 
     #[test]
@@ -28,7 +28,7 @@ mod tests {
         let ean8 = ean8.unwrap();
         let ascii = ASCII::new();
 
-        assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
+        assert!(ascii.generate(&ean8).is_ok());
     }
 
     #[test]
@@ -40,6 +40,6 @@ mod tests {
         let upca = upca.unwrap();
         let ascii = ASCII::new();
 
-        assert_eq!(ascii.generate(&upca), "SWAG".to_string());
+        assert!(ascii.generate(&upca).is_ok());
     }
 }
