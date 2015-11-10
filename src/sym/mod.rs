@@ -3,6 +3,7 @@ pub mod ean8;
 pub mod code39;
 
 use std::ops::Range;
+use std::iter::Iterator;
 
 pub trait Parse {
     fn valid_chars() -> Vec<char>;
@@ -27,5 +28,5 @@ pub trait Parse {
 }
 
 pub trait Encode {
-    fn encode(&self) -> String;
+    fn encode(&self) -> Vec<u8>;
 }

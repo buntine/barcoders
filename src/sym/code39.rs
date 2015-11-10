@@ -5,6 +5,7 @@
 use ::sym::Encode;
 use ::sym::Parse;
 use std::ops::Range;
+use std::char;
 
 /// Character -> Binary mappings for each of the 43 allowable character.
 pub const CODE39_CHARS: [(char, &'static str); 43] = [
@@ -114,16 +115,17 @@ impl Parse for Code39 {
 
 impl Encode for Code39 {
     /// Encodes the barcode.
-    /// Returns a String of binary digits.
-    fn encode(&self) -> String {
-        format!("{}{}{}", CODE39_GUARD, self.payload(), CODE39_GUARD)
+    /// Returns a Vec<u32> of binary digits.
+    fn encode(&self) -> Vec<u8> {
+        let s = format!("{}{}{}", CODE39_GUARD, self.payload(), CODE39_GUARD);
+
+        s.chars().map(|c| c.to_digit(2).expect("Unknown character") as u8).collect::<Vec<u8>>()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use ::sym::code39::*;
-    use ::generators::ascii::*;
     use ::sym::Encode;
 
     #[test]
@@ -159,8 +161,8 @@ mod tests {
         let code391 = Code39::new("1234".to_string()).unwrap();
         let code392 = Code39::new("983RD512".to_string()).unwrap();
 
-        assert_eq!(code391.encode(), "100101101101110100101011101100101011110110010101101001101011100101101101".to_string());
-        assert_eq!(code392.encode(), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011100101101101".to_string());
+        assert_eq!(format!("{:?}", code391.encode()), "100101101101110100101011101100101011110110010101101001101011100101101101".to_string());
+        assert_eq!(format!("{:?}", code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011100101101101".to_string());
     }
 
     #[test]
@@ -168,8 +170,8 @@ mod tests {
         let code391 = Code39::with_checksum("1234".to_string()).unwrap();
         let code392 = Code39::with_checksum("983RD512".to_string()).unwrap();
 
-        assert_eq!(code391.encode(), "100101101101110100101011101100101011110110010101101001101011110101001011100101101101".to_string());
-        assert_eq!(code392.encode(), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011101101101001100101101101".to_string());
+        assert_eq!(format!("{:?}", code391.encode()), "100101101101110100101011101100101011110110010101101001101011110101001011100101101101".to_string());
+        assert_eq!(format!("{:?}", code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011101101101001100101101101".to_string());
     }
 
     #[test]
@@ -179,23 +181,5 @@ mod tests {
 
         assert_eq!(code391.checksum_char().unwrap(), 'A');
         assert_eq!(code392.checksum_char().unwrap(), 'H');
-    }
-
-    #[test]
-    fn code39_to_ascii() {
-        let code39 = Code39::new("123456123456".to_string()).unwrap();
-        let ascii = ASCII::new();
-
-        assert_eq!(ascii.generate(&code39), "SWAG".to_string());
-    }
-
-    #[test]
-    fn code39_to_ascii_with_large_height() {
-        let code39 = Code39::new("123456123456".to_string()).unwrap();
-        let ascii = ASCII::new().height(40).xdim(2);
-
-        assert_eq!(ascii.height, 40);
-        assert_eq!(ascii.xdim, 2);
-        assert_eq!(ascii.generate(&code39), "SWAG".to_string());
     }
 }

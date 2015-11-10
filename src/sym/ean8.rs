@@ -120,17 +120,18 @@ impl Parse for EAN8 {
 
 impl Encode for EAN8 {
     /// Encodes the barcode.
-    /// Returns a String of binary digits.
-    fn encode(&self) -> String {
-        format!("{}{}{}{}{}{}{}", EAN8_GUARDS[0], self.number_system_encoding(), self.left_payload(),
-                                  EAN8_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN8_GUARDS[2])
+    /// Returns a Vec<u32> of binary digits.
+    fn encode(&self) -> Vec<u8> {
+        let s = format!("{}{}{}{}{}{}{}", EAN8_GUARDS[0], self.number_system_encoding(), self.left_payload(),
+                                  EAN8_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN8_GUARDS[2]);
+
+        s.chars().map(|c| c.to_digit(2).expect("Unknown character") as u8).collect::<Vec<u8>>()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use ::sym::ean8::*;
-    use ::generators::ascii::*;
     use ::sym::Encode;
 
     #[test]
@@ -166,8 +167,8 @@ mod tests {
         let ean81 = EAN8::new("5512345".to_string()).unwrap(); // Check digit: 7
         let ean82 = EAN8::new("9834651".to_string()).unwrap(); // Check digit: 3
 
-        assert_eq!(ean81.encode(), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
-        assert_eq!(ean82.encode(), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
+        assert_eq!(format!("{:?}", ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
+        assert_eq!(format!("{:?}", ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
     }
 
     #[test]
@@ -181,25 +182,7 @@ mod tests {
 
         assert_eq!(ean81.checksum_digit(), 8);
         assert_eq!(ean82.checksum_digit(), 9);
-        assert_eq!(checksum_digit1, eight_encoding);
-        assert_eq!(checksum_digit2, nine_encoding);
-    }
-
-    #[test]
-    fn ean8_to_ascii() {
-        let ean8 = EAN8::new("1234567".to_string()).unwrap();
-        let ascii = ASCII::new();
-
-        assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
-    }
-
-    #[test]
-    fn ean8_to_ascii_with_large_height() {
-        let ean8 = EAN8::new("1234567".to_string()).unwrap();
-        let ascii = ASCII::new().height(40).xdim(2);
-
-        assert_eq!(ascii.height, 40);
-        assert_eq!(ascii.xdim, 2);
-        assert_eq!(ascii.generate(&ean8), "SWAG".to_string());
+        assert_eq!(format!("{:?}", checksum_digit1), eight_encoding);
+        assert_eq!(format!("{:?}", checksum_digit2), nine_encoding);
     }
 }

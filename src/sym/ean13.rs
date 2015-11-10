@@ -1,5 +1,8 @@
 //! This module provides types for encoding UPC and EAN barcodes.
-//! Specifically:
+//! EAN13 barcodes are very common in retail. 90% of the products you purchase from a supermarket
+//! will use EAN13.
+//!
+//! This module defines types for:
 //!   * UPC-A
 //!   * EAN-13
 //!   * Bookland
@@ -159,17 +162,18 @@ impl Parse for EAN13 {
 
 impl Encode for EAN13 {
     /// Encodes the barcode.
-    /// Returns a String of binary digits.
-    fn encode(&self) -> String {
-        format!("{}{}{}{}{}{}{}", EAN13_GUARDS[0], self.number_system_encoding(), self.left_payload(),
-                                  EAN13_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN13_GUARDS[2])
+    /// Returns a Vec<u32> of binary digits.
+    fn encode(&self) -> Vec<u8> {
+        let s = format!("{}{}{}{}{}{}{}", EAN13_GUARDS[0], self.number_system_encoding(), self.left_payload(),
+                                  EAN13_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN13_GUARDS[2]);
+
+        s.chars().map(|c| c.to_digit(2).expect("Unknown character") as u8).collect::<Vec<u8>>()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use ::sym::ean13::*;
-    use ::generators::ascii::*;
     use ::sym::Encode;
 
     #[test]
@@ -212,8 +216,8 @@ mod tests {
         let ean131 = UPCA::new("012345612345".to_string()).unwrap(); // Check digit: 8
         let ean132 = UPCA::new("000118999561".to_string()).unwrap(); // Check digit: 3
 
-        assert_eq!(ean131.encode(), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
-        assert_eq!(ean132.encode(), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
+        assert_eq!(format!("{:?}", ean131.encode()), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_string());
+        assert_eq!(format!("{:?}", ean132.encode()), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_string());
     }
 
     #[test]
@@ -221,8 +225,8 @@ mod tests {
         let bookland1 = Bookland::new("978345612345".to_string()).unwrap(); // Check digit: 5
         let bookland2 = Bookland::new("978118999561".to_string()).unwrap(); // Check digit: 5
 
-        assert_eq!(bookland1.encode(), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101".to_string());
-        assert_eq!(bookland2.encode(), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101".to_string());
+        assert_eq!(format!("{:?}", bookland1.encode()), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101".to_string());
+        assert_eq!(format!("{:?}", bookland2.encode()), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101".to_string());
     }
 
     #[test]
@@ -230,8 +234,8 @@ mod tests {
         let ean131 = EAN13::new("750103131130".to_string()).unwrap(); // Check digit: 5
         let ean132 = EAN13::new("983465123499".to_string()).unwrap(); // Check digit: 5
 
-        assert_eq!(ean131.encode(), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
-        assert_eq!(ean132.encode(), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
+        assert_eq!(format!("{:?}", ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_string());
+        assert_eq!(format!("{:?}", ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_string());
     }
 
     #[test]
@@ -245,8 +249,8 @@ mod tests {
 
         assert_eq!(ean131.checksum_digit(), 2);
         assert_eq!(ean132.checksum_digit(), 8);
-        assert_eq!(checksum_digit1, two_encoding);
-        assert_eq!(checksum_digit2, eight_encoding);
+        assert_eq!(format!("{:?}", checksum_digit1), two_encoding);
+        assert_eq!(format!("{:?}", checksum_digit2), eight_encoding);
     }
 
     #[test]
@@ -260,8 +264,8 @@ mod tests {
 
         assert_eq!(bookland1.checksum_digit(), 7);
         assert_eq!(bookland2.checksum_digit(), 5);
-        assert_eq!(checksum_digit1, seven_encoding);
-        assert_eq!(checksum_digit2, five_encoding);
+        assert_eq!(format!("{:?}", checksum_digit1), seven_encoding);
+        assert_eq!(format!("{:?}", checksum_digit2), five_encoding);
     }
 
     #[test]
@@ -275,25 +279,7 @@ mod tests {
 
         assert_eq!(ean131.checksum_digit(), 6);
         assert_eq!(ean132.checksum_digit(), 2);
-        assert_eq!(checksum_digit1, six_encoding);
-        assert_eq!(checksum_digit2, two_encoding);
-    }
-
-    #[test]
-    fn ean13_to_ascii() {
-        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
-        let ascii = ASCII::new();
-
-        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
-    }
-
-    #[test]
-    fn ean13_to_ascii_with_large_height() {
-        let ean13 = EAN13::new("123456123456".to_string()).unwrap();
-        let ascii = ASCII::new().height(40).xdim(2);
-
-        assert_eq!(ascii.height, 40);
-        assert_eq!(ascii.xdim, 2);
-        assert_eq!(ascii.generate(&ean13), "SWAG".to_string());
+        assert_eq!(format!("{:?}", checksum_digit1), six_encoding);
+        assert_eq!(format!("{:?}", checksum_digit2), two_encoding);
     }
 }
