@@ -4,6 +4,7 @@
 
 use ::sym::Encode;
 use ::sym::Parse;
+use ::sym::EncodedBarcode;
 use std::ops::Range;
 
 /// Character -> Binary mappings for each of the 43 allowable character.
@@ -115,7 +116,7 @@ impl Parse for Code39 {
 impl Encode for Code39 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
-    fn encode(&self) -> Vec<u8> {
+    fn encode(&self) -> EncodedBarcode {
         let s = format!("{}{}{}", CODE39_GUARD, self.payload(), CODE39_GUARD);
 
         s.chars().map(|c| c.to_digit(2).expect("Unknown character") as u8).collect::<Vec<u8>>()

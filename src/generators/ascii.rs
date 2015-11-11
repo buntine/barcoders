@@ -1,4 +1,4 @@
-use ::sym::Encode;
+use ::sym::EncodedBarcode;
 
 pub struct ASCII {
     pub height: u32,
@@ -21,12 +21,11 @@ impl ASCII {
     }
 
     // TODO: Implement.
-    pub fn generate<T: Encode>(&self, barcode: &T) -> Result<String, String> {
-        let payload = barcode.encode();
+    pub fn generate(&self, barcode: &EncodedBarcode) -> Result<String, String> {
         let mut output = String::new();
 
         for _l in 0..self.height {
-            for d in &payload {
+            for d in barcode {
                 match d {
                     &0 => output.push_str(" "),
                     _  => output.push_str("#"),

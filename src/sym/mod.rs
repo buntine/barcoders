@@ -5,6 +5,8 @@ pub mod code39;
 use std::ops::Range;
 use std::iter::Iterator;
 
+pub type EncodedBarcode = Vec<u8>;
+
 pub trait Parse {
     fn valid_chars() -> Vec<char>;
     fn valid_len() -> Range<u32>;
@@ -28,5 +30,5 @@ pub trait Parse {
 }
 
 pub trait Encode {
-    fn encode(&self) -> Vec<u8>;
+    fn encode(&self) -> EncodedBarcode;
 }

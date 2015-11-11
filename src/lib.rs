@@ -5,7 +5,9 @@ pub mod generators;
 mod tests {
     use ::sym::ean13::*;
     use ::sym::ean8::*;
+    use ::sym::code39::*;
     use ::generators::ascii::*;
+    use ::sym::Encode;
 
     #[test]
     fn ean_13_usage() {
@@ -14,9 +16,10 @@ mod tests {
         assert!(ean13.is_ok());
 
         let ean13 = ean13.unwrap();
+        let encoded = ean13.encode();
         let ascii = ASCII::new();
 
-        assert!(ascii.generate(&ean13).is_ok());
+        assert!(ascii.generate(&encoded).is_ok());
     }
 
     #[test]
@@ -26,9 +29,10 @@ mod tests {
         assert!(ean8.is_ok());
 
         let ean8 = ean8.unwrap();
+        let encoded = ean8.encode();
         let ascii = ASCII::new();
 
-        assert!(ascii.generate(&ean8).is_ok());
+        assert!(ascii.generate(&encoded).is_ok());
     }
 
     #[test]
@@ -38,8 +42,23 @@ mod tests {
         assert!(upca.is_ok());
 
         let upca = upca.unwrap();
+        let encoded = upca.encode();
         let ascii = ASCII::new();
 
-        assert!(ascii.generate(&upca).is_ok());
+        assert!(ascii.generate(&encoded).is_ok());
     }
+
+    #[test]
+    fn code39_usage() {
+        let code39 = Code39::new("AB2C1674+1".to_string());
+
+        assert!(code39.is_ok());
+
+        let code39 = code39.unwrap();
+        let encoded = code39.encode();
+        let ascii = ASCII::new();
+
+        assert!(ascii.generate(&encoded).is_ok());
+    }
+
 }
