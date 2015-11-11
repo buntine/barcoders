@@ -13,20 +13,18 @@ use std::char;
 /// The indices are:
 /// * Left side (4 digits)
 /// * Right side (4 digits)
-pub const EAN8_ENCODINGS: [[&'static str; 10]; 2] = [
-    ["0001101", "0011001", "0010011", "0111101", "0100011",
-     "0110001", "0101111", "0111011", "0110111", "0001011",],
-    ["1110010", "1100110", "1101100", "1000010", "1011100",
-     "1001110", "1010000", "1000100", "1001000", "1110100",],
+pub const EAN8_ENCODINGS: [[[u8; 7]; 10]; 2] = [
+    [[0,0,0,1,1,0,1], [0,0,1,1,0,0,1], [0,0,1,0,0,1,1], [0,1,1,1,1,0,1], [0,1,0,0,0,1,1],
+     [0,1,1,0,0,0,1], [0,1,0,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,0,1,1,1], [0,0,0,1,0,1,1],],
+    [[1,1,1,0,0,1,0], [1,1,0,0,1,1,0], [1,1,0,1,1,0,0], [1,0,0,0,0,1,0], [1,0,1,1,1,0,0],
+     [1,0,0,1,1,1,0], [1,0,1,0,0,0,0], [1,0,0,0,1,0,0], [1,0,0,1,0,0,0], [1,1,1,0,1,0,0],],
 ];
 
 /// The patterns for the guards. These are the separators that often stick down when
 /// a barcode is printed.
-pub const EAN8_GUARDS: [&'static str; 3] = [
-    "101",   // Left.
-    "01010", // Middle.
-    "101",   // Right.
-];
+pub const EAN8_LEFT_GUARD: [u8; 3] = [1,0,1];
+pub const EAN8_MIDDLE_GUARD: [u8; 5] = [0,1,0,1,0];
+pub const EAN8_RIGHT_GUARD: [u8; 3] = [1,0,1];
 
 /// The EAN-8 barcode type.
 pub struct EAN8 {
@@ -47,8 +45,8 @@ impl EAN8 {
     }
 
     /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> String {
-        self.data.iter().map(|d| char::from_digit(*d as u32, 10).unwrap()).collect::<String>()
+    pub fn raw_data(&self) -> &[u8] {
+        &self.data[..]
     }
 
     /// Calculates the checksum digit using a weighting algorithm.
@@ -73,15 +71,21 @@ impl EAN8 {
         &self.data[0..2]
     }
 
-    fn number_system_encoding(&self) -> String {
-        self.number_system_digits().iter().map(|d| self.char_encoding(0, d)).collect()
+    fn number_system_encoding(&self) -> Vec<u8> {
+        let mut ns = vec![];
+
+        for d in self.number_system_digits() {
+            ns.extend(self.char_encoding(0, &d).iter().cloned());
+        }
+
+        ns
     }
 
-    fn checksum_encoding(&self) -> &'static str {
-        self.char_encoding(1, &self.checksum_digit())
+    fn checksum_encoding(&self) -> Vec<u8> {
+        self.char_encoding(1, &self.checksum_digit()).to_vec()
     }
 
-    fn char_encoding(&self, side: usize, d: &u8) -> &'static str {
+    fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
         EAN8_ENCODINGS[side][*d as usize]
     }
 
@@ -93,20 +97,22 @@ impl EAN8 {
         &self.data[4..]
     }
 
-    fn left_payload(&self) -> String {
-        self.left_digits()
+    fn left_payload(&self) -> Vec<u8> {
+        let slices: Vec<[u8; 7]> = self.left_digits()
             .iter()
             .map(|d| self.char_encoding(0, &d))
-            .collect::<Vec<&str>>()
-            .concat()
+            .collect();
+
+        slices.iter().flat_map(|e| e.iter()).cloned().collect()
     }
 
-    fn right_payload(&self) -> String {
-        self.right_digits()
+    fn right_payload(&self) -> Vec<u8> {
+        let slices: Vec<[u8; 7]> = self.right_digits()
             .iter()
             .map(|d| self.char_encoding(1, &d))
-            .collect::<Vec<&str>>()
-            .concat()
+            .collect();
+
+        slices.iter().flat_map(|e| e.iter()).cloned().collect()
     }
 }
 
@@ -126,10 +132,14 @@ impl Encode for EAN8 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     fn encode(&self) -> EncodedBarcode {
-        let s = format!("{}{}{}{}{}{}{}", EAN8_GUARDS[0], self.number_system_encoding(), self.left_payload(),
-                                  EAN8_GUARDS[1], self.right_payload(), self.checksum_encoding(), EAN8_GUARDS[2]);
+       let enc = vec![EAN8_LEFT_GUARD.to_vec(), self.number_system_encoding(), self.left_payload(),
+                      EAN8_MIDDLE_GUARD.to_vec(), self.right_payload(), self.checksum_encoding(),
+                      EAN8_RIGHT_GUARD.to_vec()];
 
-        s.chars().map(|c| c.to_digit(2).expect("Unknown character") as u8).collect::<Vec<u8>>()
+       enc.iter()
+          .flat_map(|b| b.into_iter())
+          .cloned()
+          .collect()
     }
 }
 
@@ -169,7 +179,7 @@ mod tests {
     fn ean8_raw_data() {
         let ean8 = EAN8::new("1234567".to_string()).unwrap();
 
-        assert_eq!(ean8.raw_data(), "1234567".to_string());
+        assert_eq!(ean8.raw_data(), &[1,2,3,4,5,6,7]);
     }
 
     #[test]
@@ -185,14 +195,8 @@ mod tests {
     fn ean8_checksum_calculation() {
         let ean81 = EAN8::new("4575678".to_string()).unwrap(); // Check digit: 8
         let ean82 = EAN8::new("9534763".to_string()).unwrap(); // Check digit: 9
-        let eight_encoding = EAN8_ENCODINGS[1][8];
-        let nine_encoding = EAN8_ENCODINGS[1][9];
-        let checksum_digit1 = &ean81.encode()[57..64];
-        let checksum_digit2 = &ean82.encode()[57..64];
 
         assert_eq!(ean81.checksum_digit(), 8);
         assert_eq!(ean82.checksum_digit(), 9);
-        assert_eq!(collapse_vec(checksum_digit1.to_vec()), eight_encoding);
-        assert_eq!(collapse_vec(checksum_digit2.to_vec()), nine_encoding);
     }
 }
