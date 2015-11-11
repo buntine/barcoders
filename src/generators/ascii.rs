@@ -20,18 +20,17 @@ impl ASCII {
         self
     }
 
+    fn generate_row(&self, barcode: &EncodedBarcode) -> String {
+        "##  ".to_string()
+    }
+
     // TODO: Implement.
     pub fn generate(&self, barcode: &EncodedBarcode) -> Result<String, String> {
         let mut output = String::new();
+        let row = self.generate_row(&barcode);
 
         for _l in 0..self.height {
-            for d in barcode {
-                match d {
-                    &0 => output.push_str(" "),
-                    _  => output.push_str("#"),
-                }
-            }
-
+            output.push_str(&row[..]);
             output.push_str("\n");
         }
 
