@@ -1,23 +1,31 @@
+//! This module provides types for generating ASCII representations of barcodes. This is useful for
+//! testing and simple verification of barcode correctness.
+
 use ::sym::EncodedBarcode;
 use std::iter::repeat;
 
+/// The ASCII barcode generator type.
 pub struct ASCII {
     pub height: usize,
     pub xdim: usize,
 }
 
+/// Maps binary digits to ASCII representation (0=' ', 1='#')
 pub const ASCII_CHARS: [char; 2] = [' ', '#'];
 
 impl ASCII {
+    /// Returns a new ASCII with default height and xdim values.
     pub fn new() -> ASCII {
         ASCII{height: 10, xdim: 1}
     }
 
+    /// Sets the height of the barcode and returns self.
     pub fn height(mut self, h: usize) -> ASCII {
         self.height = h;
         self
     }
 
+    /// Sets the xdim of the barcode and returns self.
     pub fn xdim(mut self, x: usize) -> ASCII {
         self.xdim = x;
         self
@@ -29,6 +37,7 @@ impl ASCII {
                .collect()
     }
 
+    /// Generates the given EncodedBarcode. Returns a String.
     pub fn generate(&self, barcode: &EncodedBarcode) -> Result<String, String> {
         let mut output = String::new();
         let row = self.generate_row(&barcode);
@@ -90,6 +99,4 @@ mod tests {
 ##  ##  ####      ##  ##    ######    ####    ##  ##    ######  ########  ##  ####    ####  ##  ##  ##        ##  ####    ####  ####    ####  ##        ##  ######    ##  ######  ##    ##  ##
 ".trim().to_string());
     }
-
 }
- 

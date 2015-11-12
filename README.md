@@ -14,10 +14,9 @@ use barcoders::generators::ascii::*;
 use barcoders::sym::Encode;
 
 let barcode = EAN13::new("750103131130".to_string()).unwrap();
-let ascii = ASCII::new();
-let generated = ascii.generate(&ean13.encode());
+let ascii = ASCII::new().generate(&ean13.encode());
 
-assert_eq!(generated.unwrap(),
+assert_eq!(ascii.unwrap(),
 "
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
