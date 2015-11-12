@@ -132,14 +132,9 @@ impl Encode for EAN8 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     fn encode(&self) -> EncodedBarcode {
-       let enc = vec![EAN8_LEFT_GUARD.to_vec(), self.number_system_encoding(), self.left_payload(),
-                      EAN8_MIDDLE_GUARD.to_vec(), self.right_payload(), self.checksum_encoding(),
-                      EAN8_RIGHT_GUARD.to_vec()];
-
-       enc.iter()
-          .flat_map(|b| b.into_iter())
-          .cloned()
-          .collect()
+        self.join_vecs(&[EAN8_LEFT_GUARD.to_vec(), self.number_system_encoding(), self.left_payload(),
+                         EAN8_MIDDLE_GUARD.to_vec(), self.right_payload(), self.checksum_encoding(),
+                         EAN8_RIGHT_GUARD.to_vec()][..])
     }
 }
 

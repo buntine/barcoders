@@ -119,12 +119,7 @@ impl Encode for Code39 {
     /// Encodes the barcode.
     /// Returns an EncodedBarcode (wrapper type of Vec<u8>) of binary digits.
     fn encode(&self) -> EncodedBarcode {
-       let enc = vec![CODE39_GUARD.to_vec(), self.payload(), CODE39_GUARD.to_vec()];
-
-       enc.iter()
-           .flat_map(|b| b.into_iter())
-           .cloned()
-           .collect()
+        self.join_vecs(&[CODE39_GUARD.to_vec(), self.payload(), CODE39_GUARD.to_vec()][..])
     }
 }
 

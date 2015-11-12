@@ -31,4 +31,11 @@ pub trait Parse {
 
 pub trait Encode {
     fn encode(&self) -> EncodedBarcode;
+
+    fn join_vecs(&self, vecs: &[Vec<u8>]) -> EncodedBarcode {
+        vecs.iter()
+            .flat_map(|b| b.into_iter())
+            .cloned()
+            .collect()
+    }
 }
