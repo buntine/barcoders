@@ -83,7 +83,6 @@ impl EAN13 {
 
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[u8] {
-        //self.data.iter().map(|d| char::from_digit(*d as u32, 10).unwrap()).collect::<String>()
         &self.data[..]
     }
 
@@ -144,12 +143,6 @@ impl EAN13 {
     }
 
     fn right_payload(&self) -> Vec<u8> {
-     //   self.right_digits()
-     //       .iter()
-     //       .map(|d| self.char_encoding(2, &d))
-     //       .collect::<Vec<&str>>()
-    //        .concat()
-
         let slices: Vec<[u8; 7]> = self.right_digits()
             .iter()
             .map(|d| self.char_encoding(2, &d))
