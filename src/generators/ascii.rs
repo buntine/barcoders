@@ -6,7 +6,10 @@ use std::iter::repeat;
 
 /// The ASCII barcode generator type.
 pub struct ASCII {
+    /// The height of the barcode (```self.height``` characters high for ASCII).
     pub height: usize,
+    /// The X dimension. Specifies the width of the "narrow" bars. 
+    /// For ASCII, each will be ```self.xdim``` characters wide.
     pub xdim: usize,
 }
 
@@ -25,7 +28,7 @@ impl ASCII {
         self
     }
 
-    /// Sets the xdim of the barcode and returns self.
+    /// Sets the X dimension of the barcode and returns self.
     pub fn xdim(mut self, x: usize) -> ASCII {
         self.xdim = x;
         self
