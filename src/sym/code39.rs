@@ -2,9 +2,9 @@
 //! Code39 is the standard barcode used by the United States Department of Defense and is also
 //! popular in non-retail environments. 
 
-use ::sym::Encode;
 use ::sym::Parse;
 use ::sym::EncodedBarcode;
+use ::sym::helpers;
 use std::ops::Range;
 
 /// Character -> Binary mappings for each of the 43 allowable character.
@@ -99,6 +99,13 @@ impl Code39 {
 
         enc
     }
+
+    /// Encodes the barcode.
+    /// Returns an EncodedBarcode (wrapper type of Vec<u8>) of binary digits.
+    pub fn encode(&self) -> EncodedBarcode {
+        helpers::join_vecs(&[
+            CODE39_GUARD.to_vec(), self.payload(), CODE39_GUARD.to_vec()][..])
+    }
 }
 
 impl Parse for Code39 {
@@ -115,18 +122,9 @@ impl Parse for Code39 {
     }
 }
 
-impl Encode for Code39 {
-    /// Encodes the barcode.
-    /// Returns an EncodedBarcode (wrapper type of Vec<u8>) of binary digits.
-    fn encode(&self) -> EncodedBarcode {
-        self.join_vecs(&[CODE39_GUARD.to_vec(), self.payload(), CODE39_GUARD.to_vec()][..])
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use ::sym::code39::*;
-    use ::sym::Encode;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

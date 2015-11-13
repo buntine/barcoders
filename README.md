@@ -11,7 +11,6 @@ The goal of this project is to support all major symbologies (EAN-13/8, Bookland
 ```rust
 use barcoders::sym::ean13::*;
 use barcoders::generators::ascii::*;
-use barcoders::sym::Encode;
 
 let barcode = EAN13::new("750103131130".to_string()).unwrap();
 let ascii = ASCII::new().generate(&ean13.encode());

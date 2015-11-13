@@ -1,9 +1,9 @@
 //! This module provides types for EAN-8 barcodes, which are EAN style barcodes for smaller
 //! packages on products like cigaretts, chewing gum, etc.
 
-use ::sym::Encode;
 use ::sym::Parse;
 use ::sym::EncodedBarcode;
+use ::sym::helpers;
 use std::ops::Range;
 use std::char;
 
@@ -114,6 +114,15 @@ impl EAN8 {
 
         slices.iter().flat_map(|e| e.iter()).cloned().collect()
     }
+
+    /// Encodes the barcode.
+    /// Returns a Vec<u8> of binary digits.
+    pub fn encode(&self) -> EncodedBarcode {
+        helpers::join_vecs(&[
+            EAN8_LEFT_GUARD.to_vec(), self.number_system_encoding(),
+            self.left_payload(), EAN8_MIDDLE_GUARD.to_vec(), self.right_payload(),
+            self.checksum_encoding(), EAN8_RIGHT_GUARD.to_vec()][..])
+    }
 }
 
 impl Parse for EAN8 {
@@ -128,20 +137,9 @@ impl Parse for EAN8 {
     }
 }
 
-impl Encode for EAN8 {
-    /// Encodes the barcode.
-    /// Returns a Vec<u8> of binary digits.
-    fn encode(&self) -> EncodedBarcode {
-        self.join_vecs(&[EAN8_LEFT_GUARD.to_vec(), self.number_system_encoding(), self.left_payload(),
-                         EAN8_MIDDLE_GUARD.to_vec(), self.right_payload(), self.checksum_encoding(),
-                         EAN8_RIGHT_GUARD.to_vec()][..])
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use ::sym::ean8::*;
-    use ::sym::Encode;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

@@ -1,6 +1,7 @@
 pub mod ean13;
 pub mod ean8;
 pub mod code39;
+pub mod helpers;
 
 use std::ops::Range;
 use std::iter::Iterator;
@@ -26,16 +27,5 @@ pub trait Parse {
             Some(c) => Err(format!("Invalid character: {}", c)),
             None => Ok(data),
         }
-    }
-}
-
-pub trait Encode {
-    fn encode(&self) -> EncodedBarcode;
-
-    fn join_vecs(&self, vecs: &[Vec<u8>]) -> EncodedBarcode {
-        vecs.iter()
-            .flat_map(|b| b.into_iter())
-            .cloned()
-            .collect()
     }
 }

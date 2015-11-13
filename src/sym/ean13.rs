@@ -8,9 +8,9 @@
 //!   * Bookland
 //!   * JAN
 
-use ::sym::Encode;
 use ::sym::Parse;
 use ::sym::EncodedBarcode;
+use ::sym::helpers;
 use std::ops::Range;
 use std::char;
 
@@ -150,6 +150,15 @@ impl EAN13 {
 
         slices.iter().flat_map(|e| e.iter()).cloned().collect()
     }
+
+    /// Encodes the barcode.
+    /// Returns a Vec<u8> of binary digits.
+    pub fn encode(&self) -> EncodedBarcode {
+        helpers::join_vecs(&[
+            EAN13_LEFT_GUARD.to_vec(), self.number_system_encoding(),
+            self.left_payload(), EAN13_MIDDLE_GUARD.to_vec(), self.right_payload(), 
+            self.checksum_encoding(), EAN13_RIGHT_GUARD.to_vec()][..])
+    }
 }
 
 impl Parse for EAN13 {
@@ -164,20 +173,9 @@ impl Parse for EAN13 {
     }
 }
 
-impl Encode for EAN13 {
-    /// Encodes the barcode.
-    /// Returns a Vec<u8> of binary digits.
-    fn encode(&self) -> EncodedBarcode {
-        self.join_vecs(&[EAN13_LEFT_GUARD.to_vec(), self.number_system_encoding(), self.left_payload(),
-                         EAN13_MIDDLE_GUARD.to_vec(), self.right_payload(), self.checksum_encoding(),
-                         EAN13_RIGHT_GUARD.to_vec()][..])
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use ::sym::ean13::*;
-    use ::sym::Encode;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

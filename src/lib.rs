@@ -7,7 +7,6 @@ mod tests {
     use ::sym::ean8::*;
     use ::sym::code39::*;
     use ::generators::ascii::*;
-    use ::sym::Encode;
 
     #[test]
     fn ean_13_usage() {
