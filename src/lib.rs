@@ -1,3 +1,5 @@
+extern crate image;
+
 pub mod sym;
 pub mod generators;
 

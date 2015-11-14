@@ -2,3 +2,6 @@
 name = "barcoders"
 version = "0.2.2"
 authors = ["Andrew Buntine Of Doom <bunts@hhd.com.au>"]
+
+[dependencies]
+image = "*"
