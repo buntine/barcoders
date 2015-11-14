@@ -41,7 +41,7 @@ impl ASCII {
     }
 
     /// Generates the given EncodedBarcode. Returns a String.
-    pub fn generate(&self, barcode: &EncodedBarcode) -> Result<String, String> {
+    pub fn generate(&self, barcode: &EncodedBarcode) -> Result<String, &str> {
         let mut output = String::new();
         let row = self.generate_row(&barcode);
 
