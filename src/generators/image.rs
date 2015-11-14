@@ -3,12 +3,9 @@
 extern crate image;
 
 use ::sym::EncodedBarcode;
-
 use image::GenericImage;
 use image::ImageBuffer;
-
 use std::fs::File;
-use std::path::Path;
 
 /// The GIF barcode generator type.
 pub enum Image {
@@ -29,16 +26,18 @@ pub enum Image {
 }
 
 impl Image {
-    /// Returns a new GIF with default height and xdim values.
-    //pub fn new() -> Image {
-   //     match Image {
-   //         Gif => Gif{height: 80, xdim: 1},
-   //         Png => Gif{height: 80, xdim: 1},
-  //      }
- //   }
+    /// Returns a new GIF with default values.
+    pub fn gif() -> Image {
+        Image::GIF{height: 80, xdim: 1}
+    }
+
+    /// Returns a new PNG with default values.
+    pub fn png() -> Image {
+        Image::PNG{height: 80, xdim: 1}
+    }
 
     /// Generates the given EncodedBarcode. Returns a usize indicating the number of bytes written.
-    pub fn generate(&self, barcode: &EncodedBarcode, path: &str) -> Result<usize, &str> {
+    pub fn generate(&self, barcode: &EncodedBarcode, path: &mut File) -> Result<usize, &str> {
         let (xdim, height, format) = match *self {
             Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
             Image::PNG{height: h, xdim: x} => (x, h, image::PNG),
@@ -47,6 +46,7 @@ impl Image {
         let width = (barcode.len() as u32) * (xdim * 3);
         let mut buffer = ImageBuffer::new(width, height);
         
+        // TODO: Implement.
         for x in 0..(width - 1) {
             buffer.put_pixel(x, 0, image::Luma([255 as u8]));
             buffer.put_pixel(x, 1, image::Luma([255 as u8]));
@@ -54,13 +54,9 @@ impl Image {
             buffer.put_pixel(x, 3, image::Luma([255 as u8]));
         }
 
-        let ref mut fout = match File::create(&Path::new(path)) {
-            Ok(f) => f,
-            _ => return Err("Could not open file for writing."),
-        };
         let buflen = buffer.len();
 
-        match image::ImageLuma8(buffer).save(fout, format) {
+        match image::ImageLuma8(buffer).save(path, format) {
             Ok(_) => Ok(buflen),
             _ => Err("Could not encode image."),
         }
@@ -73,12 +69,15 @@ mod tests {
 
     use ::sym::ean13::*;
     use ::generators::gif::*;
+    use std::fs::File;
+    use std::path::Path;
 
     #[test]
     fn ean_13_as_gif() {
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
-        let gif = Image::GIF{height: 80, xdim: 1};
-        let generated = gif.generate(&ean13.encode(), "./barcode.gif").unwrap();
+        let gif = Image::gif();
+        let mut path = File::create(&Path::new("./barcode.gif")).unwrap();
+        let generated = gif.generate(&ean13.encode(), &mut path).unwrap();
 
         assert_eq!(generated, 22800);
     }
@@ -86,9 +85,10 @@ mod tests {
     #[test]
     fn ean_13_as_png() {
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
-        let png = Image::PNG{height: 80, xdim: 1};
-        let generated = png.generate(&ean13.encode(), "./barcode.png").unwrap();
+        let png = Image::PNG{height: 100, xdim: 1};
+        let mut path = File::create(&Path::new("./barcode.png")).unwrap();
+        let generated = png.generate(&ean13.encode(), &mut path).unwrap();
 
-        assert_eq!(generated, 22800);
+        assert_eq!(generated, 28500);
     }
 }

@@ -1,3 +1,2 @@
-- Replace str/String inside symbologies to use arrays of u8.
-  - Maybe use binary literals: 0b10101
+- Make public interface of ASCII and Image::* the same.
 - Return iterators from encode() instead of Vecs
