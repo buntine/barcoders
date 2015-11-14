@@ -22,18 +22,6 @@ impl ASCII {
         ASCII{height: 10, xdim: 1}
     }
 
-    /// Sets the height of the barcode and returns self.
-    pub fn height(mut self, h: usize) -> ASCII {
-        self.height = h;
-        self
-    }
-
-    /// Sets the X dimension of the barcode and returns self.
-    pub fn xdim(mut self, x: usize) -> ASCII {
-        self.xdim = x;
-        self
-    }
-
     fn generate_row(&self, barcode: &EncodedBarcode) -> String {
         barcode.iter()
                .flat_map(|&d| repeat(ASCII_CHARS[d as usize]).take(self.xdim))
@@ -88,7 +76,7 @@ mod tests {
     #[test]
     fn ean_13_as_ascii_small_height_double_width() {
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
-        let ascii = ASCII::new().height(6).xdim(2);
+        let ascii = ASCII{height: 6, xdim: 2};
         let generated = ascii.generate(&ean13.encode()).unwrap();
 
         assert_eq!(generated,
@@ -126,7 +114,7 @@ mod tests {
     #[test]
     fn ean_8_as_ascii_small_height_double_width() {
         let ean8 = EAN8::new("1234567".to_string()).unwrap();
-        let ascii = ASCII::new().height(5).xdim(2);
+        let ascii = ASCII{height: 5, xdim: 2};
         let generated = ascii.generate(&ean8.encode()).unwrap();
 
         assert_eq!(generated,
@@ -163,7 +151,7 @@ mod tests {
     #[test]
     fn code_39_as_ascii_small_height_double_weight() {
         let code39 = Code39::new("1234".to_string()).unwrap();
-        let ascii = ASCII::new().height(7).xdim(2);
+        let ascii = ASCII{height: 7, xdim: 2};
         let generated = ascii.generate(&code39.encode()).unwrap();
 
         assert_eq!(generated,

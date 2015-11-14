@@ -1,2 +1,2 @@
 pub mod ascii;
-pub mod png;
+pub mod image;

@@ -20,7 +20,7 @@ pub enum Image {
         /// The height of the barcode in pixels.
         height: u32,
         /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For GIF, each will be ```self.xdim * 3``` pixels wide.
+        /// For PNG, each will be ```self.xdim * 3``` pixels wide.
         xdim: u32,
     }
 }
@@ -68,15 +68,16 @@ mod tests {
     extern crate image;
 
     use ::sym::ean13::*;
-    use ::generators::gif::*;
+    use ::generators::image::*;
     use std::fs::File;
     use std::path::Path;
 
     #[test]
     fn ean_13_as_gif() {
+        let mut path = File::create(&Path::new("./barcode.gif")).unwrap();
+
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let gif = Image::gif();
-        let mut path = File::create(&Path::new("./barcode.gif")).unwrap();
         let generated = gif.generate(&ean13.encode(), &mut path).unwrap();
 
         assert_eq!(generated, 22800);
@@ -84,9 +85,10 @@ mod tests {
 
     #[test]
     fn ean_13_as_png() {
+        let mut path = File::create(&Path::new("./barcode.png")).unwrap();
+
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let png = Image::PNG{height: 100, xdim: 1};
-        let mut path = File::create(&Path::new("./barcode.png")).unwrap();
         let generated = png.generate(&ean13.encode(), &mut path).unwrap();
 
         assert_eq!(generated, 28500);
