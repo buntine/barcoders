@@ -7,20 +7,22 @@ use image::GenericImage;
 use image::ImageBuffer;
 use std::fs::File;
 
+const IMAGE_BAR_WIDTH: u32 = 1;
+
 /// The GIF barcode generator type.
 pub enum Image {
     GIF {
         /// The height of the barcode in pixels.
         height: u32,
         /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For GIF, each will be ```self.xdim * 3``` pixels wide.
+        /// For GIF, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
         xdim: u32,
     },
     PNG {
         /// The height of the barcode in pixels.
         height: u32,
         /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For PNG, each will be ```self.xdim * 3``` pixels wide.
+        /// For PNG, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
         xdim: u32,
     }
 }
@@ -43,15 +45,24 @@ impl Image {
             Image::PNG{height: h, xdim: x} => (x, h, image::PNG),
         };
 
-        let width = (barcode.len() as u32) * (xdim * 3);
+        let width = (barcode.len() as u32) * (xdim * IMAGE_BAR_WIDTH);
         let mut buffer = ImageBuffer::new(width, height);
+        let mut pos = 0;
         
-        // TODO: Implement.
-        for x in 0..(width - 1) {
-            buffer.put_pixel(x, 0, image::Luma([255 as u8]));
-            buffer.put_pixel(x, 1, image::Luma([255 as u8]));
-            buffer.put_pixel(x, 2, image::Luma([255 as u8]));
-            buffer.put_pixel(x, 3, image::Luma([255 as u8]));
+        for y in 0..height {
+            for &b in barcode {
+                let size = xdim * IMAGE_BAR_WIDTH;
+
+                if b == 0 {
+                    for p in 0..size {
+                        buffer.put_pixel(pos + p, y, image::Luma([255 as u8]));
+                    }
+                }
+
+                pos += size;
+            }
+
+            pos = 0;
         }
 
         let buflen = buffer.len();
@@ -68,13 +79,14 @@ mod tests {
     extern crate image;
 
     use ::sym::ean13::*;
+    use ::sym::code39::*;
     use ::generators::image::*;
     use std::fs::File;
     use std::path::Path;
 
     #[test]
     fn ean_13_as_gif() {
-        let mut path = File::create(&Path::new("./barcode.gif")).unwrap();
+        let mut path = File::create(&Path::new("./ean13_barcode.gif")).unwrap();
 
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let gif = Image::gif();
@@ -85,11 +97,22 @@ mod tests {
 
     #[test]
     fn ean_13_as_png() {
-        let mut path = File::create(&Path::new("./barcode.png")).unwrap();
+        let mut path = File::create(&Path::new("./ean13_barcode.png")).unwrap();
 
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let png = Image::PNG{height: 100, xdim: 1};
         let generated = png.generate(&ean13.encode(), &mut path).unwrap();
+
+        assert_eq!(generated, 28500);
+    }
+
+    #[test]
+    fn code39_as_png() {
+        let mut path = File::create(&Path::new("./code39_barcode.png")).unwrap();
+
+        let code39 = Code39::new("TEST8052".to_string()).unwrap();
+        let png = Image::PNG{height: 60, xdim: 1};
+        let generated = png.generate(&code39.encode(), &mut path).unwrap();
 
         assert_eq!(generated, 28500);
     }
