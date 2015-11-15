@@ -5,10 +5,10 @@ pub mod generators;
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean13::*;
-    use ::sym::ean8::*;
-    use ::sym::code39::*;
-    use ::generators::ascii::*;
+    use sym::ean13::*;
+    use sym::ean8::*;
+    use sym::code39::*;
+    use generators::ascii::*;
 
     #[test]
     fn ean_13_usage() {
