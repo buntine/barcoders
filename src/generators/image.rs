@@ -79,14 +79,21 @@ mod tests {
     extern crate image;
 
     use ::sym::ean13::*;
+    use ::sym::ean8::*;
     use ::sym::code39::*;
     use ::generators::image::*;
     use std::fs::File;
     use std::path::Path;
 
+    const TEST_DATA_BASE: &'static str = "./target/debug";
+
+    fn open_file(name: &'static str) -> File {
+        File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()
+    }
+
     #[test]
     fn ean_13_as_gif() {
-        let mut path = File::create(&Path::new("./ean13_barcode.gif")).unwrap();
+        let mut path = open_file("ean13.gif");
 
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let gif = Image::gif();
@@ -97,7 +104,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_png() {
-        let mut path = File::create(&Path::new("./ean13_barcode.png")).unwrap();
+        let mut path = open_file("ean13.png");
 
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let png = Image::PNG{height: 100, xdim: 1};
@@ -108,9 +115,9 @@ mod tests {
 
     #[test]
     fn code39_as_png() {
-        let mut path = File::create(&Path::new("./code39_barcode.png")).unwrap();
+        let mut path = open_file("code39.png");
 
-        let code39 = Code39::new("TEST8052".to_string()).unwrap();
+        let code39 = Code39::new("ILOVEMEL".to_string()).unwrap();
         let png = Image::PNG{height: 60, xdim: 1};
         let generated = png.generate(&code39.encode(), &mut path).unwrap();
 
@@ -119,7 +126,7 @@ mod tests {
 
     #[test]
     fn code39_as_gif() {
-        let mut path = File::create(&Path::new("./code39_barcode.gif")).unwrap();
+        let mut path = open_file("code39.gif");
 
         let code39 = Code39::new("WIKIPEDIA".to_string()).unwrap();
         let gif = Image::GIF{height: 60, xdim: 1};
@@ -128,4 +135,25 @@ mod tests {
         assert_eq!(generated, 8520);
     }
 
+    #[test]
+    fn ean8_as_png() {
+        let mut path = open_file("ean8.png");
+
+        let ean8 = EAN8::new("5512345".to_string()).unwrap();
+        let png = Image::PNG{height: 70, xdim: 2};
+        let generated = png.generate(&ean8.encode(), &mut path).unwrap();
+
+        assert_eq!(generated, 9380);
+    }
+
+    #[test]
+    fn ean8_as_gif() {
+        let mut path = open_file("ean8.gif");
+
+        let ean8 = EAN8::new("9992227".to_string()).unwrap();
+        let gif = Image::GIF{height: 70, xdim: 2};
+        let generated = gif.generate(&ean8.encode(), &mut path).unwrap();
+
+        assert_eq!(generated, 9380);
+    }
 }
