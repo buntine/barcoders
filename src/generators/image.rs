@@ -114,7 +114,7 @@ mod tests {
         let png = Image::PNG{height: 60, xdim: 1};
         let generated = png.generate(&code39.encode(), &mut path).unwrap();
 
-        assert_eq!(generated, 7200);
+        assert_eq!(generated, 7740);
     }
 
     #[test]
@@ -125,7 +125,7 @@ mod tests {
         let gif = Image::GIF{height: 60, xdim: 1};
         let generated = gif.generate(&code39.encode(), &mut path).unwrap();
 
-        assert_eq!(generated, 7920);
+        assert_eq!(generated, 8520);
     }
 
 }
