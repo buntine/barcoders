@@ -1,12 +1,29 @@
-# Barcoders
+# BARCODERS
 
 Barcoders is a barcode-encoding library for the Rust programming language.
 
-The goal of this project is to support all major symbologies (EAN-13/8, Bookland, UPC-A, Code128, Code39, Code25, etc) and provide several output formats (ASCII, SVG, GIF, PNG, HTML, etc).
-
 **Barcoders is under active development. Initial release expected late November, 2015**
 
-## Usage
+## Support
+
+The goal of this project is to support all major symbologies and provide several output formats.
+
+### Symbologies
+
+* EAN-13
+  * UPC-A
+  * JAN
+  * Boolkand
+* EAN-8
+* Code39
+
+### Generators
+
+* ASCII
+* PNG
+* GIF
+
+## Examples
 
 ### ASCII generation
 ```rust
@@ -57,3 +74,11 @@ let bytes = png.generate(&encoded, &mut path).unwrap();
 ```
 
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
+
+## Tests
+
+Note, some of the tests leave behind image files in ./target/debug that should be visually inspected for correctness.
+
+```
+$ cargo test
+```
