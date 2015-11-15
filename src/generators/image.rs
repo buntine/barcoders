@@ -92,7 +92,7 @@ mod tests {
         let gif = Image::gif();
         let generated = gif.generate(&ean13.encode(), &mut path).unwrap();
 
-        assert_eq!(generated, 22800);
+        assert_eq!(generated, 7600);
     }
 
     #[test]
@@ -103,7 +103,7 @@ mod tests {
         let png = Image::PNG{height: 100, xdim: 1};
         let generated = png.generate(&ean13.encode(), &mut path).unwrap();
 
-        assert_eq!(generated, 28500);
+        assert_eq!(generated, 9500);
     }
 
     #[test]
@@ -114,6 +114,18 @@ mod tests {
         let png = Image::PNG{height: 60, xdim: 1};
         let generated = png.generate(&code39.encode(), &mut path).unwrap();
 
-        assert_eq!(generated, 28500);
+        assert_eq!(generated, 7200);
     }
+
+    #[test]
+    fn code39_as_gif() {
+        let mut path = File::create(&Path::new("./code39_barcode.gif")).unwrap();
+
+        let code39 = Code39::new("WIKIPEDIA".to_string()).unwrap();
+        let gif = Image::GIF{height: 60, xdim: 1};
+        let generated = gif.generate(&code39.encode(), &mut path).unwrap();
+
+        assert_eq!(generated, 7920);
+    }
+
 }

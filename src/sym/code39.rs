@@ -86,15 +86,22 @@ impl Code39 {
         }
     }
 
+    // Encoded characters are separated by a single "narrow" bar in
+    // Code39 barcodes.
+    fn push_encoding(&self, into: &mut Vec<u8>, from: [u8; 12]) {
+        into.extend(from.iter().cloned());
+        into.push(0);
+    }
+
     fn payload(&self) -> Vec<u8> {
-        let mut enc = vec![];
+        let mut enc = vec![0];
 
         for c in &self.data {
-            enc.extend(self.char_encoding(&c).iter().cloned());
+            self.push_encoding(&mut enc, self.char_encoding(&c));
         }
 
         if self.checksum_required {
-            enc.extend(self.checksum_encoding().iter().cloned());
+            self.push_encoding(&mut enc, self.checksum_encoding());
         }
 
         enc
@@ -164,9 +171,11 @@ mod tests {
     fn code39_encode() {
         let code391 = Code39::new("1234".to_string()).unwrap();
         let code392 = Code39::new("983RD512".to_string()).unwrap();
+        let code393 = Code39::new("TEST8052".to_string()).unwrap();
 
         assert_eq!(collapse_vec(code391.encode()), "100101101101110100101011101100101011110110010101101001101011100101101101".to_string());
         assert_eq!(collapse_vec(code392.encode()), "100101101101101100101101110100101101110110010101110101011001101011001011110100110101110100101011101100101011100101101101".to_string());
+        assert_eq!(collapse_vec(code393.encode()), "100101101101101011011001110101100101101101011001101011011001110100101101101001101101110100110101101100101011100101101101".to_string());
     }
 
     #[test]
