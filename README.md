@@ -42,11 +42,14 @@ use barcoders::sym::code39::*;
 use barcoders::generators::image::*;
 
 let barcode = EAN13::new("750103131130".to_string()).unwrap();
-let encoded: Vec<u8> = ean13.encode();
 let png = Image::PNG{height: 80, xdim: 1};
+
+// The `encode` method returns a Vec<u8> of the binary representation of the generated
+// barcode. This is useful if you want to add yuor own generator.
+let encoded: Vec<u8> = ean13.encode();
 
 // Image generators save the file to the given path and return a u32 indicating the 
 // number of bytes written to disk.
-let mut path = File::create(&Path::new("my_barcode.png)).unwrap();
+let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
 let bytes = png.generate(&encoded, &mut path).unwrap();
 ```
