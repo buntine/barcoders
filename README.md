@@ -44,15 +44,14 @@ use barcoders::generators::image::*;
 let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_string()).unwrap();
 let png = Image::PNG{height: 80, xdim: 1};
 
-// The `encode` method returns a Vec<u8> of the binary representation of the generated
-// barcode. This is useful if you want to add your own generator.
+// The `encode` method returns a Vec<u8> of the binary representation of the
+// generated barcode. This is useful if you want to add your own generator.
 let encoded: Vec<u8> = barcode.encode();
 
-// Image generators save the file to the given path and return a u32 indicating the 
-// number of bytes written to disk.
+// Image generators save the file to the given path and return a u32 indicating
+// the number of bytes written to disk.
 let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
 let bytes = png.generate(&encoded, &mut path).unwrap();
 ```
 
-Output:
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
