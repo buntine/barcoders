@@ -1,4 +1,4 @@
-![BARCODERS](/media/logo.jpg?raw=true "BARCODERS")
+![BARCODERS](/media/logo_short.jpg?raw=true "BARCODERS")
 
 **Barcoders** is a barcode-encoding library for the Rust programming language.
 
