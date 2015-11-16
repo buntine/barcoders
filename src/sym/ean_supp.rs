@@ -5,12 +5,11 @@
 use ::sym::Parse;
 use ::sym::EncodedBarcode;
 use ::sym::ean13::EAN_ENCODINGS;
-use ::sym::ean13::EAN_LEFT_GUARD;
-use ::sym::ean13::EAN_MIDDLE_GUARD;
-use ::sym::ean13::EAN_RIGHT_GUARD;
-//use ::sym::helpers;
+use ::sym::helpers;
 use std::ops::Range;
 use std::char;
+
+pub const EANSUPP_LEFT_GUARD: [u8; 4] = [1,0,1,1];
 
 /// The Supplemental EAN barcode type.
 pub enum EANSUPP {
@@ -48,6 +47,17 @@ impl EANSUPP {
             EANSUPP::EAN2{data: ref d} => &d[..],
             EANSUPP::EAN5{data: ref d} => &d[..],
         }
+    }
+
+    fn payload(&self) -> Vec<u8> {
+        vec![1,1,0]
+    }
+
+    /// Encodes the barcode.
+    /// Returns a Vec<u8> of binary digits.
+    pub fn encode(&self) -> EncodedBarcode {
+        helpers::join_vecs(&[
+            EANSUPP_LEFT_GUARD.to_vec(), self.payload()][..])
     }
 }
 

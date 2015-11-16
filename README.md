@@ -13,7 +13,7 @@ The goal of this project is to support all major symbologies and provide several
 * EAN-13
   * UPC-A
   * JAN
-  * Boolkand
+  * Bookland
 * EAN-8
 * Code39
 
