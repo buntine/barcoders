@@ -1,6 +1,6 @@
-# BARCODERS
+![BARCODERS](/media/logo.jpg?raw=true "BARCODERS")
 
-Barcoders is a barcode-encoding library for the Rust programming language.
+**Barcoders** is a barcode-encoding library for the Rust programming language.
 
 **Barcoders is under active development. Initial release expected late November, 2015**
 
