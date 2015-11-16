@@ -1,5 +1,6 @@
 pub mod ean13;
 pub mod ean8;
+pub mod ean_supp;
 pub mod code39;
 pub mod helpers;
 
