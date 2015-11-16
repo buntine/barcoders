@@ -4,27 +4,12 @@
 use ::sym::Parse;
 use ::sym::EncodedBarcode;
 use ::sym::helpers;
+use ::sym::ean13::EAN_ENCODINGS;
+use ::sym::ean13::EAN_LEFT_GUARD;
+use ::sym::ean13::EAN_MIDDLE_GUARD;
+use ::sym::ean13::EAN_RIGHT_GUARD;
 use std::ops::Range;
 use std::char;
-
-/// Encoding mappings for EAN barcodes.
-/// 1 = bar, 0 = no bar.
-///
-/// The indices are:
-/// * Left side (4 digits)
-/// * Right side (4 digits)
-pub const EAN8_ENCODINGS: [[[u8; 7]; 10]; 2] = [
-    [[0,0,0,1,1,0,1], [0,0,1,1,0,0,1], [0,0,1,0,0,1,1], [0,1,1,1,1,0,1], [0,1,0,0,0,1,1],
-     [0,1,1,0,0,0,1], [0,1,0,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,0,1,1,1], [0,0,0,1,0,1,1],],
-    [[1,1,1,0,0,1,0], [1,1,0,0,1,1,0], [1,1,0,1,1,0,0], [1,0,0,0,0,1,0], [1,0,1,1,1,0,0],
-     [1,0,0,1,1,1,0], [1,0,1,0,0,0,0], [1,0,0,0,1,0,0], [1,0,0,1,0,0,0], [1,1,1,0,1,0,0],],
-];
-
-/// The patterns for the guards. These are the separators that often stick down when
-/// a barcode is printed.
-pub const EAN8_LEFT_GUARD: [u8; 3] = [1,0,1];
-pub const EAN8_MIDDLE_GUARD: [u8; 5] = [0,1,0,1,0];
-pub const EAN8_RIGHT_GUARD: [u8; 3] = [1,0,1];
 
 /// The EAN-8 barcode type.
 pub struct EAN8 {
@@ -82,11 +67,11 @@ impl EAN8 {
     }
 
     fn checksum_encoding(&self) -> Vec<u8> {
-        self.char_encoding(1, &self.checksum_digit()).to_vec()
+        self.char_encoding(2, &self.checksum_digit()).to_vec()
     }
 
     fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
-        EAN8_ENCODINGS[side][*d as usize]
+        EAN_ENCODINGS[side][*d as usize]
     }
 
     fn left_digits(&self) -> &[u8] {
@@ -109,7 +94,7 @@ impl EAN8 {
     fn right_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.right_digits()
             .iter()
-            .map(|d| self.char_encoding(1, &d))
+            .map(|d| self.char_encoding(2, &d))
             .collect();
 
         slices.iter().flat_map(|e| e.iter()).cloned().collect()
@@ -119,9 +104,9 @@ impl EAN8 {
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
         helpers::join_vecs(&[
-            EAN8_LEFT_GUARD.to_vec(), self.number_system_encoding(),
-            self.left_payload(), EAN8_MIDDLE_GUARD.to_vec(), self.right_payload(),
-            self.checksum_encoding(), EAN8_RIGHT_GUARD.to_vec()][..])
+            EAN_LEFT_GUARD.to_vec(), self.number_system_encoding(),
+            self.left_payload(), EAN_MIDDLE_GUARD.to_vec(), self.right_payload(),
+            self.checksum_encoding(), EAN_RIGHT_GUARD.to_vec()][..])
     }
 }
 
