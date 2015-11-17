@@ -2,11 +2,13 @@
 
 **Barcoders** is a barcode-encoding library for the Rust programming language.
 
-**Barcoders is under active development. Initial release expected late November, 2015**
+Barcoders allows you to encode valid data for a chosen symbology into a ```Vec<u8>``` representation of the underlying binary structure. From here, you can take advantage one of builtin generators (for exporting to GIF, PNG, etc) or build your own.
 
-## Support
+**Please note, Barcoders is under active development. Initial release is expected late November, 2015**
 
-The goal of this project is to support all major symbologies and provide several output formats.
+## Currently Supported
+
+The ultimate goal of Barcoders is to provide encoding support for all major (and many not-so-major) symbologies.
 
 ### Symbologies
 
@@ -19,12 +21,14 @@ The goal of this project is to support all major symbologies and provide several
   * EAN-2
   * EAN-5
 * Code39
+* More coming!
 
 ### Generators
 
 * ASCII
 * PNG
 * GIF
+* More coming! (PostScript, SVG, etc)
 
 ## Examples
 
@@ -80,7 +84,8 @@ let bytes = png.generate(&encoded, &mut path).unwrap();
 
 ## Tests
 
-Note, some of the tests leave behind image files in ./target/debug that should be visually inspected for correctness.
+Note, some of the tests (intentionally) leave behind image files in ./target/debug that should be visually
+inspected for correctness.
 
 ```
 $ cargo test
