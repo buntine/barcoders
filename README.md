@@ -15,6 +15,9 @@ The goal of this project is to support all major symbologies and provide several
   * JAN
   * Bookland
 * EAN-8
+* EAN Supplementals
+  * EAN-2
+  * EAN-5
 * Code39
 
 ### Generators
