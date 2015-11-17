@@ -11,6 +11,28 @@ use std::char;
 
 pub const EANSUPP_LEFT_GUARD: [u8; 4] = [1,0,1,1];
 
+/// Maps parity (odd/even) for the EAN-5 barcodes based on the check digit.
+const EAN5_PARITY: [[usize; 5]; 10] = [
+    [0,0,0,0,0],
+    [0,1,0,1,1],
+    [0,1,1,0,1],
+    [0,1,1,1,0],
+    [1,0,0,1,1],
+    [1,1,0,0,1],
+    [1,1,1,0,0],
+    [1,0,1,0,1],
+    [1,0,1,1,0],
+    [1,1,0,1,0],
+];
+
+/// Maps parity (odd/even) for the EAN-2 barcodes based on the check digit.
+const EAN2_PARITY: [[usize; 5]; 4] = [
+    [0,0,0,0,0],
+    [0,1,0,0,0],
+    [1,0,0,0,0],
+    [1,1,0,0,0],
+];
+
 /// The Supplemental EAN barcode type.
 pub enum EANSUPP {
     EAN2 {
@@ -49,8 +71,36 @@ impl EANSUPP {
         }
     }
 
+    fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
+        EAN_ENCODINGS[side][*d as usize]
+    }
+ 
+    /// Calculates the checksum digit using a modulo-10 weighting algorithm.
+    pub fn checksum_digit(&self) -> u8 {
+        7
+    }
+
+    fn parity(&self) -> [usize; 5] {
+        match *self {
+            EANSUPP::EAN2{data: ref d} => {
+                let modulo = ((d[0] * 10) + d[1]) % 4;
+                EAN2_PARITY[modulo as usize]
+            },
+            EANSUPP::EAN5{data: ref _d} => {
+                let check = self.checksum_digit() as usize;
+                EAN5_PARITY[check]
+            },
+        }
+    }
+
     fn payload(&self) -> Vec<u8> {
-        vec![1,1,0]
+        let slices: Vec<[u8; 7]> = self.raw_data()
+            .iter()
+            .zip(self.parity().iter())
+            .map(|d| self.char_encoding(*d.1, &d.0))
+            .collect();
+
+        slices.iter().flat_map(|e| e.iter()).cloned().collect()
     }
 
     /// Encodes the barcode.
@@ -123,5 +173,14 @@ mod tests {
         let ean5 = EANSUPP::new("98567".to_string()).unwrap();
 
         assert_eq!(ean5.raw_data(), &[9,8,5,6,7]);
+    }
+
+    #[test]
+    fn ean2_encode() {
+        let ean21 = EANSUPP::new("34".to_string()).unwrap();
+        //let ean22 = EANSUPP::new("98".to_string()).unwrap();
+
+        assert_eq!(collapse_vec(ean21.encode()), "101101000010100011".to_string());
+       // assert_eq!(collapse_vec(ean22.encode()), "1011110".to_string());
     }
 }
