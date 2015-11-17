@@ -183,4 +183,12 @@ mod tests {
         assert_eq!(collapse_vec(ean21.encode()), "101101000010100011".to_string());
        // assert_eq!(collapse_vec(ean22.encode()), "1011110".to_string());
     }
+
+    #[test]
+    fn ean5_encode() {
+        let ean51 = EANSUPP::new("51234".to_string()).unwrap();
+
+        assert_eq!(collapse_vec(ean51.encode()), "101101100010011001001101101111010011101".to_string());
+    }
+
 }
