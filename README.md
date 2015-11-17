@@ -40,7 +40,9 @@ use barcoders::sym::ean13::*;
 use barcoders::generators::ascii::*;
 
 let barcode = EAN13::new("750103131130".to_string()).unwrap();
-let encoded: Vec<u8> = ean13.encode();
+let encoded: Vec<u8> = barcode.encode();
+
+// The ASCII generator is useful for testing purposes.
 let ascii = ASCII::new().generate(&encoded);
 
 assert_eq!(ascii.unwrap(),
