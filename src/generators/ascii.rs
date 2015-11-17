@@ -187,4 +187,25 @@ mod tests {
 # ## #    # # #   ##
 ".trim().to_string());
     }
+
+    #[test]
+    fn ean5_as_ascii() {
+        let ean5 = EANSUPP::new("50799".to_string()).unwrap();
+        let ascii = ASCII::new();
+        let generated = ascii.generate(&ean5.encode()).unwrap();
+
+        assert_eq!(generated,
+"
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+# ## ##   # # #  ### #  #   # #   # ## #   # ##
+".trim().to_string());
+    }
 }
