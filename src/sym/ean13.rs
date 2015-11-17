@@ -136,7 +136,7 @@ impl EAN13 {
         let slices: Vec<[u8; 7]> = self.left_digits()
             .iter()
             .zip(self.parity_mapping().iter())
-            .map(|d| self.char_encoding(*d.1, &d.0))
+            .map(|(d, s)| self.char_encoding(*s, &d))
             .collect();
 
         slices.iter().flat_map(|e| e.iter()).cloned().collect()

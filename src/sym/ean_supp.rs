@@ -109,14 +109,23 @@ impl EANSUPP {
     }
 
     fn payload(&self) -> Vec<u8> {
-        // TODO: Implement seperators.
+        let mut p = vec![];
         let slices: Vec<[u8; 7]> = self.raw_data()
             .iter()
             .zip(self.parity().iter())
-            .map(|d| self.char_encoding(*d.1, &d.0))
+            .map(|(d, s)| self.char_encoding(*s, &d))
             .collect();
 
-        slices.iter().flat_map(|e| e.iter()).cloned().collect()
+        for (i, d) in slices.iter().enumerate() {
+            if i > 0 {
+                p.push(0);
+                p.push(1);
+            }
+
+            p.extend(d.iter().cloned());
+        }
+
+        p
     }
 
     /// Encodes the barcode.
@@ -194,17 +203,15 @@ mod tests {
     #[test]
     fn ean2_encode() {
         let ean21 = EANSUPP::new("34".to_string()).unwrap();
-        //let ean22 = EANSUPP::new("98".to_string()).unwrap();
 
-        assert_eq!(collapse_vec(ean21.encode()), "101101000010100011".to_string());
-       // assert_eq!(collapse_vec(ean22.encode()), "1011110".to_string());
+        assert_eq!(collapse_vec(ean21.encode()), "10110100001010100011".to_string());
     }
 
     #[test]
     fn ean5_encode() {
         let ean51 = EANSUPP::new("51234".to_string()).unwrap();
 
-        assert_eq!(collapse_vec(ean51.encode()), "101101100010011001001101101111010011101".to_string());
+        assert_eq!(collapse_vec(ean51.encode()), "10110110001010011001010011011010111101010011101".to_string());
     }
 
 }
