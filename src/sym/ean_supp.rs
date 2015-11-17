@@ -77,8 +77,21 @@ impl EANSUPP {
  
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
-        // TODO: Implement.
-        9
+        let mut odds = 0;
+        let mut evens = 0;
+        let data = self.raw_data();
+
+        for (i, d) in data.iter().enumerate() {
+            match i % 2 {
+                1 => { evens += *d }
+                _ => { odds += *d }
+            }
+        }
+
+        match ((odds * 3) + (evens * 9)) % 10 {
+            10    => 0,
+            n @ _ => n,
+        }
     }
 
     fn parity(&self) -> [usize; 5] {
