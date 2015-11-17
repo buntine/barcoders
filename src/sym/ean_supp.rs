@@ -75,7 +75,8 @@ impl EANSUPP {
         EAN_ENCODINGS[side][*d as usize]
     }
  
-    /// Calculates the checksum digit using a modulo-10 weighting algorithm.
+    /// Calculates the checksum digit using modified a modulo-10 weighting
+    /// algorithm. This only makes sense for EAN5 barcodes.
     pub fn checksum_digit(&self) -> u8 {
         let mut odds = 0;
         let mut evens = 0;
