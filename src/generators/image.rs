@@ -81,6 +81,7 @@ mod tests {
     use ::sym::ean13::*;
     use ::sym::ean8::*;
     use ::sym::code39::*;
+    use ::sym::ean_supp::*;
     use ::generators::image::*;
     use std::fs::File;
     use std::path::Path;
@@ -155,5 +156,27 @@ mod tests {
         let generated = gif.generate(&ean8.encode(), &mut path).unwrap();
 
         assert_eq!(generated, 9380);
+    }
+
+    #[test]
+    fn ean2_as_png() {
+        let mut path = open_file("ean2.png");
+
+        let ean2 = EANSUPP::new("94".to_string()).unwrap();
+        let png = Image::PNG{height: 70, xdim: 2};
+        let generated = png.generate(&ean2.encode(), &mut path).unwrap();
+
+        assert_eq!(generated, 2800);
+    }
+
+    #[test]
+    fn ean5_as_gif() {
+        let mut path = open_file("ean5.gif");
+
+        let ean5 = EANSUPP::new("51234".to_string()).unwrap();
+        let gif = Image::GIF{height: 70, xdim: 2};
+        let generated = gif.generate(&ean5.encode(), &mut path).unwrap();
+
+        assert_eq!(generated, 6580);
     }
 }

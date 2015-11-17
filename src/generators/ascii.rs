@@ -49,6 +49,7 @@ impl ASCII {
 mod tests {
     use ::sym::ean13::*;
     use ::sym::ean8::*;
+    use ::sym::ean_supp::*;
     use ::sym::code39::*;
     use ::generators::ascii::*;
 
@@ -163,6 +164,27 @@ mod tests {
 ##    ##  ####  ####  ##  ####  ##    ##  ##  ####  ##  ####    ##  ##  ####  ####  ####    ##  ##  ##  ##  ##    ####  ##  ####  ##    ##  ####  ####  ##
 ##    ##  ####  ####  ##  ####  ##    ##  ##  ####  ##  ####    ##  ##  ####  ####  ####    ##  ##  ##  ##  ##    ####  ##  ####  ##    ##  ####  ####  ##
 ##    ##  ####  ####  ##  ####  ##    ##  ##  ####  ##  ####    ##  ##  ####  ####  ####    ##  ##  ##  ##  ##    ####  ##  ####  ##    ##  ####  ####  ##
+".trim().to_string());
+    }
+
+    #[test]
+    fn ean2_as_ascii() {
+        let ean2 = EANSUPP::new("34".to_string()).unwrap();
+        let ascii = ASCII::new();
+        let generated = ascii.generate(&ean2.encode()).unwrap();
+
+        assert_eq!(generated,
+"
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
+# ## #    # # #   ##
 ".trim().to_string());
     }
 }
