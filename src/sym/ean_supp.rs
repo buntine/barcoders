@@ -13,16 +13,16 @@ pub const EANSUPP_LEFT_GUARD: [u8; 4] = [1,0,1,1];
 
 /// Maps parity (odd/even) for the EAN-5 barcodes based on the check digit.
 const EAN5_PARITY: [[usize; 5]; 10] = [
-    [0,0,0,0,0],
-    [0,1,0,1,1],
-    [0,1,1,0,1],
-    [0,1,1,1,0],
-    [1,0,0,1,1],
-    [1,1,0,0,1],
-    [1,1,1,0,0],
-    [1,0,1,0,1],
-    [1,0,1,1,0],
-    [1,1,0,1,0],
+    [0,0,1,1,1],
+    [1,0,1,0,0],
+    [1,0,0,1,0],
+    [1,0,0,0,1],
+    [0,1,1,0,0],
+    [0,0,1,1,0],
+    [0,0,0,1,1],
+    [0,1,0,1,0],
+    [0,1,0,0,1],
+    [0,0,1,0,1],
 ];
 
 /// Maps parity (odd/even) for the EAN-2 barcodes based on the check digit.
@@ -77,7 +77,8 @@ impl EANSUPP {
  
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
-        7
+        // TODO: Implement.
+        9
     }
 
     fn parity(&self) -> [usize; 5] {
@@ -94,6 +95,7 @@ impl EANSUPP {
     }
 
     fn payload(&self) -> Vec<u8> {
+        // TODO: Implement seperators.
         let slices: Vec<[u8; 7]> = self.raw_data()
             .iter()
             .zip(self.parity().iter())
