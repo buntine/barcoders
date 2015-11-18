@@ -43,7 +43,7 @@ let barcode = EAN13::new("750103131130".to_string()).unwrap();
 let encoded: Vec<u8> = barcode.encode();
 
 // The ASCII generator is useful for testing purposes.
-let ascii = ASCII::new().generate(&encoded);
+let ascii = ASCII::new().generate(&encoded[..]);
 
 assert_eq!(ascii.unwrap(),
 "
@@ -79,7 +79,7 @@ let encoded: Vec<u8> = barcode.encode();
 // Image generators save the file to the given path and return a u32 indicating
 // the number of bytes written to disk.
 let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
-let bytes = png.generate(&encoded, &mut path).unwrap();
+let bytes = png.generate(&encoded[..], &mut path).unwrap();
 ```
 
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")

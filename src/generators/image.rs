@@ -2,7 +2,6 @@
 
 extern crate image;
 
-use ::sym::EncodedBarcode;
 use image::GenericImage;
 use image::ImageBuffer;
 use std::fs::File;
@@ -38,8 +37,8 @@ impl Image {
         Image::PNG{height: 80, xdim: 1}
     }
 
-    /// Generates the given EncodedBarcode. Returns a usize indicating the number of bytes written.
-    pub fn generate(&self, barcode: &EncodedBarcode, path: &mut File) -> Result<usize, &str> {
+    /// Generates the given barcode. Returns a usize indicating the number of bytes written.
+    pub fn generate(&self, barcode: &[u8], path: &mut File) -> Result<usize, &str> {
         let (xdim, height, format) = match *self {
             Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
             Image::PNG{height: h, xdim: x} => (x, h, image::PNG),
@@ -98,7 +97,7 @@ mod tests {
 
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let gif = Image::gif();
-        let generated = gif.generate(&ean13.encode(), &mut path).unwrap();
+        let generated = gif.generate(&ean13.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 7600);
     }
@@ -109,7 +108,7 @@ mod tests {
 
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let png = Image::PNG{height: 100, xdim: 1};
-        let generated = png.generate(&ean13.encode(), &mut path).unwrap();
+        let generated = png.generate(&ean13.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 9500);
     }
@@ -120,7 +119,7 @@ mod tests {
 
         let code39 = Code39::new("ILOVEMEL".to_string()).unwrap();
         let png = Image::PNG{height: 60, xdim: 1};
-        let generated = png.generate(&code39.encode(), &mut path).unwrap();
+        let generated = png.generate(&code39.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 7740);
     }
@@ -131,7 +130,7 @@ mod tests {
 
         let code39 = Code39::new("WIKIPEDIA".to_string()).unwrap();
         let gif = Image::GIF{height: 60, xdim: 1};
-        let generated = gif.generate(&code39.encode(), &mut path).unwrap();
+        let generated = gif.generate(&code39.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 8520);
     }
@@ -142,7 +141,7 @@ mod tests {
 
         let ean8 = EAN8::new("5512345".to_string()).unwrap();
         let png = Image::PNG{height: 70, xdim: 2};
-        let generated = png.generate(&ean8.encode(), &mut path).unwrap();
+        let generated = png.generate(&ean8.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 9380);
     }
@@ -153,7 +152,7 @@ mod tests {
 
         let ean8 = EAN8::new("9992227".to_string()).unwrap();
         let gif = Image::GIF{height: 70, xdim: 2};
-        let generated = gif.generate(&ean8.encode(), &mut path).unwrap();
+        let generated = gif.generate(&ean8.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 9380);
     }
@@ -164,7 +163,7 @@ mod tests {
 
         let ean2 = EANSUPP::new("94".to_string()).unwrap();
         let png = Image::PNG{height: 70, xdim: 2};
-        let generated = png.generate(&ean2.encode(), &mut path).unwrap();
+        let generated = png.generate(&ean2.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 2800);
     }
@@ -175,7 +174,7 @@ mod tests {
 
         let ean5 = EANSUPP::new("51234".to_string()).unwrap();
         let gif = Image::GIF{height: 70, xdim: 2};
-        let generated = gif.generate(&ean5.encode(), &mut path).unwrap();
+        let generated = gif.generate(&ean5.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 6580);
     }

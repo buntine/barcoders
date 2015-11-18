@@ -1,7 +1,6 @@
 //! This module provides types for generating ASCII representations of barcodes. This is useful for
 //! testing and simple verification of barcode correctness.
 
-use ::sym::EncodedBarcode;
 use std::iter::repeat;
 
 /// The ASCII barcode generator type.
@@ -22,14 +21,14 @@ impl ASCII {
         ASCII{height: 10, xdim: 1}
     }
 
-    fn generate_row(&self, barcode: &EncodedBarcode) -> String {
+    fn generate_row(&self, barcode: &[u8]) -> String {
         barcode.iter()
                .flat_map(|&d| repeat(ASCII_CHARS[d as usize]).take(self.xdim))
                .collect()
     }
 
-    /// Generates the given EncodedBarcode. Returns a String.
-    pub fn generate(&self, barcode: &EncodedBarcode) -> Result<String, &str> {
+    /// Generates the given barcode. Returns a String.
+    pub fn generate(&self, barcode: &[u8]) -> Result<String, &str> {
         let mut output = String::new();
         let row = self.generate_row(&barcode);
 
@@ -57,7 +56,7 @@ mod tests {
     fn ean_13_as_ascii() {
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&ean13.encode()).unwrap();
+        let generated = ascii.generate(&ean13.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -78,7 +77,7 @@ mod tests {
     fn ean_13_as_ascii_small_height_double_width() {
         let ean13 = EAN13::new("750103131130".to_string()).unwrap();
         let ascii = ASCII{height: 6, xdim: 2};
-        let generated = ascii.generate(&ean13.encode()).unwrap();
+        let generated = ascii.generate(&ean13.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -95,7 +94,7 @@ mod tests {
     fn ean_8_as_ascii() {
         let ean8 = EAN8::new("1234567".to_string()).unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&ean8.encode()).unwrap();
+        let generated = ascii.generate(&ean8.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -116,7 +115,7 @@ mod tests {
     fn ean_8_as_ascii_small_height_double_width() {
         let ean8 = EAN8::new("1234567".to_string()).unwrap();
         let ascii = ASCII{height: 5, xdim: 2};
-        let generated = ascii.generate(&ean8.encode()).unwrap();
+        let generated = ascii.generate(&ean8.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -132,7 +131,7 @@ mod tests {
     fn code_39_as_ascii() {
         let code39 = Code39::new("TEST8052".to_string()).unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&code39.encode()).unwrap();
+        let generated = ascii.generate(&code39.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -153,7 +152,7 @@ mod tests {
     fn code_39_as_ascii_small_height_double_weight() {
         let code39 = Code39::new("1234".to_string()).unwrap();
         let ascii = ASCII{height: 7, xdim: 2};
-        let generated = ascii.generate(&code39.encode()).unwrap();
+        let generated = ascii.generate(&code39.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -171,7 +170,7 @@ mod tests {
     fn ean2_as_ascii() {
         let ean2 = EANSUPP::new("34".to_string()).unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&ean2.encode()).unwrap();
+        let generated = ascii.generate(&ean2.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -192,7 +191,7 @@ mod tests {
     fn ean5_as_ascii() {
         let ean5 = EANSUPP::new("50799".to_string()).unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&ean5.encode()).unwrap();
+        let generated = ascii.generate(&ean5.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
