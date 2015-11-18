@@ -33,15 +33,9 @@ pub const EAN_ENCODINGS: [[[u8; 7]; 10]; 3] = [
 /// Maps parity (odd/even) for the left-side digits based on the first digit in
 /// the number system portion of the barcode data.
 const PARITY: [[usize; 5]; 10] = [
-    [0,0,0,0,0],
-    [0,1,0,1,1],
-    [0,1,1,0,1],
-    [0,1,1,1,0],
-    [1,0,0,1,1],
-    [1,1,0,0,1],
-    [1,1,1,0,0],
-    [1,0,1,0,1],
-    [1,0,1,1,0],
+    [0,0,0,0,0], [0,1,0,1,1], [0,1,1,0,1],
+    [0,1,1,1,0], [1,0,0,1,1], [1,1,0,0,1],
+    [1,1,1,0,0], [1,0,1,0,1], [1,0,1,1,0],
     [1,1,0,1,0],
 ];
 

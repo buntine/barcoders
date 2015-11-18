@@ -9,27 +9,19 @@ use ::sym::helpers;
 use std::ops::Range;
 use std::char;
 
-pub const EANSUPP_LEFT_GUARD: [u8; 4] = [1,0,1,1];
+const EANSUPP_LEFT_GUARD: [u8; 4] = [1,0,1,1];
 
 /// Maps parity (odd/even) for the EAN-5 barcodes based on the check digit.
 const EAN5_PARITY: [[usize; 5]; 10] = [
-    [0,0,1,1,1],
-    [1,0,1,0,0],
-    [1,0,0,1,0],
-    [1,0,0,0,1],
-    [0,1,1,0,0],
-    [0,0,1,1,0],
-    [0,0,0,1,1],
-    [0,1,0,1,0],
-    [0,1,0,0,1],
+    [0,0,1,1,1], [1,0,1,0,0], [1,0,0,1,0],
+    [1,0,0,0,1], [0,1,1,0,0], [0,0,1,1,0],
+    [0,0,0,1,1], [0,1,0,1,0], [0,1,0,0,1],
     [0,0,1,0,1],
 ];
 
 /// Maps parity (odd/even) for the EAN-2 barcodes based on the check digit.
 const EAN2_PARITY: [[usize; 5]; 4] = [
-    [0,0,0,0,0],
-    [0,1,0,0,0],
-    [1,0,0,0,0],
+    [0,0,0,0,0], [0,1,0,0,0], [1,0,0,0,0],
     [1,1,0,0,0],
 ];
 
