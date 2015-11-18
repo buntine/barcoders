@@ -8,9 +8,9 @@ Barcoders allows you to encode valid data for a chosen symbology into a ```Vec<u
 
 ## Installation
 
-Coming soon... 
+Coming soon... I will hopefully push to Crates.io on Sunday, 22nd of November.
 
-## Currently Supported
+## Current Support
 
 The ultimate goal of Barcoders is to provide encoding support for all major (and many not-so-major) symbologies.
 
@@ -36,34 +36,6 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 
 ## Examples
 
-### ASCII generation
-```rust
-extern crate barcoders;
-
-use barcoders::sym::ean13::*;
-use barcoders::generators::ascii::*;
-
-let barcode = EAN13::new("750103131130".to_string()).unwrap();
-let encoded: Vec<u8> = barcode.encode();
-
-// The ASCII generator is useful for testing purposes.
-let ascii = ASCII::new().generate(&encoded[..]);
-
-assert_eq!(ascii.unwrap(),
-"
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-".trim().to_string());
-```
-
 ### Image generation
 ```rust
 extern crate barcoders;
@@ -84,6 +56,35 @@ let encoded: Vec<u8> = barcode.encode();
 // the number of bytes written to disk.
 let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
 let bytes = png.generate(&encoded[..], &mut path).unwrap();
+```
+
+### ASCII generation
+```rust
+extern crate barcoders;
+
+use barcoders::sym::ean13::*;
+use barcoders::generators::ascii::*;
+
+let barcode = EAN13::new("750103131130".to_string()).unwrap();
+let encoded: Vec<u8> = barcode.encode();
+
+// The ASCII generator is useful for testing purposes.
+let ascii = ASCII::new();
+ascii.generate(&encoded[..]);
+
+assert_eq!(ascii.unwrap(),
+"
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
+".trim().to_string());
 ```
 
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
