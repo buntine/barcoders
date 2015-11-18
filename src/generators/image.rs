@@ -1,4 +1,4 @@
-//! This module provides types for generating GIF representations of barcodes. 
+//! This module provides types for generating image representations of barcodes. 
 
 extern crate image;
 

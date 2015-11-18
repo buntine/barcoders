@@ -3,5 +3,9 @@ name = "barcoders"
 version = "0.2.2"
 authors = ["Andrew Buntine Of Doom <bunts@hhd.com.au>"]
 
+[features]
+
+ascii = []
+
 [dependencies]
-image = "0.5.1"
+image = {version = "0.5.1", optional = true}
