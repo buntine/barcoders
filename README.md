@@ -56,8 +56,10 @@ let encoded: Vec<u8> = barcode.encode();
 // the number of bytes written to disk.
 let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
 let bytes = png.generate(&encoded[..], &mut path).unwrap();
+
+// Generated file ↓
 ```
-Output: ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
+![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
 
 
 ### ASCII generation
