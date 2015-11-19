@@ -57,6 +57,8 @@ let encoded: Vec<u8> = barcode.encode();
 let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
 let bytes = png.generate(&encoded[..], &mut path).unwrap();
 ```
+Output: ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
+
 
 ### ASCII generation
 ```rust
@@ -86,8 +88,6 @@ assert_eq!(ascii.unwrap(),
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 ".trim().to_string());
 ```
-
-![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
 
 ## Tests
 
