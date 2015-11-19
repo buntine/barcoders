@@ -25,6 +25,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
   * EAN-2
   * EAN-5
 * Code39
+* Interleaved 2 of 5
 * More coming!
 
 ### Generators
@@ -57,7 +58,7 @@ let encoded: Vec<u8> = barcode.encode();
 let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
 let bytes = png.generate(&encoded[..], &mut path).unwrap();
 
-// Generated file ↓
+// Generated file ↓ ↓ ↓
 ```
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
 

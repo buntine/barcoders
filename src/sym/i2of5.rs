@@ -9,6 +9,13 @@ use ::sym::helpers;
 use std::ops::Range;
 use std::char;
 
+const I2OF5_WIDTHS: [&'static str; 10] = [
+    "NNWWN", "WNNNW", "NWNNW",
+    "WWNNN", "NNWNW", "WNWNN",
+    "NWWNN", "NNNWW", "WNNWN",
+    "NWNWN",
+];
+
 const I2OF5_START: [u8; 4] = [1,0,1,0];
 const I2OF5_STOP: [u8; 4] = [1,1,0,1];
 
@@ -53,9 +60,33 @@ impl I2OF5 {
         }
     }
 
-    // TODO: Implement.
+    fn interleave(&self, bars: u8, spaces: u8) -> Vec<u8> {
+        let bwidths = I2OF5_WIDTHS[bars as usize].chars();
+        let swidths = I2OF5_WIDTHS[spaces as usize].chars();
+        let mut encoding: Vec<u8> = vec![];
+
+        for (b, s) in bwidths.zip(swidths) {
+            match b {
+                'W' => encoding.extend([1,1].iter().cloned()),
+                _ => encoding.push(1),
+            }
+
+            match s {
+                'W' => encoding.extend([0,0].iter().cloned()),
+                _ => encoding.push(0),
+            }
+        }
+
+        encoding
+    }
+
     fn payload(&self) -> Vec<u8> {
-        vec![1,0,1]
+        let weaves: Vec<Vec<u8>> = self.raw_data()
+            .chunks(2)
+            .map(|c| self.interleave(c[0], c[1]))
+            .collect();
+
+        weaves.iter().flat_map(|w| w.iter()).cloned().collect()
     }
 
     /// Encodes the barcode.
@@ -82,6 +113,12 @@ impl Parse for I2OF5 {
 #[cfg(test)]
 mod tests {
     use ::sym::i2of5::*;
+    use std::char;
+
+    fn collapse_vec(v: Vec<u8>) -> String {
+        let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
+        chars.collect()
+    }
 
     #[test]
     fn new_i2of5() {
@@ -110,5 +147,12 @@ mod tests {
         let i2of5 = I2OF5::new("12345679".to_string()).unwrap();
 
         assert_eq!(i2of5.raw_data(), &[1,2,3,4,5,6,7,9]);
+    }
+
+    #[test]
+    fn i2of5_encode() {
+        let i2of51 = I2OF5::new("1234567".to_string()).unwrap(); // Check digit: 0
+
+        assert_eq!(collapse_vec(i2of51.encode()), "1010110100101011001101101001010011010011001010101010011001101101".to_string());
     }
 }
