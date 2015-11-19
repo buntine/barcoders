@@ -9,20 +9,6 @@ use ::sym::helpers;
 use std::ops::Range;
 use std::char;
 
-// TODO: Implement.
-const I2OF5_ENCODINGS: [[u8; 5]; 10] = [
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-];
-
 const I2OF5_START: [u8; 4] = [1,0,1,0];
 const I2OF5_STOP: [u8; 4] = [1,1,0,1];
 
@@ -106,9 +92,10 @@ mod tests {
 
     #[test]
     fn new_i2of5_with_checksum() {
-        let i2of5 = I2OF5::new("1234567".to_string());
+        let i2of5 = I2OF5::new("1234567".to_string()).unwrap();
 
-        assert!(i2of5.unwrap().raw_data().len() % 2 == 0);
+        assert!(i2of5.raw_data().len() % 2 == 0);
+        assert_eq!(i2of5.checksum_digit(), &0);
     }
 
     #[test]
