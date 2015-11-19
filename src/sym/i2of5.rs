@@ -40,16 +40,15 @@ impl I2OF5 {
     pub fn new(data: String) -> Result<I2OF5, String> {
         match I2OF5::parse(data) {
             Ok(d) => {
-                let digits: Vec<u8> = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
+                let mut digits: Vec<u8> = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
                 let checksum_required = digits.len() % 2 == 1;
-                let mut i2of5 = I2OF5{data: digits};
 
                 if checksum_required {
-                    let check_digit = i2of5.checksum_digit();
-                    i2of5.data.push(check_digit);
+                    let check_digit = helpers::modulo_10_checksum(&digits[..], false);
+                    digits.push(check_digit);
                 }
 
-                Ok(i2of5)
+                Ok(I2OF5{data: digits})
             }
             Err(e) => Err(e),
         }
@@ -60,21 +59,11 @@ impl I2OF5 {
         &self.data[..]
     }
 
-    /// Calculates the checksum digit using a weighting algorithm.
-    pub fn checksum_digit(&self) -> u8 {
-        let mut odds = 0;
-        let mut evens = 0;
-
-        for (i, d) in self.data.iter().enumerate() {
-            match i % 2 {
-                1 => { evens += *d }
-                _ => { odds += *d }
-            }
-        }
-
-        match 10 - (((odds * 3) + evens) % 10) {
-            10    => 0,
-            n @ _ => n,
+    /// Returns a reference to the checksum digit portion of the data.
+    pub fn checksum_digit(&self) -> &u8 {
+        match self.data.last() {
+            Some(n) => n,
+            _ => panic!("Corrupted barcode data"),
         }
     }
 
@@ -93,8 +82,9 @@ impl I2OF5 {
 
 impl Parse for I2OF5 {
     /// Returns the valid length of data acceptable in this type of barcode.
+    /// I2of5 is variable-length.
     fn valid_len() -> Range<u32> {
-        1..128
+        1..256
     }
 
     /// Returns the set of valid characters allowed in this type of barcode.
@@ -106,7 +96,6 @@ impl Parse for I2OF5 {
 #[cfg(test)]
 mod tests {
     use ::sym::i2of5::*;
-    use std::char;
 
     #[test]
     fn new_i2of5() {

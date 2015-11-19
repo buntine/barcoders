@@ -119,7 +119,7 @@ impl Parse for Code39 {
     /// Returns the valid length of data acceptable in this type of barcode.
     /// Code-39 is variable-length.
     fn valid_len() -> Range<u32> {
-        1..128
+        1..256
     }
 
     /// Returns the set of valid characters allowed in this type of barcode.

@@ -36,20 +36,7 @@ impl EAN8 {
 
     /// Calculates the checksum digit using a weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
-        let mut odds = 0;
-        let mut evens = 0;
-
-        for (i, d) in self.data.iter().enumerate() {
-            match i % 2 {
-                1 => { evens += *d }
-                _ => { odds += *d }
-            }
-        }
-
-        match 10 - (((odds * 3) + evens) % 10) {
-            10    => 0,
-            n @ _ => n,
-        }
+        helpers::modulo_10_checksum(&self.data[..], false)
     }
 
     fn number_system_digits(&self) -> &[u8] {

@@ -82,20 +82,7 @@ impl EAN13 {
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
-        let mut odds = 0;
-        let mut evens = 0;
-
-        for (i, d) in self.data.iter().enumerate() {
-            match i % 2 {
-                1 => { odds += *d }
-                _ => { evens += *d }
-            }
-        }
-
-        match 10 - (((odds * 3) + evens) % 10) {
-            10    => 0,
-            n @ _ => n,
-        }
+        helpers::modulo_10_checksum(&self.data[..], true)
     }
 
     fn number_system_digit(&self) -> u8 {
