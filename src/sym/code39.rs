@@ -32,13 +32,13 @@ pub const CODE39_GUARD: [u8; 12] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
 /// The Code39 barcode type.
 pub struct Code39 {
     data: Vec<char>,
-    checksum_required: bool,
+    pub checksum: bool,
 }
 
 impl Code39 {
-   fn init(data: String, checksum_required: bool) -> Result<Code39, String> {
+   fn init(data: String, checksum: bool) -> Result<Code39, String> {
         match Code39::parse(data) {
-            Ok(d) => Ok(Code39{data: d.chars().collect(), checksum_required: checksum_required}),
+            Ok(d) => Ok(Code39{data: d.chars().collect(), checksum: checksum}),
             Err(e) => Err(e),
         }
     }
@@ -100,7 +100,7 @@ impl Code39 {
             self.push_encoding(&mut enc, self.char_encoding(&c));
         }
 
-        if self.checksum_required {
+        if self.checksum {
             self.push_encoding(&mut enc, self.checksum_encoding());
         }
 

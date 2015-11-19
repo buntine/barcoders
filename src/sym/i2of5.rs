@@ -33,12 +33,23 @@ pub struct I2OF5 {
 
 impl I2OF5 {
     /// Creates a new barcode.
+    /// If the length of the given data is odd, a checksum value will be computed and appended to
+    /// the data for encoding.
+    ///
     /// Returns Result<I2OF5, String> indicating parse success.
     pub fn new(data: String) -> Result<I2OF5, String> {
         match I2OF5::parse(data) {
             Ok(d) => {
-                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
-                Ok(I2OF5{data: digits})
+                let digits: Vec<u8> = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
+                let checksum_required = digits.len() % 2 == 1;
+                let mut i2of5 = I2OF5{data: digits};
+
+                if checksum_required {
+                    let check_digit = i2of5.checksum_digit();
+                    i2of5.data.push(check_digit);
+                }
+
+                Ok(i2of5)
             }
             Err(e) => Err(e),
         }
@@ -67,14 +78,6 @@ impl I2OF5 {
         }
     }
 
-    fn checksum_encoding(&self) -> Vec<u8> {
-        self.char_encoding(&self.checksum_digit()).to_vec()
-    }
-
-    fn char_encoding(&self, d: &u8) -> [u8; 5] {
-        I2OF5_ENCODINGS[*d as usize]
-    }
-
     // TODO: Implement.
     fn payload(&self) -> Vec<u8> {
         vec![1,0,1]
@@ -84,14 +87,12 @@ impl I2OF5 {
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
         helpers::join_vecs(&[
-            I2OF5_START.to_vec(), self.payload(),
-            self.checksum_encoding(), I2OF5_STOP.to_vec()][..])
+            I2OF5_START.to_vec(), self.payload(), I2OF5_STOP.to_vec()][..])
     }
 }
 
 impl Parse for I2OF5 {
     /// Returns the valid length of data acceptable in this type of barcode.
-    // TODO: Also needs to be odd number in order to be valid.
     fn valid_len() -> Range<u32> {
         1..128
     }
@@ -109,9 +110,16 @@ mod tests {
 
     #[test]
     fn new_i2of5() {
-        let i2of5 = I2OF5::new("1234567".to_string());
+        let i2of5 = I2OF5::new("12345679".to_string());
 
         assert!(i2of5.is_ok());
+    }
+
+    #[test]
+    fn new_i2of5_with_checksum() {
+        let i2of5 = I2OF5::new("1234567".to_string());
+
+        assert!(i2of5.unwrap().raw_data().len() % 2 == 0);
     }
 
     #[test]
@@ -123,8 +131,8 @@ mod tests {
 
     #[test]
     fn i2of5_raw_data() {
-        let i2of5 = I2OF5::new("1234567".to_string()).unwrap();
+        let i2of5 = I2OF5::new("12345679".to_string()).unwrap();
 
-        assert_eq!(i2of5.raw_data(), &[1,2,3,4,5,6,7]);
+        assert_eq!(i2of5.raw_data(), &[1,2,3,4,5,6,7,9]);
     }
 }
