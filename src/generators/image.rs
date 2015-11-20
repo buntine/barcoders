@@ -81,6 +81,7 @@ mod tests {
     use ::sym::ean8::*;
     use ::sym::code39::*;
     use ::sym::ean_supp::*;
+    use ::sym::i2of5::*;
     use ::generators::image::*;
     use std::fs::File;
     use std::path::Path;
@@ -177,5 +178,27 @@ mod tests {
         let generated = gif.generate(&ean5.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 6580);
+    }
+
+    #[test]
+    fn i2of5_as_png() {
+        let mut path = open_file("i2of5.png");
+
+        let i2of5 = I2OF5::new("1234567".to_string()).unwrap();
+        let png = Image::PNG{height: 100, xdim: 2};
+        let generated = png.generate(&i2of5.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 12800);
+    }
+
+    #[test]
+    fn i2of5_as_gif() {
+        let mut path = open_file("i2of5.gif");
+
+        let i2of5 = I2OF5::new("98766543561".to_string()).unwrap();
+        let gif = Image::GIF{height: 130, xdim: 1};
+        let generated = gif.generate(&i2of5.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 11960);
     }
 }

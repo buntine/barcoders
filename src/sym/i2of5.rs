@@ -66,14 +66,11 @@ impl I2OF5 {
         let mut encoding: Vec<u8> = vec![];
 
         for (b, s) in bwidths.zip(swidths) {
-            match b {
-                'W' => encoding.extend([1,1].iter().cloned()),
-                _ => encoding.push(1),
-            }
-
-            match s {
-                'W' => encoding.extend([0,0].iter().cloned()),
-                _ => encoding.push(0),
+            for &(item, i) in [(b, 1), (s, 0)].iter() {
+                match item {
+                    'W' => encoding.extend([i,i].iter().cloned()),
+                    _ => encoding.push(i),
+                }
             }
         }
 
