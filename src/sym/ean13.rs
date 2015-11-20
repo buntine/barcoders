@@ -89,12 +89,12 @@ impl EAN13 {
         self.data[1]
     }
 
-    fn number_system_encoding(&self) -> Vec<u8> {
-        self.char_encoding(0, &self.number_system_digit()).to_vec()
+    fn number_system_encoding(&self) -> [u8; 7] {
+        self.char_encoding(0, &self.number_system_digit())
     }
 
-    fn checksum_encoding(&self) -> Vec<u8> {
-        self.char_encoding(2, &self.checksum_digit()).to_vec()
+    fn checksum_encoding(&self) -> [u8; 7] {
+        self.char_encoding(2, &self.checksum_digit())
     }
 
     fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
@@ -135,10 +135,14 @@ impl EAN13 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
-        helpers::join_vecs(&[
-            EAN_LEFT_GUARD.to_vec(), self.number_system_encoding(),
-            self.left_payload(), EAN_MIDDLE_GUARD.to_vec(), self.right_payload(), 
-            self.checksum_encoding(), EAN_RIGHT_GUARD.to_vec()][..])
+        helpers::join_slices(&[
+            &EAN_LEFT_GUARD[..],
+            &self.number_system_encoding()[..],
+            &self.left_payload()[..],
+            &EAN_MIDDLE_GUARD[..],
+            &self.right_payload()[..],
+            &self.checksum_encoding()[..],
+            &EAN_RIGHT_GUARD[..]][..])
     }
 }
 

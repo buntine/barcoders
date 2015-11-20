@@ -123,8 +123,8 @@ impl EANSUPP {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
-        helpers::join_vecs(&[
-            EANSUPP_LEFT_GUARD.to_vec(), self.payload()][..])
+        helpers::join_slices(&[
+            &EANSUPP_LEFT_GUARD[..], &self.payload()[..]][..])
     }
 }
 

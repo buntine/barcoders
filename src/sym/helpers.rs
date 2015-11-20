@@ -1,10 +1,11 @@
-/// Joins and flattens the given slice of Vecs.
-pub fn join_vecs(vecs: &[Vec<u8>]) -> Vec<u8> {
+/// Joins and flattens the given slice of &[u8] slices into a Vec<u8>.
+pub fn join_slices(vecs: &[&[u8]]) -> Vec<u8> {
     vecs.iter()
         .flat_map(|b| b.into_iter())
         .cloned()
         .collect()
 }
+
 
 /// Calculates the checksum digit using a modulo-10 weighting algorithm.
 pub fn modulo_10_checksum(data: &[u8], even_start: bool) -> u8 {

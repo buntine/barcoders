@@ -92,8 +92,10 @@ impl I2OF5 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
-        helpers::join_vecs(&[
-            I2OF5_START.to_vec(), self.payload(), I2OF5_STOP.to_vec()][..])
+        helpers::join_slices(&[
+            &I2OF5_START[..],
+            &self.payload()[..],
+            &I2OF5_STOP[..]][..])
     }
 }
 
