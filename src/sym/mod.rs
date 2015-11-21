@@ -2,7 +2,7 @@ pub mod ean13;
 pub mod ean8;
 pub mod ean_supp;
 pub mod code39;
-pub mod i2of5;
+pub mod tf;
 pub mod helpers;
 
 use std::ops::Range;

@@ -94,7 +94,7 @@ mod tests {
     use ::sym::ean8::*;
     use ::sym::code39::*;
     use ::sym::ean_supp::*;
-    use ::sym::i2of5::*;
+    use ::sym::tf::*;
     use ::generators::image::*;
     use std::fs::File;
     use std::path::Path;
@@ -238,34 +238,34 @@ mod tests {
     }
 
     #[test]
-    fn i2of5_as_png() {
-        let mut path = open_file("i2of5.png");
+    fn itf_as_png() {
+        let mut path = open_file("itf.png");
 
-        let i2of5 = I2OF5::new("1234567".to_string()).unwrap();
+        let itf = TF::interleaved("1234567".to_string()).unwrap();
         let png = Image::PNG{height: 100, xdim: 2};
-        let generated = png.generate(&i2of5.encode()[..], &mut path).unwrap();
+        let generated = png.generate(&itf.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 16000);
     }
 
     #[test]
-    fn i2of5_as_gif() {
-        let mut path = open_file("i2of5.gif");
+    fn itf_as_gif() {
+        let mut path = open_file("itf.gif");
 
-        let i2of5 = I2OF5::new("98766543561".to_string()).unwrap();
+        let itf = TF::interleaved("98766543561".to_string()).unwrap();
         let gif = Image::GIF{height: 130, xdim: 1};
-        let generated = gif.generate(&i2of5.encode()[..], &mut path).unwrap();
+        let generated = gif.generate(&itf.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 15080);
     }
 
     #[test]
-    fn i2of5_as_jpeg() {
-        let mut path = open_file("i2of5.jpg");
+    fn itf_as_jpeg() {
+        let mut path = open_file("itf.jpg");
 
-        let i2of5 = I2OF5::new("98766543561".to_string()).unwrap();
+        let itf = TF::interleaved("98766543561".to_string()).unwrap();
         let jpeg = Image::JPEG{height: 130, xdim: 1};
-        let generated = jpeg.generate(&i2of5.encode()[..], &mut path).unwrap();
+        let generated = jpeg.generate(&itf.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 15080);
     }
