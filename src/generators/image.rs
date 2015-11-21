@@ -245,7 +245,7 @@ mod tests {
         let png = Image::PNG{height: 100, xdim: 2};
         let generated = png.generate(&i2of5.encode()[..], &mut path).unwrap();
 
-        assert_eq!(generated, 12800);
+        assert_eq!(generated, 16000);
     }
 
     #[test]
@@ -256,7 +256,7 @@ mod tests {
         let gif = Image::GIF{height: 130, xdim: 1};
         let generated = gif.generate(&i2of5.encode()[..], &mut path).unwrap();
 
-        assert_eq!(generated, 11960);
+        assert_eq!(generated, 15080);
     }
 
     #[test]
@@ -267,6 +267,6 @@ mod tests {
         let jpeg = Image::JPEG{height: 130, xdim: 1};
         let generated = jpeg.generate(&i2of5.encode()[..], &mut path).unwrap();
 
-        assert_eq!(generated, 11960);
+        assert_eq!(generated, 15080);
     }
 }

@@ -68,7 +68,7 @@ impl I2OF5 {
         for (b, s) in bwidths.zip(swidths) {
             for &(item, i) in [(b, 1), (s, 0)].iter() {
                 match item {
-                    'W' => encoding.extend([i,i].iter().cloned()),
+                    'W' => encoding.extend([i; 3].iter().cloned()),
                     _ => encoding.push(i),
                 }
             }
@@ -152,6 +152,6 @@ mod tests {
     fn i2of5_encode() {
         let i2of51 = I2OF5::new("1234567".to_string()).unwrap(); // Check digit: 0
 
-        assert_eq!(collapse_vec(i2of51.encode()), "1010110100101011001101101001010011010011001010101010011001101101".to_string());
+        assert_eq!(collapse_vec(i2of51.encode()), "10101110100010101110001110111010001010001110100011100010101010100011100011101101".to_string());
     }
 }
