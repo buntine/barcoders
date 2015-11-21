@@ -25,7 +25,9 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
   * EAN-2
   * EAN-5
 * Code39
-* Interleaved 2 of 5 (ITF)
+* Two-Of-Five
+  * Interleaved (ITF)
+  * Standard (STF)
 * More coming!
 
 ### Generators
