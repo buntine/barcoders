@@ -33,6 +33,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 * ASCII
 * PNG
 * GIF
+* JPEG
 * More coming! (PostScript, SVG, etc)
 
 ## Examples

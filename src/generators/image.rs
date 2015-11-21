@@ -23,7 +23,14 @@ pub enum Image {
         /// The X dimension. Specifies the width of the "narrow" bars. 
         /// For PNG, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
         xdim: u32,
-    }
+    },
+    JPEG {
+        /// The height of the barcode in pixels.
+        height: u32,
+        /// The X dimension. Specifies the width of the "narrow" bars. 
+        /// For JPEG, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
+        xdim: u32,
+    },
 }
 
 impl Image {
@@ -37,11 +44,17 @@ impl Image {
         Image::PNG{height: 80, xdim: 1}
     }
 
+    /// Returns a new PNG with default values.
+    pub fn jpeg() -> Image {
+        Image::JPEG{height: 80, xdim: 1}
+    }
+
     /// Generates the given barcode. Returns a usize indicating the number of bytes written.
     pub fn generate(&self, barcode: &[u8], path: &mut File) -> Result<usize, &str> {
         let (xdim, height, format) = match *self {
             Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
             Image::PNG{height: h, xdim: x} => (x, h, image::PNG),
+            Image::JPEG{height: h, xdim: x} => (x, h, image::JPEG),
         };
 
         let width = (barcode.len() as u32) * (xdim * IMAGE_BAR_WIDTH);
@@ -115,6 +128,17 @@ mod tests {
     }
 
     #[test]
+    fn ean_13_as_jpeg() {
+        let mut path = open_file("ean13.jpg");
+
+        let ean13 = EAN13::new("999988881234".to_string()).unwrap();
+        let jpeg = Image::JPEG{height: 100, xdim: 3};
+        let generated = jpeg.generate(&ean13.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 28500);
+    }
+
+    #[test]
     fn code39_as_png() {
         let mut path = open_file("code39.png");
 
@@ -137,6 +161,17 @@ mod tests {
     }
 
     #[test]
+    fn code39_as_jpeg() {
+        let mut path = open_file("code39.jpg");
+
+        let code39 = Code39::new("SWAGLORDTHE3RD".to_string()).unwrap();
+        let jpeg = Image::JPEG{height: 160, xdim: 1};
+        let generated = jpeg.generate(&code39.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 33120);
+    }
+
+    #[test]
     fn ean8_as_png() {
         let mut path = open_file("ean8.png");
 
@@ -154,6 +189,17 @@ mod tests {
         let ean8 = EAN8::new("9992227".to_string()).unwrap();
         let gif = Image::GIF{height: 70, xdim: 2};
         let generated = gif.generate(&ean8.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 9380);
+    }
+
+    #[test]
+    fn ean8_as_jpeg() {
+        let mut path = open_file("ean8.jpg");
+
+        let ean8 = EAN8::new("9992227".to_string()).unwrap();
+        let jpeg = Image::JPEG{height: 70, xdim: 2};
+        let generated = jpeg.generate(&ean8.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 9380);
     }
@@ -181,6 +227,17 @@ mod tests {
     }
 
     #[test]
+    fn ean5_as_jpeg() {
+        let mut path = open_file("ean5.jpg");
+
+        let ean5 = EANSUPP::new("51574".to_string()).unwrap();
+        let jpeg = Image::JPEG{height: 140, xdim: 5};
+        let generated = jpeg.generate(&ean5.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 32900);
+    }
+
+    #[test]
     fn i2of5_as_png() {
         let mut path = open_file("i2of5.png");
 
@@ -198,6 +255,17 @@ mod tests {
         let i2of5 = I2OF5::new("98766543561".to_string()).unwrap();
         let gif = Image::GIF{height: 130, xdim: 1};
         let generated = gif.generate(&i2of5.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 11960);
+    }
+
+    #[test]
+    fn i2of5_as_jpeg() {
+        let mut path = open_file("i2of5.jpg");
+
+        let i2of5 = I2OF5::new("98766543561".to_string()).unwrap();
+        let jpeg = Image::JPEG{height: 130, xdim: 1};
+        let generated = jpeg.generate(&i2of5.encode()[..], &mut path).unwrap();
 
         assert_eq!(generated, 11960);
     }
