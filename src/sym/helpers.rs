@@ -1,11 +1,29 @@
 /// Joins and flattens the given slice of &[u8] slices into a Vec<u8>.
-pub fn join_slices(vecs: &[&[u8]]) -> Vec<u8> {
+pub fn join_slices(slices: &[&[u8]]) -> Vec<u8> {
+    slices.iter()
+        .flat_map(|b| b.into_iter())
+        .cloned()
+        .collect()
+}
+
+/// Joins and flattens the given slice of &[u8] slices into a Vec<u8>.
+/// TODO: How to make this and join_slices generic??
+pub fn join_vecs(vecs: &[Vec<u8>]) -> Vec<u8> {
     vecs.iter()
         .flat_map(|b| b.into_iter())
         .cloned()
         .collect()
 }
 
+/// Joins and flattens the given slice of &[u8] slices into a Vec<u8>.
+/// TODO: How to make this and join_slices generic??
+/// TODO: SERIOUSLY, HOW DO I MAKE THESE ONE FUNCTION??
+pub fn join_arrays(arrs: &[[u8; 7]]) -> Vec<u8> {
+    arrs.iter()
+        .flat_map(|b| b.into_iter())
+        .cloned()
+        .collect()
+}
 
 /// Calculates the checksum digit using a modulo-10 weighting algorithm.
 pub fn modulo_10_checksum(data: &[u8], even_start: bool) -> u8 {

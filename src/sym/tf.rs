@@ -90,8 +90,8 @@ impl TF {
         let mut encoding: Vec<u8> = vec![];
 
         for (b, s) in bwidths.zip(swidths) {
-            for &(item, i) in [(b, 1), (s, 0)].iter() {
-                match item {
+            for &(c, i) in [(b, 1), (s, 0)].iter() {
+                match c {
                     'W' => encoding.extend([i; 3].iter().cloned()),
                     _ => encoding.push(i),
                 }
@@ -101,9 +101,32 @@ impl TF {
         encoding
     }
 
-    // TODO: Implement.
+    fn char_encoding(&self, d: &u8) -> Vec<u8> {
+        let bars: Vec<Vec<u8>> = self.char_widths(d)
+            .chars()
+            .map(|c| {
+                match c {
+                    'W' => vec![1,1,1,0],
+                    _ => vec![1,0],
+                }
+            })
+            .collect();
+
+        helpers::join_vecs(&bars[..])
+    }
+
+    fn char_widths(&self, d: &u8) -> &'static str {
+        TF_WIDTHS[*d as usize]
+    }
+
     fn stf_payload(&self) -> Vec<u8> {
-        vec![0,1,0]
+        let mut encodings = vec![];
+
+        for d in self.raw_data() {
+            encodings.extend(self.char_encoding(d).iter().cloned());
+        }
+
+        encodings
     }
 
     fn itf_payload(&self) -> Vec<u8> {
@@ -112,7 +135,7 @@ impl TF {
             .map(|c| self.interleave(c[0], c[1]))
             .collect();
 
-        weaves.iter().flat_map(|w| w.iter()).cloned().collect()
+        helpers::join_vecs(&weaves[..])
     }
 
     /// Encodes the barcode.
@@ -166,6 +189,13 @@ mod tests {
     }
 
     #[test]
+    fn new_stf() {
+        let stf = TF::standard("12345".to_string());
+
+        assert!(stf.is_ok());
+    }
+
+    #[test]
     fn new_itf_with_checksum() {
         let itf = TF::interleaved("1234567".to_string()).unwrap();
 
@@ -181,6 +211,13 @@ mod tests {
     }
 
     #[test]
+    fn invalid_data_stf() {
+        let stf = TF::standard("WORDUP".to_string());
+
+        assert!(stf.is_err());
+    }
+ 
+    #[test]
     fn itf_raw_data() {
         let itf = TF::interleaved("12345679".to_string()).unwrap();
 
@@ -189,8 +226,15 @@ mod tests {
 
     #[test]
     fn itf_encode() {
-        let itf1 = TF::interleaved("1234567".to_string()).unwrap(); // Check digit: 0
+        let itf = TF::interleaved("1234567".to_string()).unwrap(); // Check digit: 0
 
-        assert_eq!(collapse_vec(itf1.encode()), "10101110100010101110001110111010001010001110100011100010101010100011100011101101".to_string());
+        assert_eq!(collapse_vec(itf.encode()), "10101110100010101110001110111010001010001110100011100010101010100011100011101101".to_string());
+    }
+
+    #[test]
+    fn stf_encode() {
+        let stf = TF::interleaved("1234567".to_string()).unwrap();
+
+        assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_string());
     }
 }
