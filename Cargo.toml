@@ -1,7 +1,7 @@
 [package]
 name = "barcoders"
-version = "0.2.2"
-authors = ["Andrew Buntine Of Doom <bunts@hhd.com.au>"]
+version = "0.3.0"
+authors = ["Andrew Buntine <info@bunts.io>"]
 
 [features]
 
