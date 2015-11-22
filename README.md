@@ -4,20 +4,18 @@
 
 Barcoders allows you to encode valid data for a chosen symbology into a ```Vec<u8>``` representation of the underlying binary structure. From here, you can take advantage one of optional builtin generators (for exporting to GIF, PNG, etc) or build your own.
 
-**Please note, Barcoders is under active development. Initial release is expected late November, 2015**
-
 ## Installation
 
 For encode-only functionality (e.g if you just want to translate a `String` into a `Vec<u8>` of binary digits):
 
-```
+```toml
 [dependencies]
 barcoders = "0.3.0"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate features:
 
-```
+```toml
 [dependencies]
 barcoders = {version = "0.3.0", features = ["image"]}
 ```
