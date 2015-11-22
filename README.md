@@ -8,7 +8,22 @@ Barcoders allows you to encode valid data for a chosen symbology into a ```Vec<u
 
 ## Installation
 
-Coming soon... I will hopefully push to Crates.io on Sunday, 22nd of November.
+For encode-only functionality (e.g if you just want to translate a `String` into a `Vec<u8>` of binary digits):
+
+```
+[dependencies]
+barcoders = "0.3.0"
+```
+
+If you want to generate barcodes into a particular format, turn on the appropriate features:
+
+```
+[dependencies]
+barcoders = {version = "0.3.0", features = ["image"]}
+```
+
+Each generator is an optional feature so you only need to compile what you want to use.
+See below for the feature associated to the generation functionality you desire.
 
 ## Current Support
 
@@ -32,10 +47,10 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 
 ### Generators
 
-* ASCII
-* PNG
-* GIF
-* JPEG
+* ASCII (feature: `ascii`)
+* PNG (feature: `image`)
+* GIF (feature: `image`)
+* JPEG (feature: `image`)
 * More coming! (PostScript, SVG, etc)
 
 ## Examples
