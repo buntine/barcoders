@@ -233,7 +233,7 @@ mod tests {
 
     #[test]
     fn stf_encode() {
-        let stf = TF::interleaved("1234567".to_string()).unwrap();
+        let stf = TF::standard("1234567".to_string()).unwrap();
 
         assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_string());
     }

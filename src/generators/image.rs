@@ -249,6 +249,17 @@ mod tests {
     }
 
     #[test]
+    fn stf_as_png() {
+        let mut path = open_file("stf.png");
+
+        let stf = TF::standard("1234567".to_string()).unwrap();
+        let png = Image::PNG{height: 100, xdim: 2};
+        let generated = png.generate(&stf.encode()[..], &mut path).unwrap();
+
+        assert_eq!(generated, 22800);
+    }
+
+    #[test]
     fn itf_as_gif() {
         let mut path = open_file("itf.gif");
 
