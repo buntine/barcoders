@@ -26,6 +26,7 @@ const EAN2_PARITY: [[usize; 5]; 4] = [
 ];
 
 /// The Supplemental EAN barcode type.
+#[derive(Debug)]
 pub enum EANSUPP {
     EAN2 {
         data: Vec<u8>,

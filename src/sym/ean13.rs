@@ -46,6 +46,7 @@ pub const EAN_MIDDLE_GUARD: [u8; 5] = [0,1,0,1,0];
 pub const EAN_RIGHT_GUARD: [u8; 3] = [1,0,1];
 
 /// The EAN-13 barcode type.
+#[derive(Debug)]
 pub struct EAN13 {
     data: Vec<u8>,
 }

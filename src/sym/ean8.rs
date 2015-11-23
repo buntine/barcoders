@@ -12,6 +12,7 @@ use std::ops::Range;
 use std::char;
 
 /// The EAN-8 barcode type.
+#[derive(Debug)]
 pub struct EAN8 {
     data: Vec<u8>,
 }
