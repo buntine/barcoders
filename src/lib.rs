@@ -41,6 +41,10 @@
         unstable_features,
         unused_import_braces, unused_qualifications)]
 
+#![cfg_attr(feature = "dev", allow(unstable_features))]
+#![cfg_attr(feature = "dev", feature(plugin))]
+#![cfg_attr(feature = "dev", plugin(clippy))]
+
 #[cfg(feature = "image")]
 extern crate image;
 
