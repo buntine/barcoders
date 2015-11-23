@@ -126,45 +126,45 @@ mod tests {
 
     #[test]
     fn new_ean8() {
-        let ean8 = EAN8::new("1234567".to_string());
+        let ean8 = EAN8::new("1234567".to_owned());
 
         assert!(ean8.is_ok());
     }
 
     #[test]
     fn invalid_data_ean8() {
-        let ean8 = EAN8::new("1234er123412".to_string());
+        let ean8 = EAN8::new("1234er123412".to_owned());
 
         assert!(ean8.is_err());
     }
 
     #[test]
     fn invalid_len_ean8() {
-        let ean8 = EAN8::new("1111112222222333333".to_string());
+        let ean8 = EAN8::new("1111112222222333333".to_owned());
 
         assert!(ean8.is_err());
     }
 
     #[test]
     fn ean8_raw_data() {
-        let ean8 = EAN8::new("1234567".to_string()).unwrap();
+        let ean8 = EAN8::new("1234567".to_owned()).unwrap();
 
         assert_eq!(ean8.raw_data(), &[1,2,3,4,5,6,7]);
     }
 
     #[test]
     fn ean8_encode() {
-        let ean81 = EAN8::new("5512345".to_string()).unwrap(); // Check digit: 7
-        let ean82 = EAN8::new("9834651".to_string()).unwrap(); // Check digit: 3
+        let ean81 = EAN8::new("5512345".to_owned()).unwrap(); // Check digit: 7
+        let ean82 = EAN8::new("9834651".to_owned()).unwrap(); // Check digit: 3
 
-        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
-        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
+        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_owned());
+        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_owned());
     }
 
     #[test]
     fn ean8_checksum_calculation() {
-        let ean81 = EAN8::new("4575678".to_string()).unwrap(); // Check digit: 8
-        let ean82 = EAN8::new("9534763".to_string()).unwrap(); // Check digit: 9
+        let ean81 = EAN8::new("4575678".to_owned()).unwrap(); // Check digit: 8
+        let ean82 = EAN8::new("9534763".to_owned()).unwrap(); // Check digit: 9
 
         assert_eq!(ean81.checksum_digit(), 8);
         assert_eq!(ean82.checksum_digit(), 9);

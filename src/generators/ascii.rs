@@ -55,7 +55,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_ascii() {
-        let ean13 = EAN13::new("750103131130".to_string()).unwrap();
+        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&ean13.encode()[..]).unwrap();
 
@@ -71,12 +71,12 @@ mod tests {
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn ean_13_as_ascii_small_height_double_width() {
-        let ean13 = EAN13::new("750103131130".to_string()).unwrap();
+        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
         let ascii = ASCII{height: 6, xdim: 2};
         let generated = ascii.generate(&ean13.encode()[..]).unwrap();
 
@@ -88,12 +88,12 @@ mod tests {
 ##  ##  ####      ##  ##    ######    ####    ##  ##    ######  ########  ##  ####    ####  ##  ##  ##        ##  ####    ####  ####    ####  ##        ##  ######    ##  ######  ##    ##  ##
 ##  ##  ####      ##  ##    ######    ####    ##  ##    ######  ########  ##  ####    ####  ##  ##  ##        ##  ####    ####  ####    ####  ##        ##  ######    ##  ######  ##    ##  ##
 ##  ##  ####      ##  ##    ######    ####    ##  ##    ######  ########  ##  ####    ####  ##  ##  ##        ##  ####    ####  ####    ####  ##        ##  ######    ##  ######  ##    ##  ##
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn ean_8_as_ascii() {
-        let ean8 = EAN8::new("1234567".to_string()).unwrap();
+        let ean8 = EAN8::new("1234567".to_owned()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&ean8.encode()[..]).unwrap();
 
@@ -109,12 +109,12 @@ mod tests {
 # #  ##  #  #  ## #### # #   ## # # #  ### # #    #   #  ###  # # #
 # #  ##  #  #  ## #### # #   ## # # #  ### # #    #   #  ###  # # #
 # #  ##  #  #  ## #### # #   ## # # #  ### # #    #   #  ###  # # #
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn ean_8_as_ascii_small_height_double_width() {
-        let ean8 = EAN8::new("1234567".to_string()).unwrap();
+        let ean8 = EAN8::new("1234567".to_owned()).unwrap();
         let ascii = ASCII{height: 5, xdim: 2};
         let generated = ascii.generate(&ean8.encode()[..]).unwrap();
 
@@ -125,12 +125,12 @@ mod tests {
 ##  ##    ####    ##    ##    ####  ########  ##  ##      ####  ##  ##  ##    ######  ##  ##        ##      ##    ######    ##  ##  ##
 ##  ##    ####    ##    ##    ####  ########  ##  ##      ####  ##  ##  ##    ######  ##  ##        ##      ##    ######    ##  ##  ##
 ##  ##    ####    ##    ##    ####  ########  ##  ##      ####  ##  ##  ##    ######  ##  ##        ##      ##    ######    ##  ##  ##
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn code_39_as_ascii() {
-        let code39 = Code39::new("TEST8052".to_string()).unwrap();
+        let code39 = Code39::new("TEST8052".to_owned()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&code39.encode()[..]).unwrap();
 
@@ -146,12 +146,12 @@ mod tests {
 #  # ## ## # # # ## ##  # ## # ##  # # # ## # ##  # # # ## ##  # ## #  # ## # # #  ## ## # ## #  ## # # # ##  # # ## #  # ## ## #
 #  # ## ## # # # ## ##  # ## # ##  # # # ## # ##  # # # ## ##  # ## #  # ## # # #  ## ## # ## #  ## # # # ##  # # ## #  # ## ## #
 #  # ## ## # # # ## ##  # ## # ##  # # # ## # ##  # # # ## ##  # ## #  # ## # # #  ## ## # ## #  ## # # # ##  # # ## #  # ## ## #
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn code_39_as_ascii_small_height_double_weight() {
-        let code39 = Code39::new("1234".to_string()).unwrap();
+        let code39 = Code39::new("1234".to_owned()).unwrap();
         let ascii = ASCII{height: 7, xdim: 2};
         let generated = ascii.generate(&code39.encode()[..]).unwrap();
 
@@ -164,12 +164,12 @@ mod tests {
 ##    ##  ####  ####  ##  ####  ##    ##  ##  ####  ##  ####    ##  ##  ####  ####  ####    ##  ##  ##  ##  ##    ####  ##  ####  ##    ##  ####  ####  ##
 ##    ##  ####  ####  ##  ####  ##    ##  ##  ####  ##  ####    ##  ##  ####  ####  ####    ##  ##  ##  ##  ##    ####  ##  ####  ##    ##  ####  ####  ##
 ##    ##  ####  ####  ##  ####  ##    ##  ##  ####  ##  ####    ##  ##  ####  ####  ####    ##  ##  ##  ##  ##    ####  ##  ####  ##    ##  ####  ####  ##
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn ean2_as_ascii() {
-        let ean2 = EANSUPP::new("34".to_string()).unwrap();
+        let ean2 = EANSUPP::new("34".to_owned()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&ean2.encode()[..]).unwrap();
 
@@ -185,12 +185,12 @@ mod tests {
 # ## #    # # #   ##
 # ## #    # # #   ##
 # ## #    # # #   ##
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn ean5_as_ascii() {
-        let ean5 = EANSUPP::new("50799".to_string()).unwrap();
+        let ean5 = EANSUPP::new("50799".to_owned()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&ean5.encode()[..]).unwrap();
 
@@ -206,12 +206,12 @@ mod tests {
 # ## ##   # # #  ### #  #   # #   # ## #   # ##
 # ## ##   # # #  ### #  #   # #   # ## #   # ##
 # ## ##   # # #  ### #  #   # #   # ## #   # ##
-".trim().to_string());
+".trim().to_owned());
     }
 
     #[test]
     fn itf_as_ascii() {
-        let itf = TF::interleaved("12345".to_string()).unwrap();
+        let itf = TF::interleaved("12345".to_owned()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&itf.encode()[..]).unwrap();
 
@@ -227,6 +227,6 @@ mod tests {
 # # ### #   # # ###   ### ### #   # #   ### # ### #   #   ## #
 # # ### #   # # ###   ### ### #   # #   ### # ### #   #   ## #
 # # ### #   # # ###   ### ### #   # #   ### # ### #   #   ## #
-".trim().to_string());
+".trim().to_owned());
     }
 }

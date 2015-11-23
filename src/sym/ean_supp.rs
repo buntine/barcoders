@@ -153,58 +153,58 @@ mod tests {
 
     #[test]
     fn new_ean2() {
-        let ean2 = EANSUPP::new("12".to_string());
+        let ean2 = EANSUPP::new("12".to_owned());
 
         assert!(ean2.is_ok());
     }
 
     #[test]
     fn new_ean5() {
-        let ean5 = EANSUPP::new("12345".to_string());
+        let ean5 = EANSUPP::new("12345".to_owned());
 
         assert!(ean5.is_ok());
     }
 
     #[test]
     fn invalid_data_ean2() {
-        let ean2 = EANSUPP::new("AT".to_string());
+        let ean2 = EANSUPP::new("AT".to_owned());
 
         assert!(ean2.is_err());
     }
 
     #[test]
     fn invalid_len_ean2() {
-        let ean2 = EANSUPP::new("123".to_string());
+        let ean2 = EANSUPP::new("123".to_owned());
 
         assert!(ean2.is_err());
     }
 
     #[test]
     fn ean2_raw_data() {
-        let ean2 = EANSUPP::new("98".to_string()).unwrap();
+        let ean2 = EANSUPP::new("98".to_owned()).unwrap();
 
         assert_eq!(ean2.raw_data(), &[9,8]);
     }
 
     #[test]
     fn ean5_raw_data() {
-        let ean5 = EANSUPP::new("98567".to_string()).unwrap();
+        let ean5 = EANSUPP::new("98567".to_owned()).unwrap();
 
         assert_eq!(ean5.raw_data(), &[9,8,5,6,7]);
     }
 
     #[test]
     fn ean2_encode() {
-        let ean21 = EANSUPP::new("34".to_string()).unwrap();
+        let ean21 = EANSUPP::new("34".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(ean21.encode()), "10110100001010100011".to_string());
+        assert_eq!(collapse_vec(ean21.encode()), "10110100001010100011".to_owned());
     }
 
     #[test]
     fn ean5_encode() {
-        let ean51 = EANSUPP::new("51234".to_string()).unwrap();
+        let ean51 = EANSUPP::new("51234".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(ean51.encode()), "10110110001010011001010011011010111101010011101".to_string());
+        assert_eq!(collapse_vec(ean51.encode()), "10110110001010011001010011011010111101010011101".to_owned());
     }
 
 }

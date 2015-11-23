@@ -184,21 +184,21 @@ mod tests {
 
     #[test]
     fn new_itf() {
-        let itf = TF::interleaved("12345679".to_string());
+        let itf = TF::interleaved("12345679".to_owned());
 
         assert!(itf.is_ok());
     }
 
     #[test]
     fn new_stf() {
-        let stf = TF::standard("12345".to_string());
+        let stf = TF::standard("12345".to_owned());
 
         assert!(stf.is_ok());
     }
 
     #[test]
     fn new_itf_with_checksum() {
-        let itf = TF::interleaved("1234567".to_string()).unwrap();
+        let itf = TF::interleaved("1234567".to_owned()).unwrap();
 
         assert!(itf.raw_data().len() % 2 == 0);
         assert_eq!(itf.checksum_digit(), Some(&0));
@@ -206,36 +206,36 @@ mod tests {
 
     #[test]
     fn invalid_data_itf() {
-        let itf = TF::interleaved("1234er123412".to_string());
+        let itf = TF::interleaved("1234er123412".to_owned());
 
         assert!(itf.is_err());
     }
 
     #[test]
     fn invalid_data_stf() {
-        let stf = TF::standard("WORDUP".to_string());
+        let stf = TF::standard("WORDUP".to_owned());
 
         assert!(stf.is_err());
     }
- 
+
     #[test]
     fn itf_raw_data() {
-        let itf = TF::interleaved("12345679".to_string()).unwrap();
+        let itf = TF::interleaved("12345679".to_owned()).unwrap();
 
         assert_eq!(itf.raw_data(), &[1,2,3,4,5,6,7,9]);
     }
 
     #[test]
     fn itf_encode() {
-        let itf = TF::interleaved("1234567".to_string()).unwrap(); // Check digit: 0
+        let itf = TF::interleaved("1234567".to_owned()).unwrap(); // Check digit: 0
 
-        assert_eq!(collapse_vec(itf.encode()), "10101110100010101110001110111010001010001110100011100010101010100011100011101101".to_string());
+        assert_eq!(collapse_vec(itf.encode()), "10101110100010101110001110111010001010001110100011100010101010100011100011101101".to_owned());
     }
 
     #[test]
     fn stf_encode() {
-        let stf = TF::standard("1234567".to_string()).unwrap();
+        let stf = TF::standard("1234567".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_string());
+        assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_owned());
     }
 }
