@@ -42,7 +42,7 @@ pub fn modulo_10_checksum(data: &[u8], even_start: bool) -> u8 {
     if even_start { odds *= 3; } else { evens *= 3; }
 
     match 10 - ((odds + evens) % 10) {
-        10    => 0,
-        n @ _ => n,
+        10 => 0,
+        n  => n,
     }
 }

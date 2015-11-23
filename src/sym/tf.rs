@@ -91,7 +91,7 @@ impl TF {
         let mut encoding: Vec<u8> = vec![];
 
         for (b, s) in bwidths.zip(swidths) {
-            for &(c, i) in [(b, 1), (s, 0)].iter() {
+            for &(c, i) in &[(b, 1), (s, 0)] {
                 match c {
                     'W' => encoding.extend([i; 3].iter().cloned()),
                     _ => encoding.push(i),

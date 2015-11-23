@@ -49,7 +49,7 @@ impl EANSUPP {
                 match digits.len() {
                     2 => Ok(EANSUPP::EAN2{data: digits}),
                     5 => Ok(EANSUPP::EAN5{data: digits}),
-                    n @ _ => Err(format!("Invalid supplemental length: {}", n)),
+                    n => Err(format!("Invalid supplemental length: {}", n)),
                 }
             }
             Err(e) => Err(e),
@@ -67,7 +67,7 @@ impl EANSUPP {
     fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
         EAN_ENCODINGS[side][*d as usize]
     }
- 
+
     /// Calculates the checksum digit using a modified modulo-10 weighting
     /// algorithm. This only makes sense for EAN5 barcodes.
     pub fn checksum_digit(&self) -> u8 {
@@ -83,8 +83,8 @@ impl EANSUPP {
         }
 
         match ((odds * 3) + (evens * 9)) % 10 {
-            10    => 0,
-            n @ _ => n,
+            10 => 0,
+            n  => n,
         }
     }
 
