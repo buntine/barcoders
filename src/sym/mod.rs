@@ -1,16 +1,29 @@
+//! Supported barcode symbologies.
+//!
+//! Symbologies are separated into logical modules and thus you must `use` the appropriate one(s).
+//! 
+//! For example:
+//!
+//! ```rust
+//! use barcoders::sym::ean13::*;
+//!
+//! let barcode = EAN13::new("750103131130".to_string()).unwrap();
+//! let encoded = barcode.encode();
+//! ```
+
 pub mod ean13;
 pub mod ean8;
 pub mod ean_supp;
 pub mod code39;
 pub mod tf;
-pub mod helpers;
+mod helpers;
 
 use std::ops::Range;
 use std::iter::Iterator;
 
 pub type EncodedBarcode = Vec<u8>;
 
-pub trait Parse {
+trait Parse {
     fn valid_chars() -> Vec<char>;
     fn valid_len() -> Range<u32>;
 

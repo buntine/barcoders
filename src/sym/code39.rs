@@ -1,14 +1,18 @@
-//! This module provides types for encoding Code39 barcodes. Also known as 3-of-9 barcodes.
+//! Encoder for Code39 barcodes.
+//!
+//! Code39 barcodes are often referred to as "3-of-9".
+//!
 //! Code39 is the standard barcode used by the United States Department of Defense and is also
-//! popular in non-retail environments. 
+//! popular in non-retail environments. It was one of the first symbologies to support encoding
+//! of the ASCII alphabet.
 
 use ::sym::Parse;
 use ::sym::EncodedBarcode;
 use ::sym::helpers;
 use std::ops::Range;
 
-/// Character -> Binary mappings for each of the 43 allowable character.
-pub const CODE39_CHARS: [(char, [u8; 12]); 43] = [
+// Character -> Binary mappings for each of the 43 allowable character.
+const CODE39_CHARS: [(char, [u8; 12]); 43] = [
     ('0', [1,0,1,0,0,1,1,0,1,1,0,1]), ('1', [1,1,0,1,0,0,1,0,1,0,1,1]), ('2', [1,0,1,1,0,0,1,0,1,0,1,1]),
     ('3', [1,1,0,1,1,0,0,1,0,1,0,1]), ('4', [1,0,1,0,0,1,1,0,1,0,1,1]), ('5', [1,1,0,1,0,0,1,1,0,1,0,1]),
     ('6', [1,0,1,1,0,0,1,1,0,1,0,1]), ('7', [1,0,1,0,0,1,0,1,1,0,1,1]), ('8', [1,1,0,1,0,0,1,0,1,1,0,1]),
@@ -26,8 +30,8 @@ pub const CODE39_CHARS: [(char, [u8; 12]); 43] = [
     ('%', [1,0,1,0,0,1,0,0,1,0,0,1]),
 ];
 
-/// Code39 barcodes must start and end with the '*' special character.
-pub const CODE39_GUARD: [u8; 12] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
+// Code39 barcodes must start and end with the '*' special character.
+const CODE39_GUARD: [u8; 12] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
 
 /// The Code39 barcode type.
 pub struct Code39 {
@@ -120,13 +124,10 @@ impl Code39 {
 }
 
 impl Parse for Code39 {
-    /// Returns the valid length of data acceptable in this type of barcode.
-    /// Code-39 is variable-length.
     fn valid_len() -> Range<u32> {
         1..256
     }
 
-    /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
         let (chars, _): (Vec<_>, Vec<_>) = CODE39_CHARS.iter().cloned().unzip();
         chars

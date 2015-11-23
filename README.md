@@ -23,6 +23,10 @@ barcoders = {version = "0.3.0", features = ["image"]}
 Each generator is an optional feature so you only need to compile what you want to use.
 See below for the feature associated to the generation functionality you desire.
 
+## Documentation
+
+**Coming soon! I'm just cleaning it up a bit and then I'll work out how to delpoy it somewhere.**
+
 ## Current Support
 
 The ultimate goal of Barcoders is to provide encoding support for all major (and many not-so-major) symbologies.
