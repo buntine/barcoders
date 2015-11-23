@@ -2,7 +2,7 @@
 
 **Barcoders** is a barcode-encoding library for the Rust programming language.
 
-Barcoders allows you to encode valid data for a chosen symbology into a ```Vec<u8>``` representation of the underlying binary structure. From here, you can take advantage one of optional builtin generators (for exporting to GIF, PNG, etc) or build your own.
+Barcoders allows you to encode valid data for a chosen barcode symbology into a ```Vec<u8>``` representation of the underlying binary structure. From here, you can take advantage one of optional builtin generators (for exporting to GIF, PNG, etc) or build your own.
 
 ## Installation
 
