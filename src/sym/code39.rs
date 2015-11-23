@@ -6,9 +6,9 @@
 //! popular in non-retail environments. It was one of the first symbologies to support encoding
 //! of the ASCII alphabet.
 
-use ::sym::Parse;
-use ::sym::EncodedBarcode;
-use ::sym::helpers;
+use sym::Parse;
+use sym::EncodedBarcode;
+use sym::helpers;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 43 allowable character.
@@ -41,9 +41,14 @@ pub struct Code39 {
 }
 
 impl Code39 {
-   fn init(data: String, checksum: bool) -> Result<Code39, String> {
+    fn init(data: String, checksum: bool) -> Result<Code39, String> {
         match Code39::parse(data) {
-            Ok(d) => Ok(Code39{data: d.chars().collect(), checksum: checksum}),
+            Ok(d) => {
+                Ok(Code39 {
+                    data: d.chars().collect(),
+                    checksum: checksum,
+                })
+            }
             Err(e) => Err(e),
         }
     }
@@ -85,7 +90,7 @@ impl Code39 {
     }
 
     fn char_encoding(&self, c: &char) -> [u8; 12] {
-         match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
+        match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
@@ -117,10 +122,7 @@ impl Code39 {
     pub fn encode(&self) -> EncodedBarcode {
         let guard = &CODE39_GUARD[..];
 
-        helpers::join_slices(&[
-            guard,
-            &self.payload()[..],
-            guard][..])
+        helpers::join_slices(&[guard, &self.payload()[..], guard][..])
     }
 }
 

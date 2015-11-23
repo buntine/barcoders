@@ -8,9 +8,9 @@
 //!   * Bookland
 //!   * JAN
 
-use ::sym::Parse;
-use ::sym::EncodedBarcode;
-use ::sym::helpers;
+use sym::Parse;
+use sym::EncodedBarcode;
+use sym::helpers;
 use std::ops::Range;
 use std::char;
 
@@ -41,9 +41,9 @@ const PARITY: [[usize; 5]; 10] = [
 
 /// The patterns for the guards. These are the separators that often stick down when
 /// a barcode is printed.
-pub const EAN_LEFT_GUARD: [u8; 3] = [1,0,1];
-pub const EAN_MIDDLE_GUARD: [u8; 5] = [0,1,0,1,0];
-pub const EAN_RIGHT_GUARD: [u8; 3] = [1,0,1];
+pub const EAN_LEFT_GUARD: [u8; 3] = [1, 0, 1];
+pub const EAN_MIDDLE_GUARD: [u8; 5] = [0, 1, 0, 1, 0];
+pub const EAN_RIGHT_GUARD: [u8; 3] = [1, 0, 1];
 
 /// The EAN-13 barcode type.
 #[derive(Debug)]
@@ -69,8 +69,10 @@ impl EAN13 {
     pub fn new(data: String) -> Result<EAN13, String> {
         match EAN13::parse(data) {
             Ok(d) => {
-                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
-                Ok(EAN13{data: digits})
+                let digits = d.chars()
+                              .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                              .collect();
+                Ok(EAN13 { data: digits })
             }
             Err(e) => Err(e),
         }
@@ -116,19 +118,19 @@ impl EAN13 {
 
     fn left_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.left_digits()
-            .iter()
-            .zip(self.parity_mapping().iter())
-            .map(|(d, s)| self.char_encoding(*s, &d))
-            .collect();
+                                       .iter()
+                                       .zip(self.parity_mapping().iter())
+                                       .map(|(d, s)| self.char_encoding(*s, &d))
+                                       .collect();
 
         helpers::join_arrays(&slices[..])
     }
 
     fn right_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.right_digits()
-            .iter()
-            .map(|d| self.char_encoding(2, &d))
-            .collect();
+                                       .iter()
+                                       .map(|d| self.char_encoding(2, &d))
+                                       .collect();
 
         helpers::join_arrays(&slices[..])
     }
@@ -136,14 +138,13 @@ impl EAN13 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
-        helpers::join_slices(&[
-            &EAN_LEFT_GUARD[..],
-            &self.number_system_encoding()[..],
-            &self.left_payload()[..],
-            &EAN_MIDDLE_GUARD[..],
-            &self.right_payload()[..],
-            &self.checksum_encoding()[..],
-            &EAN_RIGHT_GUARD[..]][..])
+        helpers::join_slices(&[&EAN_LEFT_GUARD[..],
+                               &self.number_system_encoding()[..],
+                               &self.left_payload()[..],
+                               &EAN_MIDDLE_GUARD[..],
+                               &self.right_payload()[..],
+                               &self.checksum_encoding()[..],
+                               &EAN_RIGHT_GUARD[..]][..])
     }
 }
 
@@ -201,7 +202,7 @@ mod tests {
     fn ean13_raw_data() {
         let ean13 = EAN13::new("123456123456".to_owned()).unwrap();
 
-        assert_eq!(ean13.raw_data(), &[1,2,3,4,5,6,1,2,3,4,5,6]);
+        assert_eq!(ean13.raw_data(), &[1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6]);
     }
 
     #[test]

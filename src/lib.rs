@@ -4,11 +4,11 @@
 //! (for exporting to GIF, PNG, etc) or build your own.
 //!
 //! ## Current Support
-//! 
+//!
 //! The ultimate goal of Barcoders is to provide encoding support for all major (and many not-so-major) symbologies.
-//! 
+//!
 //! ### Symbologies
-//! 
+//!
 //! * EAN-13
 //!   * UPC-A
 //!   * JAN
@@ -22,12 +22,12 @@
 //!   * Interleaved (ITF)
 //!   * Standard (STF)
 //! * More coming!
-//! 
+//!
 //! ### Generators
 //!
 //! Each generator is defined as an optional "feature" that must be opted-into in order for it's
 //! functionality to be compiled into your app.
-//! 
+//!
 //! * ASCII (feature: `ascii`)
 //! * PNG (feature: `image`)
 //! * GIF (feature: `image`)

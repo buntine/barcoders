@@ -3,9 +3,9 @@
 //! they also make an appearance in retail where they are sometimes used for the outer cartons on
 //! groups of products (cartons of Cola, etc).
 
-use ::sym::Parse;
-use ::sym::EncodedBarcode;
-use ::sym::helpers;
+use sym::Parse;
+use sym::EncodedBarcode;
+use sym::helpers;
 use std::ops::Range;
 use std::char;
 
@@ -16,10 +16,10 @@ const TF_WIDTHS: [&'static str; 10] = [
     "NWNWN",
 ];
 
-const IFT_START: [u8; 4] = [1,0,1,0];
-const IFT_STOP: [u8; 4] = [1,1,0,1];
-const SFT_START: [u8; 8] = [1,1,0,1,1,0,1,0];
-const SFT_STOP: [u8; 8] = [1,1,0,1,0,1,1,0];
+const IFT_START: [u8; 4] = [1, 0, 1, 0];
+const IFT_STOP: [u8; 4] = [1, 1, 0, 1];
+const SFT_START: [u8; 8] = [1, 1, 0, 1, 1, 0, 1, 0];
+const SFT_STOP: [u8; 8] = [1, 1, 0, 1, 0, 1, 1, 0];
 
 /// The Interleaved 2-of-5 barcode type.
 #[derive(Debug)]
@@ -41,7 +41,11 @@ impl TF {
     pub fn interleaved(data: String) -> Result<TF, String> {
         match TF::parse(data) {
             Ok(d) => {
-                let mut digits: Vec<u8> = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
+                let mut digits: Vec<u8> = d.chars()
+                                           .map(|c| {
+                                               c.to_digit(10).expect("Unknown character") as u8
+                                           })
+                                           .collect();
                 let checksum_required = digits.len() % 2 == 1;
 
                 if checksum_required {
@@ -49,7 +53,7 @@ impl TF {
                     digits.push(check_digit);
                 }
 
-                Ok(TF::Interleaved{data: digits})
+                Ok(TF::Interleaved { data: digits })
             }
             Err(e) => Err(e),
         }
@@ -61,8 +65,10 @@ impl TF {
     pub fn standard(data: String) -> Result<TF, String> {
         match TF::parse(data) {
             Ok(d) => {
-                let digits: Vec<u8> = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
-                Ok(TF::Standard{data: digits})
+                let digits: Vec<u8> = d.chars()
+                                       .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                                       .collect();
+                Ok(TF::Standard { data: digits })
             }
             Err(e) => Err(e),
         }
@@ -104,14 +110,14 @@ impl TF {
 
     fn char_encoding(&self, d: &u8) -> Vec<u8> {
         let bars: Vec<Vec<u8>> = self.char_widths(d)
-            .chars()
-            .map(|c| {
-                match c {
-                    'W' => vec![1,1,1,0],
-                    _ => vec![1,0],
-                }
-            })
-            .collect();
+                                     .chars()
+                                     .map(|c| {
+                                         match c {
+                                             'W' => vec![1, 1, 1, 0],
+                                             _ => vec![1, 0],
+                                         }
+                                     })
+                                     .collect();
 
         helpers::join_vecs(&bars[..])
     }
@@ -132,9 +138,9 @@ impl TF {
 
     fn itf_payload(&self) -> Vec<u8> {
         let weaves: Vec<Vec<u8>> = self.raw_data()
-            .chunks(2)
-            .map(|c| self.interleave(c[0], c[1]))
-            .collect();
+                                       .chunks(2)
+                                       .map(|c| self.interleave(c[0], c[1]))
+                                       .collect();
 
         helpers::join_vecs(&weaves[..])
     }
@@ -144,17 +150,11 @@ impl TF {
     pub fn encode(&self) -> EncodedBarcode {
         match *self {
             TF::Standard{data: _} => {
-                helpers::join_slices(
-                &[&SFT_START[..],
-                  &self.stf_payload()[..],
-                  &SFT_STOP[..]][..])
-            },
+                helpers::join_slices(&[&SFT_START[..], &self.stf_payload()[..], &SFT_STOP[..]][..])
+            }
             TF::Interleaved{data: _} => {
-                helpers::join_slices(
-                &[&IFT_START[..],
-                  &self.itf_payload()[..],
-                  &IFT_STOP[..]][..])
-            },
+                helpers::join_slices(&[&IFT_START[..], &self.itf_payload()[..], &IFT_STOP[..]][..])
+            }
         }
     }
 }
@@ -222,7 +222,7 @@ mod tests {
     fn itf_raw_data() {
         let itf = TF::interleaved("12345679".to_owned()).unwrap();
 
-        assert_eq!(itf.raw_data(), &[1,2,3,4,5,6,7,9]);
+        assert_eq!(itf.raw_data(), &[1, 2, 3, 4, 5, 6, 7, 9]);
     }
 
     #[test]

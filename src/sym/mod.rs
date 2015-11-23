@@ -1,7 +1,7 @@
 //! Supported barcode symbologies.
 //!
 //! Symbologies are separated into logical modules and thus you must `use` the appropriate one(s).
-//! 
+//!
 //! For example:
 //!
 //! ```rust
@@ -33,7 +33,9 @@ trait Parse {
         let data_len = data.len() as u32;
 
         if data_len < valid_len.start || data_len > valid_len.end {
-            return Err(format!("Data does not fit within range of {}-{}", valid_len.start, valid_len.end - 1));
+            return Err(format!("Data does not fit within range of {}-{}",
+                               valid_len.start,
+                               valid_len.end - 1));
         }
 
         let bad_char = data.chars().find(|&c| valid_chars.iter().find(|&vc| *vc == c).is_none());

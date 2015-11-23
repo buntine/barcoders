@@ -18,7 +18,10 @@ pub const ASCII_CHARS: [char; 2] = [' ', '#'];
 impl ASCII {
     /// Returns a new ASCII with default values.
     pub fn new() -> ASCII {
-        ASCII{height: 10, xdim: 1}
+        ASCII {
+            height: 10,
+            xdim: 1,
+        }
     }
 
     fn generate_row(&self, barcode: &[u8]) -> String {

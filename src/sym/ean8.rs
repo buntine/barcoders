@@ -1,13 +1,13 @@
 //! This module provides types for EAN-8 barcodes, which are EAN style barcodes for smaller
 //! packages on products like cigaretts, chewing gum, etc.
 
-use ::sym::Parse;
-use ::sym::EncodedBarcode;
-use ::sym::helpers;
-use ::sym::ean13::EAN_ENCODINGS;
-use ::sym::ean13::EAN_LEFT_GUARD;
-use ::sym::ean13::EAN_MIDDLE_GUARD;
-use ::sym::ean13::EAN_RIGHT_GUARD;
+use sym::Parse;
+use sym::EncodedBarcode;
+use sym::helpers;
+use sym::ean13::EAN_ENCODINGS;
+use sym::ean13::EAN_LEFT_GUARD;
+use sym::ean13::EAN_MIDDLE_GUARD;
+use sym::ean13::EAN_RIGHT_GUARD;
 use std::ops::Range;
 use std::char;
 
@@ -23,8 +23,10 @@ impl EAN8 {
     pub fn new(data: String) -> Result<EAN8, String> {
         match EAN8::parse(data) {
             Ok(d) => {
-                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
-                Ok(EAN8{data: digits})
+                let digits = d.chars()
+                              .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                              .collect();
+                Ok(EAN8 { data: digits })
             }
             Err(e) => Err(e),
         }
@@ -72,18 +74,18 @@ impl EAN8 {
 
     fn left_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.left_digits()
-            .iter()
-            .map(|d| self.char_encoding(0, &d))
-            .collect();
+                                       .iter()
+                                       .map(|d| self.char_encoding(0, &d))
+                                       .collect();
 
         helpers::join_arrays(&slices[..])
     }
 
     fn right_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.right_digits()
-            .iter()
-            .map(|d| self.char_encoding(2, &d))
-            .collect();
+                                       .iter()
+                                       .map(|d| self.char_encoding(2, &d))
+                                       .collect();
 
         helpers::join_arrays(&slices[..])
     }
@@ -91,14 +93,13 @@ impl EAN8 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
-        helpers::join_slices(&[
-            &EAN_LEFT_GUARD[..],
-            &self.number_system_encoding()[..],
-            &self.left_payload()[..],
-            &EAN_MIDDLE_GUARD[..],
-            &self.right_payload()[..],
-            &self.checksum_encoding()[..],
-            &EAN_RIGHT_GUARD[..]][..])
+        helpers::join_slices(&[&EAN_LEFT_GUARD[..],
+                               &self.number_system_encoding()[..],
+                               &self.left_payload()[..],
+                               &EAN_MIDDLE_GUARD[..],
+                               &self.right_payload()[..],
+                               &self.checksum_encoding()[..],
+                               &EAN_RIGHT_GUARD[..]][..])
     }
 }
 
@@ -149,7 +150,7 @@ mod tests {
     fn ean8_raw_data() {
         let ean8 = EAN8::new("1234567".to_owned()).unwrap();
 
-        assert_eq!(ean8.raw_data(), &[1,2,3,4,5,6,7]);
+        assert_eq!(ean8.raw_data(), &[1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
