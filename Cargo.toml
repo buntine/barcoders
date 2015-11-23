@@ -13,8 +13,9 @@ exclude = [
 ]
 
 [features]
-
 ascii = []
+dev = ["clippy"]
 
 [dependencies]
 image = {version = "0.5.1", optional = true}
+clippy = {version = "0.0.24", optional = true}

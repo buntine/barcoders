@@ -1,17 +1,18 @@
 //! This module provides types for EAN-8 barcodes, which are EAN style barcodes for smaller
 //! packages on products like cigaretts, chewing gum, etc.
 
-use ::sym::Parse;
-use ::sym::EncodedBarcode;
-use ::sym::helpers;
-use ::sym::ean13::EAN_ENCODINGS;
-use ::sym::ean13::EAN_LEFT_GUARD;
-use ::sym::ean13::EAN_MIDDLE_GUARD;
-use ::sym::ean13::EAN_RIGHT_GUARD;
+use sym::Parse;
+use sym::EncodedBarcode;
+use sym::helpers;
+use sym::ean13::EAN_ENCODINGS;
+use sym::ean13::EAN_LEFT_GUARD;
+use sym::ean13::EAN_MIDDLE_GUARD;
+use sym::ean13::EAN_RIGHT_GUARD;
 use std::ops::Range;
 use std::char;
 
 /// The EAN-8 barcode type.
+#[derive(Debug)]
 pub struct EAN8 {
     data: Vec<u8>,
 }
@@ -22,8 +23,10 @@ impl EAN8 {
     pub fn new(data: String) -> Result<EAN8, String> {
         match EAN8::parse(data) {
             Ok(d) => {
-                let digits = d.chars().map(|c| c.to_digit(10).expect("Unknown character") as u8).collect();
-                Ok(EAN8{data: digits})
+                let digits = d.chars()
+                              .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                              .collect();
+                Ok(EAN8 { data: digits })
             }
             Err(e) => Err(e),
         }
@@ -71,18 +74,18 @@ impl EAN8 {
 
     fn left_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.left_digits()
-            .iter()
-            .map(|d| self.char_encoding(0, &d))
-            .collect();
+                                       .iter()
+                                       .map(|d| self.char_encoding(0, &d))
+                                       .collect();
 
         helpers::join_arrays(&slices[..])
     }
 
     fn right_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.right_digits()
-            .iter()
-            .map(|d| self.char_encoding(2, &d))
-            .collect();
+                                       .iter()
+                                       .map(|d| self.char_encoding(2, &d))
+                                       .collect();
 
         helpers::join_arrays(&slices[..])
     }
@@ -90,14 +93,13 @@ impl EAN8 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> EncodedBarcode {
-        helpers::join_slices(&[
-            &EAN_LEFT_GUARD[..],
-            &self.number_system_encoding()[..],
-            &self.left_payload()[..],
-            &EAN_MIDDLE_GUARD[..],
-            &self.right_payload()[..],
-            &self.checksum_encoding()[..],
-            &EAN_RIGHT_GUARD[..]][..])
+        helpers::join_slices(&[&EAN_LEFT_GUARD[..],
+                               &self.number_system_encoding()[..],
+                               &self.left_payload()[..],
+                               &EAN_MIDDLE_GUARD[..],
+                               &self.right_payload()[..],
+                               &self.checksum_encoding()[..],
+                               &EAN_RIGHT_GUARD[..]][..])
     }
 }
 
@@ -125,45 +127,45 @@ mod tests {
 
     #[test]
     fn new_ean8() {
-        let ean8 = EAN8::new("1234567".to_string());
+        let ean8 = EAN8::new("1234567".to_owned());
 
         assert!(ean8.is_ok());
     }
 
     #[test]
     fn invalid_data_ean8() {
-        let ean8 = EAN8::new("1234er123412".to_string());
+        let ean8 = EAN8::new("1234er123412".to_owned());
 
         assert!(ean8.is_err());
     }
 
     #[test]
     fn invalid_len_ean8() {
-        let ean8 = EAN8::new("1111112222222333333".to_string());
+        let ean8 = EAN8::new("1111112222222333333".to_owned());
 
         assert!(ean8.is_err());
     }
 
     #[test]
     fn ean8_raw_data() {
-        let ean8 = EAN8::new("1234567".to_string()).unwrap();
+        let ean8 = EAN8::new("1234567".to_owned()).unwrap();
 
-        assert_eq!(ean8.raw_data(), &[1,2,3,4,5,6,7]);
+        assert_eq!(ean8.raw_data(), &[1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
     fn ean8_encode() {
-        let ean81 = EAN8::new("5512345".to_string()).unwrap(); // Check digit: 7
-        let ean82 = EAN8::new("9834651".to_string()).unwrap(); // Check digit: 3
+        let ean81 = EAN8::new("5512345".to_owned()).unwrap(); // Check digit: 7
+        let ean82 = EAN8::new("9834651".to_owned()).unwrap(); // Check digit: 3
 
-        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_string());
-        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_string());
+        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_owned());
+        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_owned());
     }
 
     #[test]
     fn ean8_checksum_calculation() {
-        let ean81 = EAN8::new("4575678".to_string()).unwrap(); // Check digit: 8
-        let ean82 = EAN8::new("9534763".to_string()).unwrap(); // Check digit: 9
+        let ean81 = EAN8::new("4575678".to_owned()).unwrap(); // Check digit: 8
+        let ean82 = EAN8::new("9534763".to_owned()).unwrap(); // Check digit: 9
 
         assert_eq!(ean81.checksum_digit(), 8);
         assert_eq!(ean82.checksum_digit(), 9);

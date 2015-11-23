@@ -6,9 +6,9 @@
 //! popular in non-retail environments. It was one of the first symbologies to support encoding
 //! of the ASCII alphabet.
 
-use ::sym::Parse;
-use ::sym::EncodedBarcode;
-use ::sym::helpers;
+use sym::Parse;
+use sym::EncodedBarcode;
+use sym::helpers;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 43 allowable character.
@@ -34,15 +34,21 @@ const CODE39_CHARS: [(char, [u8; 12]); 43] = [
 const CODE39_GUARD: [u8; 12] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
 
 /// The Code39 barcode type.
+#[derive(Debug)]
 pub struct Code39 {
     data: Vec<char>,
     pub checksum: bool,
 }
 
 impl Code39 {
-   fn init(data: String, checksum: bool) -> Result<Code39, String> {
+    fn init(data: String, checksum: bool) -> Result<Code39, String> {
         match Code39::parse(data) {
-            Ok(d) => Ok(Code39{data: d.chars().collect(), checksum: checksum}),
+            Ok(d) => {
+                Ok(Code39 {
+                    data: d.chars().collect(),
+                    checksum: checksum,
+                })
+            }
             Err(e) => Err(e),
         }
     }
@@ -84,7 +90,7 @@ impl Code39 {
     }
 
     fn char_encoding(&self, c: &char) -> [u8; 12] {
-         match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
+        match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
@@ -116,10 +122,7 @@ impl Code39 {
     pub fn encode(&self) -> EncodedBarcode {
         let guard = &CODE39_GUARD[..];
 
-        helpers::join_slices(&[
-            guard,
-            &self.payload()[..],
-            guard][..])
+        helpers::join_slices(&[guard, &self.payload()[..], guard][..])
     }
 }
 
@@ -146,56 +149,56 @@ mod tests {
 
     #[test]
     fn new_code39() {
-        let code39 = Code39::new("12345".to_string());
+        let code39 = Code39::new("12345".to_owned());
 
         assert!(code39.is_ok());
     }
 
     #[test]
     fn invalid_data_code39() {
-        let code39 = Code39::new("1212s".to_string());
+        let code39 = Code39::new("1212s".to_owned());
 
         assert!(code39.is_err());
     }
 
     #[test]
     fn invalid_len_code39() {
-        let code39 = Code39::new("".to_string());
+        let code39 = Code39::new("".to_owned());
 
         assert!(code39.is_err());
     }
 
     #[test]
     fn code39_raw_data() {
-        let code39 = Code39::new("12345".to_string()).unwrap();
+        let code39 = Code39::new("12345".to_owned()).unwrap();
 
         assert_eq!(code39.raw_data(), &['1', '2', '3', '4', '5']);
     }
 
     #[test]
     fn code39_encode() {
-        let code391 = Code39::new("1234".to_string()).unwrap();
-        let code392 = Code39::new("983RD512".to_string()).unwrap();
-        let code393 = Code39::new("TEST8052".to_string()).unwrap();
+        let code391 = Code39::new("1234".to_owned()).unwrap();
+        let code392 = Code39::new("983RD512".to_owned()).unwrap();
+        let code393 = Code39::new("TEST8052".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(code391.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_string());
-        assert_eq!(collapse_vec(code392.encode()), "100101101101010110010110101101001011010110110010101011010101100101010110010110110100110101011010010101101011001010110100101101101".to_string());
-        assert_eq!(collapse_vec(code393.encode()), "100101101101010101101100101101011001010101101011001010101101100101101001011010101001101101011010011010101011001010110100101101101".to_string());
+        assert_eq!(collapse_vec(code391.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_owned());
+        assert_eq!(collapse_vec(code392.encode()), "100101101101010110010110101101001011010110110010101011010101100101010110010110110100110101011010010101101011001010110100101101101".to_owned());
+        assert_eq!(collapse_vec(code393.encode()), "100101101101010101101100101101011001010101101011001010101101100101101001011010101001101101011010011010101011001010110100101101101".to_owned());
     }
 
     #[test]
     fn code39_encode_with_checksum() {
-        let code391 = Code39::with_checksum("1234".to_string()).unwrap();
-        let code392 = Code39::with_checksum("983RD512".to_string()).unwrap();
+        let code391 = Code39::with_checksum("1234".to_owned()).unwrap();
+        let code392 = Code39::with_checksum("983RD512".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(code391.encode()), "100101101101011010010101101011001010110110110010101010100110101101101010010110100101101101".to_string());
-        assert_eq!(collapse_vec(code392.encode()), "1001011011010101100101101011010010110101101100101010110101011001010101100101101101001101010110100101011010110010101101011011010010100101101101".to_string());
+        assert_eq!(collapse_vec(code391.encode()), "100101101101011010010101101011001010110110110010101010100110101101101010010110100101101101".to_owned());
+        assert_eq!(collapse_vec(code392.encode()), "1001011011010101100101101011010010110101101100101010110101011001010101100101101101001101010110100101011010110010101101011011010010100101101101".to_owned());
     }
 
     #[test]
     fn code39_checksum_calculation() {
-        let code391 = Code39::new("1234".to_string()).unwrap(); // Check char: 'A'
-        let code392 = Code39::new("159AZ".to_string()).unwrap(); // Check char: 'H'
+        let code391 = Code39::new("1234".to_owned()).unwrap(); // Check char: 'A'
+        let code392 = Code39::new("159AZ".to_owned()).unwrap(); // Check char: 'H'
 
         assert_eq!(code391.checksum_char().unwrap(), 'A');
         assert_eq!(code392.checksum_char().unwrap(), 'H');
