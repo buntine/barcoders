@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/buntine/barcoders.svg?branch=master)](https://travis-ci.org/buntine/barcoders)
+[![Coverage Status](https://coveralls.io/repos/buntine/barcoders/badge.svg?branch=master&service=github)](https://coveralls.io/github/buntine/barcoders?branch=master)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Crates.io](http://meritbadge.herokuapp.com/barcoders)](https://crates.io/crates/barcoders)
 
