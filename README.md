@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/buntine/barcoders.svg?branch=master)](https://travis-ci.org/buntine/barcoders)
+
 ![BARCODERS](/media/logo.jpg?raw=true "BARCODERS")
 
 **Barcoders** is a barcode-encoding library for the Rust programming language.
