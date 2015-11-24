@@ -5,7 +5,7 @@ rust:
   - beta
   - stable
 script:
-  - cargo build --features=ascii &&
+  - cargo build --features=ascii
   - cargo test --features=ascii
   - cargo doc --features="ascii image"
 # addons:
