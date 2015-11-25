@@ -21,12 +21,14 @@ const IFT_STOP: [u8; 4] = [1, 1, 0, 1];
 const SFT_START: [u8; 8] = [1, 1, 0, 1, 1, 0, 1, 0];
 const SFT_STOP: [u8; 8] = [1, 1, 0, 1, 0, 1, 1, 0];
 
-/// The Interleaved 2-of-5 barcode type.
+/// The 2-of-5 barcode type.
 #[derive(Debug)]
 pub enum TF {
+    /// The standard 2-of-5 barcode type.
     Standard {
         data: Vec<u8>,
     },
+    /// The interleaved 2-of-5 barcode type.
     Interleaved {
         data: Vec<u8>,
     },

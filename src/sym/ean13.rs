@@ -39,10 +39,11 @@ const PARITY: [[usize; 5]; 10] = [
     [1,1,0,1,0],
 ];
 
-/// The patterns for the guards. These are the separators that often stick down when
-/// a barcode is printed.
+/// The left-hard guard pattern.
 pub const EAN_LEFT_GUARD: [u8; 3] = [1, 0, 1];
+/// The middle guard pattern.
 pub const EAN_MIDDLE_GUARD: [u8; 5] = [0, 1, 0, 1, 0];
+/// The right-hard guard pattern.
 pub const EAN_RIGHT_GUARD: [u8; 3] = [1, 0, 1];
 
 /// The EAN-13 barcode type.

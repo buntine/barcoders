@@ -1,5 +1,9 @@
-//! This module provides types for generating ASCII representations of barcodes. This is useful for
-//! testing and simple verification of barcode correctness.
+//! Functionality for generating ASCII representations of barcodes.
+//!
+//! This is useful for testing and simple verification of barcode correctness.
+//!
+//! You will pretty much never need to turn this feature on unless you are adding new functionality
+//! or running the test suite.
 
 use std::iter::repeat;
 

@@ -31,12 +31,13 @@ const CODE39_CHARS: [(char, [u8; 12]); 43] = [
 ];
 
 // Code39 barcodes must start and end with the '*' special character.
-const CODE39_GUARD: [u8; 12] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
+const CODE39_GUARD: [u8; 12] = [1,0,0,1,0,1,1,0,1,1,0,1];
 
 /// The Code39 barcode type.
 #[derive(Debug)]
 pub struct Code39 {
     data: Vec<char>,
+    /// Indicates whether to encode a checksum digit.
     pub checksum: bool,
 }
 
