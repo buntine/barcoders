@@ -1,7 +1,11 @@
-//! This module provides types for Interleaved 2-of-5 barcodes.
+//! Encoder for 2-of-5 barcodes.
+//!
 //! 2-of-5 barcodes are often used by Airlines and in some industrial settings.
-//! they also make an appearance in retail where they are sometimes used for the outer cartons on
+//!
+//! They also make an appearance in retail where they are sometimes used for the outer cartons on
 //! groups of products (cartons of Cola, etc).
+//!
+//! Most of the time you will want to use the interleaved barcode over the standard option.
 
 use sym::Parse;
 use sym::helpers;

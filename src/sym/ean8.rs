@@ -1,5 +1,7 @@
-//! This module provides types for EAN-8 barcodes, which are EAN style barcodes for smaller
-//! packages on products like cigaretts, chewing gum, etc.
+//! Encoder for EAN-8 barcodes.
+//!
+//! EAN-8 barcodes are EAN style barcodes for smaller packages on products like
+//! cigaretts, chewing gum, etc where package space is limited.
 
 use sym::Parse;
 use sym::helpers;

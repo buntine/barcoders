@@ -1,6 +1,10 @@
-//! This module provides types for encoding supplemental 2-digit and 5-digit EAN barcodes.
-//! Supplemental EAN-2 barcodes are used in magazines and newspapers to indicate issue number and
+//! Encoders for supplemental 2-digit and 5-digit EAN barcodes.
+//!
+//! EAN-2 barcodes are used in magazines and newspapers to indicate issue number.
+//!
 //! EAN-5 barcodes are often used to indicate the suggested retail price of books.
+//!
+//! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
 use sym::Parse;
 use sym::ean13::EAN_ENCODINGS;

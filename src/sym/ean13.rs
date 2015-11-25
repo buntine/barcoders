@@ -1,4 +1,5 @@
-//! This module provides types for encoding UPC and EAN barcodes.
+//! Encoder for UPC and EAN barcodes.
+//!
 //! EAN13 barcodes are very common in retail. 90% of the products you purchase from a supermarket
 //! will use EAN13.
 //!
