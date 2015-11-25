@@ -3,7 +3,6 @@
 //! EAN-5 barcodes are often used to indicate the suggested retail price of books.
 
 use sym::Parse;
-use sym::EncodedBarcode;
 use sym::ean13::EAN_ENCODINGS;
 use sym::helpers;
 use std::ops::Range;
@@ -127,7 +126,7 @@ impl EANSUPP {
 
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> EncodedBarcode {
+    pub fn encode(&self) -> Vec<u8> {
         helpers::join_slices(&[&EANSUPP_LEFT_GUARD[..], &self.payload()[..]][..])
     }
 }

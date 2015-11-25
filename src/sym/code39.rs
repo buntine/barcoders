@@ -7,7 +7,6 @@
 //! of the ASCII alphabet.
 
 use sym::Parse;
-use sym::EncodedBarcode;
 use sym::helpers;
 use std::ops::Range;
 
@@ -119,8 +118,8 @@ impl Code39 {
     }
 
     /// Encodes the barcode.
-    /// Returns an EncodedBarcode (wrapper type of Vec<u8>) of binary digits.
-    pub fn encode(&self) -> EncodedBarcode {
+    /// Returns a Vec<u8> of binary digits.
+    pub fn encode(&self) -> Vec<u8> {
         let guard = &CODE39_GUARD[..];
 
         helpers::join_slices(&[guard, &self.payload()[..], guard][..])

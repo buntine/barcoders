@@ -21,8 +21,6 @@ mod helpers;
 use std::ops::Range;
 use std::iter::Iterator;
 
-pub type EncodedBarcode = Vec<u8>;
-
 trait Parse {
     fn valid_chars() -> Vec<char>;
     fn valid_len() -> Range<u32>;

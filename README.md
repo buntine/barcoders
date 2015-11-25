@@ -71,7 +71,7 @@ use barcoders::generators::image::*;
 use std::fs::File;
 use std::path::Path;
 
-let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_string()).unwrap();
+let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
 let png = Image::PNG{height: 80, xdim: 1};
 
 // The `encode` method returns a Vec<u8> of the binary representation of the
@@ -95,7 +95,7 @@ extern crate barcoders;
 use barcoders::sym::ean13::*;
 use barcoders::generators::ascii::*;
 
-let barcode = EAN13::new("750103131130".to_string()).unwrap();
+let barcode = EAN13::new("750103131130".to_owned()).unwrap();
 let encoded: Vec<u8> = barcode.encode();
 
 // The ASCII generator is useful for testing purposes.
@@ -114,7 +114,7 @@ assert_eq!(ascii.unwrap(),
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-".trim().to_string());
+".trim().to_owned());
 ```
 
 ## Tests

@@ -33,6 +33,10 @@
 //! * GIF (feature: `image`)
 //! * JPEG (feature: `image`)
 //! * More coming! (PostScript, SVG, etc)
+//!
+//! ## Examples
+//!
+//! See the Github repository.
 
 #![warn(missing_docs,
         missing_debug_implementations, missing_copy_implementations,

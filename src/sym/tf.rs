@@ -4,7 +4,6 @@
 //! groups of products (cartons of Cola, etc).
 
 use sym::Parse;
-use sym::EncodedBarcode;
 use sym::helpers;
 use std::ops::Range;
 use std::char;
@@ -149,7 +148,7 @@ impl TF {
 
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> EncodedBarcode {
+    pub fn encode(&self) -> Vec<u8> {
         match *self {
             TF::Standard{data: _} => {
                 helpers::join_slices(&[&SFT_START[..], &self.stf_payload()[..], &SFT_STOP[..]][..])

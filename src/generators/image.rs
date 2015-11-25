@@ -8,9 +8,10 @@ use std::fs::File;
 
 const IMAGE_BAR_WIDTH: u32 = 1;
 
-/// The GIF barcode generator type.
+/// The image generator type.
 #[derive(Copy, Clone, Debug)]
 pub enum Image {
+    /// GIF image generator type.
     GIF {
         /// The height of the barcode in pixels.
         height: u32,
@@ -18,6 +19,7 @@ pub enum Image {
         /// For GIF, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
         xdim: u32,
     },
+    /// PNG image generator type.
     PNG {
         /// The height of the barcode in pixels.
         height: u32,
@@ -25,6 +27,7 @@ pub enum Image {
         /// For PNG, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
         xdim: u32,
     },
+    /// JPEG image generator type.
     JPEG {
         /// The height of the barcode in pixels.
         height: u32,

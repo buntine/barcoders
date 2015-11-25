@@ -2,7 +2,6 @@
 //! packages on products like cigaretts, chewing gum, etc.
 
 use sym::Parse;
-use sym::EncodedBarcode;
 use sym::helpers;
 use sym::ean13::EAN_ENCODINGS;
 use sym::ean13::EAN_LEFT_GUARD;
@@ -92,7 +91,7 @@ impl EAN8 {
 
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> EncodedBarcode {
+    pub fn encode(&self) -> Vec<u8> {
         helpers::join_slices(&[&EAN_LEFT_GUARD[..],
                                &self.number_system_encoding()[..],
                                &self.left_payload()[..],
