@@ -47,9 +47,7 @@ pub const EAN_RIGHT_GUARD: [u8; 3] = [1, 0, 1];
 
 /// The EAN-13 barcode type.
 #[derive(Debug)]
-pub struct EAN13 {
-    data: Vec<u8>,
-}
+pub struct EAN13(Vec<u8>);
 
 /// The Bookland barcode type.
 /// Bookland are EAN-13 that use number system 978.
@@ -72,7 +70,7 @@ impl EAN13 {
                 let digits = d.chars()
                               .map(|c| c.to_digit(10).expect("Unknown character") as u8)
                               .collect();
-                Ok(EAN13 { data: digits })
+                Ok(EAN13(digits))
             }
             Err(e) => Err(e),
         }
@@ -80,16 +78,16 @@ impl EAN13 {
 
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[u8] {
-        &self.data[..]
+        &self.0[..]
     }
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
-        helpers::modulo_10_checksum(&self.data[..], true)
+        helpers::modulo_10_checksum(&self.0[..], true)
     }
 
     fn number_system_digit(&self) -> u8 {
-        self.data[1]
+        self.0[1]
     }
 
     fn number_system_encoding(&self) -> [u8; 7] {
@@ -105,15 +103,15 @@ impl EAN13 {
     }
 
     fn left_digits(&self) -> &[u8] {
-        &self.data[2..7]
+        &self.0[2..7]
     }
 
     fn right_digits(&self) -> &[u8] {
-        &self.data[7..]
+        &self.0[7..]
     }
 
     fn parity_mapping(&self) -> [usize; 5] {
-        PARITY[self.data[0] as usize]
+        PARITY[self.0[0] as usize]
     }
 
     fn left_payload(&self) -> Vec<u8> {

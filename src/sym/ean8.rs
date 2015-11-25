@@ -12,9 +12,7 @@ use std::char;
 
 /// The EAN-8 barcode type.
 #[derive(Debug)]
-pub struct EAN8 {
-    data: Vec<u8>,
-}
+pub struct EAN8(Vec<u8>);
 
 impl EAN8 {
     /// Creates a new barcode.
@@ -25,7 +23,7 @@ impl EAN8 {
                 let digits = d.chars()
                               .map(|c| c.to_digit(10).expect("Unknown character") as u8)
                               .collect();
-                Ok(EAN8 { data: digits })
+                Ok(EAN8(digits))
             }
             Err(e) => Err(e),
         }
@@ -33,16 +31,16 @@ impl EAN8 {
 
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[u8] {
-        &self.data[..]
+        &self.0[..]
     }
 
     /// Calculates the checksum digit using a weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
-        helpers::modulo_10_checksum(&self.data[..], false)
+        helpers::modulo_10_checksum(&self.0[..], false)
     }
 
     fn number_system_digits(&self) -> &[u8] {
-        &self.data[0..2]
+        &self.0[0..2]
     }
 
     fn number_system_encoding(&self) -> Vec<u8> {
@@ -64,11 +62,11 @@ impl EAN8 {
     }
 
     fn left_digits(&self) -> &[u8] {
-        &self.data[2..4]
+        &self.0[2..4]
     }
 
     fn right_digits(&self) -> &[u8] {
-        &self.data[4..]
+        &self.0[4..]
     }
 
     fn left_payload(&self) -> Vec<u8> {

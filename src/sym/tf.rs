@@ -24,13 +24,9 @@ const SFT_STOP: [u8; 8] = [1, 1, 0, 1, 0, 1, 1, 0];
 #[derive(Debug)]
 pub enum TF {
     /// The standard 2-of-5 barcode type.
-    Standard {
-        data: Vec<u8>,
-    },
+    Standard(Vec<u8>),
     /// The interleaved 2-of-5 barcode type.
-    Interleaved {
-        data: Vec<u8>,
-    },
+    Interleaved(Vec<u8>),
 }
 
 impl TF {
@@ -54,7 +50,7 @@ impl TF {
                     digits.push(check_digit);
                 }
 
-                Ok(TF::Interleaved { data: digits })
+                Ok(TF::Interleaved(digits))
             }
             Err(e) => Err(e),
         }
@@ -69,7 +65,7 @@ impl TF {
                 let digits: Vec<u8> = d.chars()
                                        .map(|c| c.to_digit(10).expect("Unknown character") as u8)
                                        .collect();
-                Ok(TF::Standard { data: digits })
+                Ok(TF::Standard(digits))
             }
             Err(e) => Err(e),
         }
@@ -78,8 +74,8 @@ impl TF {
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[u8] {
         match *self {
-            TF::Standard{data: ref d} => &d[..],
-            TF::Interleaved{data: ref d} => &d[..],
+            TF::Standard(ref d) => &d[..],
+            TF::Interleaved(ref d) => &d[..],
         }
     }
 
@@ -87,8 +83,8 @@ impl TF {
     /// The Optional value is because Standard TF barcodes do not have a check digit.
     pub fn checksum_digit(&self) -> Option<&u8> {
         match *self {
-            TF::Standard{data: _} => None,
-            TF::Interleaved{data: ref d} => d.last(),
+            TF::Standard(_) => None,
+            TF::Interleaved(ref d) => d.last(),
         }
     }
 
@@ -150,10 +146,10 @@ impl TF {
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
         match *self {
-            TF::Standard{data: _} => {
+            TF::Standard(_) => {
                 helpers::join_slices(&[&SFT_START[..], &self.stf_payload()[..], &SFT_STOP[..]][..])
             }
-            TF::Interleaved{data: _} => {
+            TF::Interleaved(_) => {
                 helpers::join_slices(&[&IFT_START[..], &self.itf_payload()[..], &IFT_STOP[..]][..])
             }
         }

@@ -28,13 +28,9 @@ const EAN2_PARITY: [[usize; 5]; 4] = [
 #[derive(Debug)]
 pub enum EANSUPP {
     /// EAN-2 supplemental barcode type.
-    EAN2 {
-        data: Vec<u8>,
-    },
+    EAN2(Vec<u8>),
     /// EAN-5 supplemental barcode type.
-    EAN5 {
-        data: Vec<u8>,
-    },
+    EAN5(Vec<u8>),
 }
 
 impl EANSUPP {
@@ -50,8 +46,8 @@ impl EANSUPP {
                                        .collect();
 
                 match digits.len() {
-                    2 => Ok(EANSUPP::EAN2 { data: digits }),
-                    5 => Ok(EANSUPP::EAN5 { data: digits }),
+                    2 => Ok(EANSUPP::EAN2(digits)),
+                    5 => Ok(EANSUPP::EAN5(digits)),
                     n => Err(format!("Invalid supplemental length: {}", n)),
                 }
             }
@@ -62,8 +58,8 @@ impl EANSUPP {
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[u8] {
         match *self {
-            EANSUPP::EAN2{data: ref d} => &d[..],
-            EANSUPP::EAN5{data: ref d} => &d[..],
+            EANSUPP::EAN2(ref d) => &d[..],
+            EANSUPP::EAN5(ref d) => &d[..],
         }
     }
 
@@ -93,11 +89,11 @@ impl EANSUPP {
 
     fn parity(&self) -> [usize; 5] {
         match *self {
-            EANSUPP::EAN2{data: ref d} => {
+            EANSUPP::EAN2(ref d) => {
                 let modulo = ((d[0] * 10) + d[1]) % 4;
                 EAN2_PARITY[modulo as usize]
             }
-            EANSUPP::EAN5{data: ref _d} => {
+            EANSUPP::EAN5(ref _d) => {
                 let check = self.checksum_digit() as usize;
                 EAN5_PARITY[check]
             }
