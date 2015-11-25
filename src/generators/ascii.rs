@@ -4,6 +4,7 @@
 use std::iter::repeat;
 
 /// The ASCII barcode generator type.
+#[derive(Copy, Clone, Debug)]
 pub struct ASCII {
     /// The height of the barcode (```self.height``` characters high for ASCII).
     pub height: usize,

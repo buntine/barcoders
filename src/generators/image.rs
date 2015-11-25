@@ -9,6 +9,7 @@ use std::fs::File;
 const IMAGE_BAR_WIDTH: u32 = 1;
 
 /// The GIF barcode generator type.
+#[derive(Copy, Clone, Debug)]
 pub enum Image {
     GIF {
         /// The height of the barcode in pixels.
@@ -76,7 +77,7 @@ impl Image {
 
                 if b == 0 {
                     for p in 0..size {
-                        buffer.put_pixel(pos + p, y, image::Luma([255 as u8]));
+                        buffer.put_pixel(pos + p, y, image::Luma([255]));
                     }
                 }
 
