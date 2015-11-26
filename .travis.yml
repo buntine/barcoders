@@ -3,29 +3,29 @@ language: rust
 addons:
   apt:
     packages:
-      - libcurl4-openssl-dev
-      - libelf-dev
-      - libdw-dev
-      - binutils-dev # optional: only required for the --verify flag of coveralls
+    - libcurl4-openssl-dev
+    - libelf-dev
+    - libdw-dev
+    - binutils-dev
 rust:
-  - nightly
-  - beta
-  - stable
+- nightly
+- beta
+- stable
 before_script:
-  - |
-      pip install 'travis-cargo<0.2' --user &&
-      export PATH=$HOME/.local/bin:$PATH
+- |
+  pip install 'travis-cargo<0.2' --user &&
+  export PATH=$HOME/.local/bin:$PATH
 script:
-  - cargo build --features=ascii
-  - cargo test --features=ascii
-  - cargo doc --features="ascii image"
+- cargo build --features=ascii
+- cargo test --features=ascii
+- cargo doc --features="ascii image"
 after_success:
-  - env COVERAGE_TESTING=1 travis-cargo coveralls --no-sudo
-  - travis-cargo --only stable doc-upload
+- env COVERAGE_TESTING=1 travis-cargo coveralls --no-sudo
+- travis-cargo --only stable doc-upload
 notifications:
   email:
     on_success: never
 env:
   global:
   - TRAVIS_CARGO_NIGHTLY_FEATURE=dev
-  # - secure:
+  - secure: ndtH0IKksuh6Ta6P8mLrBLSZ/D5n4CYwrTdzyb7wYl//UkWFP/Tshyc3tPq0e8ce6ecMxKdKI31nZ0fYhNJpcCOFER13MaWsHj/53HRXnik+fL4VF+xxNebEoeWu+ek9s1kzTnlaXUKq8v3wRGoZckB9jP06kkDpOuww+dzjY+lcwCEa6H9172FZWOS60Hhtgq82hzi9sMOO4R14WNm2PVTTBYlaAmNumS4kU9NKzC3T/voUjyanYAxNQVk8GewmLuI6CSrzu9kLDTyvrk2iNMNGz1qVP6+h+anhKrt3sRihQAGiQ2u851IekjnGg0Niem7BCLMNiFJS1X7wd+eL7kuy3UdCXvu0B8C4F6fsprBzF14rCmXB3/pEk6zNu+ztIm6YPu683ageys6w+WoMguSBZZUL1uAwMwgYHj2m4CtTHeU2u+C7mhUjIj3IPr3d5FUEo+npMG/uaCirtl2Jm9gn8Rdc8TOtot/qJhFJxqv72MUAAIVc+xBfrcB0nzaY0iaG5yGrZUh75Qk6KdLI2ieA7+j+YNeINOeqi5U5ndac1Xh3tIwtGtB1I97PHlogX98e20wyK//tDAMFQF9VpywdhWbsUZ2HTlhTMUtalqY195TiWVuKPnqyIgrOX/4ARjlFrDQ3QzRn5F+xkCcN66Kh8It0oKnd+fKKj7OIkVU=
