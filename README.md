@@ -30,7 +30,7 @@ See below for the feature associated to the generation functionality you desire.
 
 ## Documentation
 
-**Coming soon! I'm just cleaning it up a bit and then I'll work out how to delpoy it somewhere.**
+Documentation and examples are [available here](http://buntine.github.io/barcoders/barcoders/index.html).
 
 ## Current Support
 
