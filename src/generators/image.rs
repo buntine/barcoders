@@ -23,8 +23,6 @@ use image::GenericImage;
 use image::ImageBuffer;
 use std::fs::File;
 
-const IMAGE_BAR_WIDTH: u32 = 1;
-
 /// The image generator type.
 #[derive(Copy, Clone, Debug)]
 pub enum Image {
@@ -33,7 +31,7 @@ pub enum Image {
         /// The height of the barcode in pixels.
         height: u32,
         /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For GIF, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
+        /// For GIF, each will be ```self.xdim``` pixels wide.
         xdim: u32,
     },
     /// PNG image generator type.
@@ -41,7 +39,7 @@ pub enum Image {
         /// The height of the barcode in pixels.
         height: u32,
         /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For PNG, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
+        /// For PNG, each will be ```self.xdim``` pixels wide.
         xdim: u32,
     },
     /// JPEG image generator type.
@@ -49,7 +47,7 @@ pub enum Image {
         /// The height of the barcode in pixels.
         height: u32,
         /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For JPEG, each will be ```self.xdim * IMAGE_BAR_WIDTH``` pixels wide.
+        /// For JPEG, each will be ```self.xdim``` pixels wide.
         xdim: u32,
     },
 }
@@ -87,13 +85,13 @@ impl Image {
             Image::JPEG{height: h, xdim: x} => (x, h, image::JPEG),
         };
 
-        let width = (barcode.len() as u32) * (xdim * IMAGE_BAR_WIDTH);
+        let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
 
         for y in 0..height {
             for &b in barcode {
-                let size = xdim * IMAGE_BAR_WIDTH;
+                let size = xdim;
 
                 if b == 0 {
                     for p in 0..size {

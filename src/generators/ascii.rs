@@ -18,7 +18,7 @@ pub struct ASCII {
 }
 
 /// Maps binary digits to ASCII representation (0=' ', 1='#')
-pub const ASCII_CHARS: [char; 2] = [' ', '#'];
+const ASCII_CHARS: [char; 2] = [' ', '#'];
 
 impl ASCII {
     /// Returns a new ASCII with default values.

@@ -15,3 +15,6 @@ pub mod ascii;
 
 #[cfg(feature = "image")]
 pub mod image;
+
+#[cfg(feature = "svg")]
+pub mod svg;
