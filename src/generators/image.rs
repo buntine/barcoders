@@ -1,4 +1,20 @@
-//! This module provides types for generating image representations of barcodes.
+//! Functionality for generating image representations of barcodes.
+//!
+//! Each enum variant can be constructed via the standard constructor pattern
+//! or via a constructor method if you want default values.
+//!
+//! For example:
+//! ```rust
+//! use barcoders::generators::image::*;
+//!
+//! // Specify your own struct fields.
+//! let png = Image::PNG{height: 80, xdim: 1};
+//!
+//! // Or use the constructor for defaults.
+//! let png = Image::png();
+//! ```
+//!
+//! See the README for more examples.
 
 extern crate image;
 
@@ -62,7 +78,7 @@ impl Image {
         }
     }
 
-    /// Generates the given barcode. Returns a usize indicating the number of bytes written.
+    /// Generates the given barcode. Returns a `Result<usize, &str>` indicating the number of bytes written.
     pub fn generate(&self, barcode: &[u8], path: &mut File) -> Result<usize, &str> {
         let (xdim, height, format) = match *self {
             Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
