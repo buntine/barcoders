@@ -21,7 +21,6 @@ extern crate image;
 
 use image::GenericImage;
 use image::ImageBuffer;
-use std::fs::File;
 
 /// The image generator type.
 #[derive(Copy, Clone, Debug)]
@@ -125,7 +124,6 @@ mod tests {
     use ::sym::ean_supp::*;
     use ::sym::tf::*;
     use ::generators::image::*;
-    use std::io;
     use std::io::prelude::*;
     use std::io::BufWriter;
     use std::fs::File;
@@ -164,6 +162,8 @@ mod tests {
         };
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "ean13.png"); }
+
         assert_eq!(generated.len(), 9500);
     }
 
@@ -175,6 +175,8 @@ mod tests {
             xdim: 3,
         };
         let generated = jpeg.generate(&ean13.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean13.jpg"); }
 
         assert_eq!(generated.len(), 28500);
     }
@@ -188,6 +190,8 @@ mod tests {
         };
         let generated = png.generate(&code39.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "code39.png"); }
+
         assert_eq!(generated.len(), 7740);
     }
 
@@ -199,6 +203,8 @@ mod tests {
             xdim: 1,
         };
         let generated = gif.generate(&code39.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code39.gif"); }
 
         assert_eq!(generated.len(), 8520);
     }
@@ -212,6 +218,8 @@ mod tests {
         };
         let generated = jpeg.generate(&code39.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "code39.jpg"); }
+
         assert_eq!(generated.len(), 33120);
     }
 
@@ -223,6 +231,8 @@ mod tests {
             xdim: 2,
         };
         let generated = png.generate(&ean8.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean8.png"); }
 
         assert_eq!(generated.len(), 9380);
     }
@@ -236,6 +246,8 @@ mod tests {
         };
         let generated = gif.generate(&ean8.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "ean8.gif"); }
+
         assert_eq!(generated.len(), 9380);
     }
 
@@ -247,6 +259,8 @@ mod tests {
             xdim: 2,
         };
         let generated = jpeg.generate(&ean8.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean8.jpg"); }
 
         assert_eq!(generated.len(), 9380);
     }
@@ -260,6 +274,8 @@ mod tests {
         };
         let generated = png.generate(&ean2.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "ean2.png"); }
+
         assert_eq!(generated.len(), 2800);
     }
 
@@ -271,6 +287,8 @@ mod tests {
             xdim: 2,
         };
         let generated = gif.generate(&ean5.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean5.gif"); }
 
         assert_eq!(generated.len(), 6580);
     }
@@ -284,6 +302,8 @@ mod tests {
         };
         let generated = jpeg.generate(&ean5.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "ean5.jpg"); }
+
         assert_eq!(generated.len(), 32900);
     }
 
@@ -295,6 +315,8 @@ mod tests {
             xdim: 2,
         };
         let generated = png.generate(&itf.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ift.png"); }
 
         assert_eq!(generated.len(), 16000);
     }
@@ -308,6 +330,8 @@ mod tests {
         };
         let generated = png.generate(&stf.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "sft.png"); }
+
         assert_eq!(generated.len(), 22800);
     }
 
@@ -320,6 +344,8 @@ mod tests {
         };
         let generated = gif.generate(&itf.encode()[..]).unwrap();
 
+        if WRITE_TO_FILE { write_file(&generated[..], "ift.gif"); }
+
         assert_eq!(generated.len(), 15080);
     }
 
@@ -331,6 +357,8 @@ mod tests {
             xdim: 1,
         };
         let generated = jpeg.generate(&itf.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
 
         assert_eq!(generated.len(), 15080);
     }
