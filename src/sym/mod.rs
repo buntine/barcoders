@@ -10,6 +10,8 @@
 //! let barcode = EAN13::new("750103131130".to_owned()).unwrap();
 //! let encoded = barcode.encode();
 //! ```
+//! Each encoder accepts a `String` to be encoded. Valid data is barcode-specific and thus
+//! constructors return an Option<T>.
 
 pub mod ean13;
 pub mod ean8;

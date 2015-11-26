@@ -30,7 +30,7 @@ See below for the feature associated to the generation functionality you desire.
 
 ## Documentation
 
-Documentation and examples are [available here](http://buntine.github.io/barcoders/barcoders/index.html).
+[Documentation and examples are available here](http://buntine.github.io/barcoders/barcoders/index.html).
 
 ## Current Support
 
@@ -62,6 +62,21 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 
 ## Examples
 
+### Encoding
+```rust
+extern crate barcoders;
+
+use barcoders::sym::ean13::*;
+
+// Each encoder accepts a String to be encoded. Valid data is barcode-specific
+// and thus constructors return an Option<T>.
+let barcode = EAN13::new("593456661897".to_owned()).unwrap();
+
+// The `encode` method returns a Vec<u8> of the binary representation of the
+// generated barcode. This is useful if you want to add your own generator.
+let encoded: Vec<u8> = barcode.encode();
+```
+
 ### Image generation
 ```rust
 extern crate barcoders;
@@ -73,10 +88,7 @@ use std::path::Path;
 
 let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
 let png = Image::PNG{height: 80, xdim: 1};
-
-// The `encode` method returns a Vec<u8> of the binary representation of the
-// generated barcode. This is useful if you want to add your own generator.
-let encoded: Vec<u8> = barcode.encode();
+let encoded = barcode.encode();
 
 // Image generators save the file to the given path and return a u32 indicating
 // the number of bytes written to disk.

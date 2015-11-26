@@ -15,6 +15,7 @@ exclude = [
 
 [features]
 ascii = []
+svg = []
 dev = ["clippy"]
 
 [dependencies]
