@@ -4,6 +4,7 @@
 //! or via a constructor method if you want default values.
 //!
 //! For example:
+//!
 //! ```rust
 //! use barcoders::generators::image::*;
 //!
