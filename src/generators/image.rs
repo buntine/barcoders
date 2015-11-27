@@ -178,7 +178,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.jpg"); }
 
-        assert_eq!(generated.len(), 28500);
+        assert_eq!(generated.len(), 5600);
     }
 
     #[test]
@@ -220,7 +220,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.jpg"); }
 
-        assert_eq!(generated.len(), 33120);
+        assert_eq!(generated.len(), 6436);
     }
 
     #[test]
@@ -262,7 +262,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.jpg"); }
 
-        assert_eq!(generated.len(), 9380);
+        assert_eq!(generated.len(), 2146);
     }
 
     #[test]
@@ -304,7 +304,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean5.jpg"); }
 
-        assert_eq!(generated.len(), 32900);
+        assert_eq!(generated.len(), 5562);
     }
 
     #[test]
@@ -360,6 +360,6 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
 
-        assert_eq!(generated.len(), 15080);
+        assert_eq!(generated.len(), 3504);
     }
 }
