@@ -76,7 +76,8 @@ impl Image {
         }
     }
 
-    /// Generates the given barcode. Returns a `Result<Vec<u8>, &str>` of the encoded bytes.
+    /// Generates the given barcode. Returns a `Result<Vec<u8>, &str>` of the encoded bytes or
+    /// an error message.
     pub fn generate(&self, barcode: &[u8]) -> Result<Vec<u8>, &str> {
         let (xdim, height, format) = match *self {
             Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
@@ -87,6 +88,7 @@ impl Image {
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
+        let mut bytes: Vec<u8> = vec![];
 
         for y in 0..height {
             for &b in barcode {
@@ -104,14 +106,10 @@ impl Image {
             pos = 0;
         }
 
-        let mut bytes: Vec<u8> = vec![];
-
-        // Here I am introducing a new scope to get around the borrow checker as I am only
-        // interested in this lines side-effect on `bytes`. I assume there is a better way
-        // to handle this?
-        {image::ImageLuma8(buffer).save(&mut bytes, format).unwrap();}
-
-        Ok(bytes)
+        match image::ImageLuma8(buffer).save(&mut bytes, format) {
+            Ok(_) => Ok(bytes),
+            _ => Err("Could not save image data to buffer"),
+        }
     }
 }
 

@@ -21,24 +21,35 @@ impl SVG {
         }
     }
 
-    /// Generates the given barcode. Returns a `Result<usize, &str>` indicating the number of bytes written.
-    pub fn generate(&self, barcode: &[u8], path: &mut File) -> Result<usize, &str> {
-        Ok(10)
+    /// Generates the given barcode. Returns a `Result<String, &str>` of the SVG data or an
+    /// error message.
+    pub fn generate(&self, barcode: &[u8], path: &mut File) -> Result<String, &str> {
+        let rects = "<rect x=\"0\" y=\"0\" width=\"60\" height=\"80\" fill=\"blue\" />
+                     <rect x=\"60\" y=\"0\" width=\"40\" height=\"80\" fill=\"green\" />";
+        let svg = format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">
+                             {r}
+                           </svg>", w=100, h=80, r=rects);
+        Ok(svg)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use ::sym::ean13::*;
-    use ::sym::ean8::*;
-    use ::sym::ean_supp::*;
-    use ::sym::code39::*;
-    use ::sym::tf::*;
     use ::generators::svg::*;
+    use std::io::prelude::*;
+    use std::io::BufWriter;
     use std::fs::File;
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
+    const WRITE_TO_FILE: bool = true;
+
+    fn write_file(data: &str, file: &'static str) {
+        let path = open_file(file);
+        let mut writer = BufWriter::new(path);
+        writer.write(data.as_bytes()).unwrap();
+    }
 
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()
@@ -52,6 +63,8 @@ mod tests {
         let svg = SVG::new();
         let generated = svg.generate(&ean13.encode()[..], &mut path).unwrap();
 
-        assert_eq!(generated, 10);
+        if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
+
+//        assert_eq!(generated, "swag".to_owned());
     }
 }
