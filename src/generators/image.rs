@@ -106,9 +106,10 @@ impl Image {
 
         let mut bytes: Vec<u8> = vec![];
 
-        {
-            image::ImageLuma8(buffer).save(&mut bytes, format).unwrap();
-        }
+        // Here I am introducing a new scope to get around the borrow checker as I am only
+        // interested in this lines side-effect on `bytes`. I assume there is a better way
+        // to handle this?
+        {image::ImageLuma8(buffer).save(&mut bytes, format).unwrap();}
 
         Ok(bytes)
     }
@@ -130,7 +131,7 @@ mod tests {
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = true;
+    const WRITE_TO_FILE: bool = false;
 
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()

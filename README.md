@@ -83,6 +83,8 @@ extern crate barcoders;
 
 use barcoders::sym::code39::*;
 use barcoders::generators::image::*;
+use std::io::prelude::*;
+use std::io::BufWriter;
 use std::fs::File;
 use std::path::Path;
 
@@ -90,10 +92,13 @@ let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
 let png = Image::PNG{height: 80, xdim: 1};
 let encoded = barcode.encode();
 
-// Image generators save the file to the given path and return a u32 indicating
-// the number of bytes written to disk.
-let mut path = File::create(&Path::new("my_barcode.png")).unwrap();
-let bytes = png.generate(&encoded[..], &mut path).unwrap();
+// Image generators return a Result<Vec<u8>, &str) of encoded bytes.
+let bytes = png.generate(&encoded[..]).unwrap();
+
+// Which you can then save to disk.
+let file = File::create(&Path::new("my_barcode.png")).unwrap()
+let mut writer = BufWriter::new(file);
+writer.write(bytes).unwrap();
 
 // Generated file ↓ ↓ ↓
 ```
