@@ -15,14 +15,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "0.3.0"
+barcoders = "0.3.2"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate features:
 
 ```toml
 [dependencies]
-barcoders = {version = "0.3.0", features = ["image"]}
+barcoders = {version = "0.3.2", features = ["image"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -59,7 +59,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 * PNG (feature: `image`)
 * GIF (feature: `image`)
 * JPEG (feature: `image`)
-* More coming! (PostScript, SVG, etc)
+* More coming! (PostScript, etc)
 
 ## Examples
 
@@ -142,7 +142,7 @@ inspected for correctness.
 
 Full suite:
 ```
-$ cargo test --features="image ascii"
+$ cargo test --features="image svg ascii"
 ```
 
 Encoding only:
