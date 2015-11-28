@@ -97,9 +97,9 @@ let encoded = barcode.encode();
 let bytes = png.generate(&encoded[..]).unwrap();
 
 // Which you can then save to disk.
-let file = File::create(&Path::new("my_barcode.png")).unwrap()
+let file = File::create(&Path::new("my_barcode.png")).unwrap();
 let mut writer = BufWriter::new(file);
-writer.write(bytes).unwrap();
+writer.write(&bytes[..]).unwrap();
 
 // Generated file ↓ ↓ ↓
 ```
