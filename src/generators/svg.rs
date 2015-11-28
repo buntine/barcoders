@@ -1,15 +1,13 @@
 //! Functionality for generating SVG representations of barcodes.
 
-use std::fs::File;
-
 /// The SVG barcode generator type.
 #[derive(Copy, Clone, Debug)]
 pub struct SVG {
     /// The height of the barcode (```self.height``` pixels high for SVG).
-    pub height: usize,
+    pub height: u32,
     /// The X dimension. Specifies the width of the "narrow" bars. 
     /// For SVG, each will be ```self.xdim``` pixels wide.
-    pub xdim: usize,
+    pub xdim: u32,
 }
 
 impl SVG {
@@ -21,14 +19,27 @@ impl SVG {
         }
     }
 
+    fn rect(&self, style: u8, offset: usize) -> String {
+        let fill = match style {
+            1 => "black",
+            _ => "white",
+        };
+
+        format!("<rect x=\"{}\" y=\"0\" width=\"1\" height=\"{}\" fill=\"{}\" />",
+                offset, self.height, fill)
+    }
+
     /// Generates the given barcode. Returns a `Result<String, &str>` of the SVG data or an
     /// error message.
-    pub fn generate(&self, barcode: &[u8], path: &mut File) -> Result<String, &str> {
-        let rects = "<rect x=\"0\" y=\"0\" width=\"60\" height=\"80\" fill=\"blue\" />
-                     <rect x=\"60\" y=\"0\" width=\"40\" height=\"80\" fill=\"green\" />";
+    pub fn generate(&self, barcode: &[u8]) -> Result<String, &str> {
+        let width = (barcode.len() as u32) * self.xdim;
+        let rects: String = barcode.iter()
+                           .enumerate()
+                           .map(|(i, &n)| self.rect(n, i))
+                           .collect();
         let svg = format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">
                              {r}
-                           </svg>", w=100, h=80, r=rects);
+                           </svg>", w=width, h=self.height, r=rects);
         Ok(svg)
     }
 }
@@ -57,14 +68,12 @@ mod tests {
 
     #[test]
     fn ean_13_as_svg() {
-        let mut path = open_file("ean13.svg");
-
         let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
         let svg = SVG::new();
-        let generated = svg.generate(&ean13.encode()[..], &mut path).unwrap();
+        let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
 
-//        assert_eq!(generated, "swag".to_owned());
+        assert_eq!(generated.len(), 5413);
     }
 }

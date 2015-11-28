@@ -55,6 +55,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 ### Generators
 
 * ASCII (feature: `ascii`)
+* SVG (feature: `svg`)
 * PNG (feature: `image`)
 * GIF (feature: `image`)
 * JPEG (feature: `image`)
