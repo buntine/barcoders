@@ -15,14 +15,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "0.3.2"
+barcoders = "0.3.3"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate features:
 
 ```toml
 [dependencies]
-barcoders = {version = "0.3.2", features = ["image"]}
+barcoders = {version = "0.3.3", features = ["image", "svg"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -70,7 +70,7 @@ extern crate barcoders;
 use barcoders::sym::ean13::*;
 
 // Each encoder accepts a String to be encoded. Valid data is barcode-specific
-// and thus constructors return an Option<T>.
+// and thus constructors return an Result<T>.
 let barcode = EAN13::new("593456661897".to_owned()).unwrap();
 
 // The `encode` method returns a Vec<u8> of the binary representation of the
