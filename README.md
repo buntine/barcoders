@@ -114,7 +114,7 @@ use barcoders::sym::ean13::*;
 use barcoders::generators::ascii::*;
 
 let barcode = EAN13::new("750103131130".to_owned()).unwrap();
-let encoded: Vec<u8> = barcode.encode();
+let encoded = barcode.encode();
 
 // The ASCII generator is useful for testing purposes.
 let ascii = ASCII::new();

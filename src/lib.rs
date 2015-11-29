@@ -29,10 +29,11 @@
 //! functionality to be compiled into your app.
 //!
 //! * ASCII (feature: `ascii`)
+//! * SVG (feature: `svg`)
 //! * PNG (feature: `image`)
 //! * GIF (feature: `image`)
 //! * JPEG (feature: `image`)
-//! * More coming! (PostScript, SVG, etc)
+//! * More coming! (PostScript, etc)
 //!
 //! ## Examples
 //!
@@ -52,5 +53,6 @@
 #[cfg(feature = "image")]
 extern crate image;
 
+pub mod error;
 pub mod sym;
 pub mod generators;
