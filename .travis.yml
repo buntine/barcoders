@@ -17,8 +17,8 @@ before_script:
   export PATH=$HOME/.local/bin:$PATH
 script:
 - cargo build --features=ascii
-- cargo test --features=ascii
-- cargo doc --features="ascii image"
+- cargo test --features="ascii svg"
+- cargo doc --features="ascii image svg"
 after_success:
 - env COVERAGE_TESTING=1 travis-cargo coveralls --no-sudo
 - travis-cargo --only stable doc-upload
