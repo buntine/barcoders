@@ -19,14 +19,14 @@ impl SVG {
         }
     }
 
-    fn rect(&self, style: u8, offset: usize) -> String {
+    fn rect(&self, style: u8, offset: u32, width: u32) -> String {
         let fill = match style {
             1 => "black",
             _ => "white",
         };
 
-        format!("<rect x=\"{}\" y=\"0\" width=\"1\" height=\"{}\" fill=\"{}\" />",
-                offset, self.height, fill)
+        format!("<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"{}\" />",
+                offset, width, self.height, fill)
     }
 
     /// Generates the given barcode. Returns a `Result<String, &str>` of the SVG data or an
@@ -35,11 +35,14 @@ impl SVG {
         let width = (barcode.len() as u32) * self.xdim;
         let rects: String = barcode.iter()
                            .enumerate()
-                           .map(|(i, &n)| self.rect(n, i))
+                           .filter(|&(_, &n)| n == 1)
+                           .map(|(i, &n)| self.rect(n, (i as u32 * self.xdim), self.xdim))
                            .collect();
         let svg = format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">
+                             {s}
                              {r}
-                           </svg>", w=width, h=self.height, r=rects);
+                           </svg>", w=width, h=self.height, s=self.rect(0, 0, width), r=rects);
+
         Ok(svg)
     }
 }
@@ -47,6 +50,10 @@ impl SVG {
 #[cfg(test)]
 mod tests {
     use ::sym::ean13::*;
+    use ::sym::ean8::*;
+    use ::sym::code39::*;
+    use ::sym::ean_supp::*;
+    use ::sym::tf::*;
     use ::generators::svg::*;
     use std::io::prelude::*;
     use std::io::BufWriter;
@@ -54,7 +61,7 @@ mod tests {
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = true;
+    const WRITE_TO_FILE: bool = false;
 
     fn write_file(data: &str, file: &'static str) {
         let path = open_file(file);
@@ -74,6 +81,50 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
 
-        assert_eq!(generated.len(), 5413);
+        assert_eq!(generated.len(), 2928);
+    }
+
+    #[test]
+    fn ean_8_as_svg() {
+        let ean8 = EAN8::new("9998823".to_owned()).unwrap();
+        let svg = SVG::new();
+        let generated = svg.generate(&ean8.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean8.svg"); }
+
+        assert_eq!(generated.len(), 1976);
+    }
+
+    #[test]
+    fn code39_as_svg() {
+        let code39 = Code39::new("IGOT99PROBLEMS".to_owned()).unwrap();
+        let svg = SVG::new();
+        let generated = svg.generate(&code39.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
+
+        assert_eq!(generated.len(), 6514);
+    }
+
+    #[test]
+    fn ean_2_as_svg() {
+        let ean2 = EANSUPP::new("78".to_owned()).unwrap();
+        let svg = SVG::new();
+        let generated = svg.generate(&ean2.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean2.svg"); }
+
+        assert_eq!(generated.len(), 801);
+    }
+
+    #[test]
+    fn itf_as_svg() {
+        let itf = TF::interleaved("1234123488993344556677118".to_owned()).unwrap();
+        let svg = SVG{height: 200, xdim:3};
+        let generated = svg.generate(&itf.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "itf.svg"); }
+
+        assert_eq!(generated.len(), 7249);
     }
 }
