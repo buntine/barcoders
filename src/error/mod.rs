@@ -14,7 +14,8 @@ pub enum Error {
   Generate,
 }
 
-type Result<T> = ::std::result::Result<T, Error>;
+/// Alias-type for Result<T, barcoders::error::Error>.
+pub type Result<T> = ::std::result::Result<T, Error>;
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

@@ -8,7 +8,7 @@
 
 use sym::Parse;
 use sym::helpers;
-use error::Error;
+use error::Result;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 43 allowable character.
@@ -42,7 +42,7 @@ pub struct Code39 {
 }
 
 impl Code39 {
-    fn init(data: String, checksum: bool) -> Result<Code39, Error> {
+    fn init(data: String, checksum: bool) -> Result<Code39> {
         match Code39::parse(data) {
             Ok(d) => {
                 Ok(Code39 {
@@ -56,13 +56,13 @@ impl Code39 {
 
     /// Creates a new barcode.
     /// Returns Result<Code39, Error> indicating parse success.
-    pub fn new(data: String) -> Result<Code39, Error> {
+    pub fn new(data: String) -> Result<Code39> {
         Code39::init(data, false)
     }
 
     /// Creates a new barcode with an appended check-digit, calculated using modulo-43..
     /// Returns Result<Code39, Error> indicating parse success.
-    pub fn with_checksum(data: String) -> Result<Code39, Error> {
+    pub fn with_checksum(data: String) -> Result<Code39> {
         Code39::init(data, true)
     }
 

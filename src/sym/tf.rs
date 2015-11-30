@@ -9,7 +9,7 @@
 
 use sym::Parse;
 use sym::helpers;
-use error::Error;
+use error::Result;
 use std::ops::Range;
 use std::char;
 
@@ -40,7 +40,7 @@ impl TF {
     /// the data for encoding.
     ///
     /// Returns Result<TF::Interleaved, Error> indicating parse success.
-    pub fn interleaved(data: String) -> Result<TF, Error> {
+    pub fn interleaved(data: String) -> Result<TF> {
         match TF::parse(data) {
             Ok(d) => {
                 let mut digits: Vec<u8> = d.chars()
@@ -64,7 +64,7 @@ impl TF {
     /// Creates a new SFT barcode.
     ///
     /// Returns Result<TF::Standard, Error> indicating parse success.
-    pub fn standard(data: String) -> Result<TF, Error> {
+    pub fn standard(data: String) -> Result<TF> {
         match TF::parse(data) {
             Ok(d) => {
                 let digits: Vec<u8> = d.chars()

@@ -5,7 +5,7 @@
 
 use sym::Parse;
 use sym::helpers;
-use error::Error;
+use error::Result;
 use sym::ean13::EAN_ENCODINGS;
 use sym::ean13::EAN_LEFT_GUARD;
 use sym::ean13::EAN_MIDDLE_GUARD;
@@ -20,7 +20,7 @@ pub struct EAN8(Vec<u8>);
 impl EAN8 {
     /// Creates a new barcode.
     /// Returns Result<EAN8, String> indicating parse success.
-    pub fn new(data: String) -> Result<EAN8, Error> {
+    pub fn new(data: String) -> Result<EAN8> {
         match EAN8::parse(data) {
             Ok(d) => {
                 let digits = d.chars()

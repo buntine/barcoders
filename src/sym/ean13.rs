@@ -11,7 +11,7 @@
 
 use sym::Parse;
 use sym::helpers;
-use error::Error;
+use error::Result;
 use std::ops::Range;
 use std::char;
 
@@ -66,7 +66,7 @@ pub type JAN = EAN13;
 impl EAN13 {
     /// Creates a new barcode.
     /// Returns Result<EAN13, Error> indicating parse success.
-    pub fn new(data: String) -> Result<EAN13, Error> {
+    pub fn new(data: String) -> Result<EAN13> {
         match EAN13::parse(data) {
             Ok(d) => {
                 let digits = d.chars()

@@ -7,7 +7,7 @@
 //! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
 use sym::Parse;
-use error::Error;
+use error::{Error, Result};
 use sym::ean13::EAN_ENCODINGS;
 use sym::helpers;
 use std::ops::Range;
@@ -43,7 +43,7 @@ impl EANSUPP {
     /// Returns Result<EANSUPP, Error> indicating parse success.
     /// Either a EAN2 or EAN5 variant will be returned depending on
     /// the length of `data`.
-    pub fn new(data: String) -> Result<EANSUPP, Error> {
+    pub fn new(data: String) -> Result<EANSUPP> {
         match EANSUPP::parse(data) {
             Ok(d) => {
                 let digits: Vec<u8> = d.chars()
