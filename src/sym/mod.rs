@@ -15,33 +15,37 @@
 
 pub mod ean13;
 pub mod ean8;
-pub mod ean_supp;
-pub mod code39;
-pub mod tf;
+//pub mod ean_supp;
+//pub mod code39;
+//pub mod tf;
 mod helpers;
 
 use std::ops::Range;
 use std::iter::Iterator;
+use error::Error;
 
 trait Parse {
     fn valid_chars() -> Vec<char>;
     fn valid_len() -> Range<u32>;
 
-    fn parse(data: String) -> Result<String, String> {
+    fn parse(data: String) -> Result<String, Error> {
         let valid_chars = Self::valid_chars();
         let valid_len = Self::valid_len();
         let data_len = data.len() as u32;
 
         if data_len < valid_len.start || data_len > valid_len.end {
-            return Err(format!("Data does not fit within range of {}-{}",
-                               valid_len.start,
-                               valid_len.end - 1));
+            return Err(Error::Length);
         }
 
-        let bad_char = data.chars().find(|&c| valid_chars.iter().find(|&vc| *vc == c).is_none());
+        let bad_char = data
+            .chars()
+            .find(|&c| valid_chars
+                           .iter()
+                           .find(|&vc| *vc == c)
+                           .is_none());
 
         match bad_char {
-            Some(c) => Err(format!("Invalid character: {}", c)),
+            Some(_) => Err(Error::Character),
             None => Ok(data),
         }
     }

@@ -11,6 +11,7 @@
 
 use sym::Parse;
 use sym::helpers;
+use error::Error;
 use std::ops::Range;
 use std::char;
 
@@ -64,8 +65,8 @@ pub type JAN = EAN13;
 
 impl EAN13 {
     /// Creates a new barcode.
-    /// Returns Result<EAN13, String> indicating parse success.
-    pub fn new(data: String) -> Result<EAN13, String> {
+    /// Returns Result<EAN13, Error> indicating parse success.
+    pub fn new(data: String) -> Result<EAN13, Error> {
         match EAN13::parse(data) {
             Ok(d) => {
                 let digits = d.chars()
@@ -163,6 +164,7 @@ impl Parse for EAN13 {
 mod tests {
     use ::sym::ean13::*;
     use std::char;
+    use error::Error;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -187,14 +189,14 @@ mod tests {
     fn invalid_data_ean13() {
         let ean13 = EAN13::new("1234er123412".to_owned());
 
-        assert!(ean13.is_err());
+        assert_eq!(ean13.err().unwrap(), Error::Character)
     }
 
     #[test]
     fn invalid_len_ean13() {
         let ean13 = EAN13::new("1111112222222333333".to_owned());
 
-        assert!(ean13.is_err());
+        assert_eq!(ean13.err().unwrap(), Error::Length)
     }
 
     #[test]
