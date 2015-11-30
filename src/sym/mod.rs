@@ -15,9 +15,9 @@
 
 pub mod ean13;
 pub mod ean8;
-//pub mod ean_supp;
-//pub mod code39;
-//pub mod tf;
+pub mod ean_supp;
+pub mod code39;
+pub mod tf;
 mod helpers;
 
 use std::ops::Range;

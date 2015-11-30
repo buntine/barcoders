@@ -8,6 +8,7 @@
 
 use sym::Parse;
 use sym::helpers;
+use error::Error;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 43 allowable character.
@@ -41,7 +42,7 @@ pub struct Code39 {
 }
 
 impl Code39 {
-    fn init(data: String, checksum: bool) -> Result<Code39, String> {
+    fn init(data: String, checksum: bool) -> Result<Code39, Error> {
         match Code39::parse(data) {
             Ok(d) => {
                 Ok(Code39 {
@@ -54,14 +55,14 @@ impl Code39 {
     }
 
     /// Creates a new barcode.
-    /// Returns Result<Code39, String> indicating parse success.
-    pub fn new(data: String) -> Result<Code39, String> {
+    /// Returns Result<Code39, Error> indicating parse success.
+    pub fn new(data: String) -> Result<Code39, Error> {
         Code39::init(data, false)
     }
 
     /// Creates a new barcode with an appended check-digit, calculated using modulo-43..
-    /// Returns Result<Code39, String> indicating parse success.
-    pub fn with_checksum(data: String) -> Result<Code39, String> {
+    /// Returns Result<Code39, Error> indicating parse success.
+    pub fn with_checksum(data: String) -> Result<Code39, Error> {
         Code39::init(data, true)
     }
 
@@ -139,7 +140,8 @@ impl Parse for Code39 {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::code39::*;
+    use sym::code39::*;
+    use error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
@@ -158,14 +160,14 @@ mod tests {
     fn invalid_data_code39() {
         let code39 = Code39::new("1212s".to_owned());
 
-        assert!(code39.is_err());
+        assert_eq!(code39.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_code39() {
         let code39 = Code39::new("".to_owned());
 
-        assert!(code39.is_err());
+        assert_eq!(code39.err().unwrap(), Error::Length);
     }
 
     #[test]

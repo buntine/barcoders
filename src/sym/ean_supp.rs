@@ -7,6 +7,7 @@
 //! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
 use sym::Parse;
+use error::Error;
 use sym::ean13::EAN_ENCODINGS;
 use sym::helpers;
 use std::ops::Range;
@@ -39,10 +40,10 @@ pub enum EANSUPP {
 
 impl EANSUPP {
     /// Creates a new barcode.
-    /// Returns Result<EANSUPP, String> indicating parse success.
+    /// Returns Result<EANSUPP, Error> indicating parse success.
     /// Either a EAN2 or EAN5 variant will be returned depending on
     /// the length of `data`.
-    pub fn new(data: String) -> Result<EANSUPP, String> {
+    pub fn new(data: String) -> Result<EANSUPP, Error> {
         match EANSUPP::parse(data) {
             Ok(d) => {
                 let digits: Vec<u8> = d.chars()
@@ -52,7 +53,7 @@ impl EANSUPP {
                 match digits.len() {
                     2 => Ok(EANSUPP::EAN2(digits)),
                     5 => Ok(EANSUPP::EAN5(digits)),
-                    n => Err(format!("Invalid supplemental length: {}", n)),
+                    _ => Err(Error::Length),
                 }
             }
             Err(e) => Err(e),
@@ -145,7 +146,8 @@ impl Parse for EANSUPP {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean_supp::*;
+    use sym::ean_supp::*;
+    use error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
@@ -171,14 +173,14 @@ mod tests {
     fn invalid_data_ean2() {
         let ean2 = EANSUPP::new("AT".to_owned());
 
-        assert!(ean2.is_err());
+        assert_eq!(ean2.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_ean2() {
         let ean2 = EANSUPP::new("123".to_owned());
 
-        assert!(ean2.is_err());
+        assert_eq!(ean2.err().unwrap(), Error::Length);
     }
 
     #[test]

@@ -70,7 +70,7 @@ extern crate barcoders;
 use barcoders::sym::ean13::*;
 
 // Each encoder accepts a String to be encoded. Valid data is barcode-specific
-// and thus constructors return an Result<T>.
+// and thus constructors return an Result<T, barcoders::error::Error>.
 let barcode = EAN13::new("593456661897".to_owned()).unwrap();
 
 // The `encode` method returns a Vec<u8> of the binary representation of the

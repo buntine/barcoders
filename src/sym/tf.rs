@@ -9,6 +9,7 @@
 
 use sym::Parse;
 use sym::helpers;
+use error::Error;
 use std::ops::Range;
 use std::char;
 
@@ -38,8 +39,8 @@ impl TF {
     /// If the length of the given data is odd, a checksum value will be computed and appended to
     /// the data for encoding.
     ///
-    /// Returns Result<TF::Interleaved, String> indicating parse success.
-    pub fn interleaved(data: String) -> Result<TF, String> {
+    /// Returns Result<TF::Interleaved, Error> indicating parse success.
+    pub fn interleaved(data: String) -> Result<TF, Error> {
         match TF::parse(data) {
             Ok(d) => {
                 let mut digits: Vec<u8> = d.chars()
@@ -62,8 +63,8 @@ impl TF {
 
     /// Creates a new SFT barcode.
     ///
-    /// Returns Result<TF::Standard, String> indicating parse success.
-    pub fn standard(data: String) -> Result<TF, String> {
+    /// Returns Result<TF::Standard, Error> indicating parse success.
+    pub fn standard(data: String) -> Result<TF, Error> {
         match TF::parse(data) {
             Ok(d) => {
                 let digits: Vec<u8> = d.chars()
@@ -175,7 +176,8 @@ impl Parse for TF {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::tf::*;
+    use sym::tf::*;
+    use error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
@@ -209,14 +211,14 @@ mod tests {
     fn invalid_data_itf() {
         let itf = TF::interleaved("1234er123412".to_owned());
 
-        assert!(itf.is_err());
+        assert_eq!(itf.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_data_stf() {
         let stf = TF::standard("WORDUP".to_owned());
 
-        assert!(stf.is_err());
+        assert_eq!(stf.err().unwrap(), Error::Character);
     }
 
     #[test]
