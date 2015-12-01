@@ -23,6 +23,14 @@ use image::GenericImage;
 use image::ImageBuffer;
 use error::{Result, Error};
 
+#[derive(Copy, Clone, Debug)]
+pub enum Rotation {
+    Zero,
+    Ninety,
+    OneEighty,
+    TwoSeventy,
+}
+
 /// The image generator type.
 #[derive(Copy, Clone, Debug)]
 pub enum Image {
@@ -33,6 +41,8 @@ pub enum Image {
         /// The X dimension. Specifies the width of the "narrow" bars. 
         /// For GIF, each will be ```self.xdim``` pixels wide.
         xdim: u32,
+        /// The rotation to apply to the generated barcode.
+        rotation: Rotation,
     },
     /// PNG image generator type.
     PNG {
@@ -41,6 +51,8 @@ pub enum Image {
         /// The X dimension. Specifies the width of the "narrow" bars. 
         /// For PNG, each will be ```self.xdim``` pixels wide.
         xdim: u32,
+        /// The rotation to apply to the generated barcode.
+        rotation: Rotation,
     },
     /// JPEG image generator type.
     JPEG {
@@ -49,6 +61,8 @@ pub enum Image {
         /// The X dimension. Specifies the width of the "narrow" bars. 
         /// For JPEG, each will be ```self.xdim``` pixels wide.
         xdim: u32,
+        /// The rotation to apply to the generated barcode.
+        rotation: Rotation,
     },
 }
 
@@ -58,6 +72,7 @@ impl Image {
         Image::GIF {
             height: 80,
             xdim: 1,
+            rotation: Rotation::Zero,
         }
     }
 
@@ -66,6 +81,7 @@ impl Image {
         Image::PNG {
             height: 80,
             xdim: 1,
+            rotation: Rotation::Zero,
         }
     }
 
@@ -74,16 +90,17 @@ impl Image {
         Image::JPEG {
             height: 80,
             xdim: 1,
+            rotation: Rotation::Zero,
         }
     }
 
     /// Generates the given barcode. Returns a `Result<Vec<u8>, Error>` of the encoded bytes or
     /// an error message.
     pub fn generate(&self, barcode: &[u8]) -> Result<Vec<u8>> {
-        let (xdim, height, format) = match *self {
-            Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
-            Image::PNG{height: h, xdim: x} => (x, h, image::PNG),
-            Image::JPEG{height: h, xdim: x} => (x, h, image::JPEG),
+        let (xdim, height, rotation, format) = match *self {
+            Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
+            Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r, image::PNG),
+            Image::JPEG{height: h, xdim: x, rotation: r} => (x, h, r, image::JPEG),
         };
 
         let width = (barcode.len() as u32) * xdim;
@@ -107,7 +124,16 @@ impl Image {
             pos = 0;
         }
 
-        match image::ImageLuma8(buffer).save(&mut bytes, format) {
+        let mut img = image::ImageLuma8(buffer);
+
+        img = match rotation {
+            Rotation::Ninety => img.rotate90(),
+            Rotation::OneEighty => img.rotate180(),
+            Rotation::TwoSeventy => img.rotate270(),
+            Rotation::Zero => img,
+        };
+
+        match img.save(&mut bytes, format) {
             Ok(_) => Ok(bytes),
             _ => Err(Error::Generate),
         }
@@ -118,19 +144,19 @@ impl Image {
 mod tests {
     extern crate image;
 
-    use ::sym::ean13::*;
-    use ::sym::ean8::*;
-    use ::sym::code39::*;
-    use ::sym::ean_supp::*;
-    use ::sym::tf::*;
-    use ::generators::image::*;
+    use sym::ean13::*;
+    use sym::ean8::*;
+    use sym::code39::*;
+    use sym::ean_supp::*;
+    use sym::tf::*;
+    use generators::image::*;
     use std::io::prelude::*;
     use std::io::BufWriter;
     use std::fs::File;
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = false;
+    const WRITE_TO_FILE: bool = true;
 
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()
@@ -159,6 +185,7 @@ mod tests {
         let png = Image::PNG {
             height: 100,
             xdim: 1,
+            rotation: Rotation::Zero,
         };
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
@@ -168,11 +195,27 @@ mod tests {
     }
 
     #[test]
+    fn rotated_ean_13_as_png() {
+        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 100,
+            xdim: 1,
+            rotation: Rotation::Ninety,
+        };
+        let generated = png.generate(&ean13.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean13_90.png"); }
+
+        assert_eq!(generated.len(), 249);
+    }
+
+    #[test]
     fn ean_13_as_jpeg() {
         let ean13 = EAN13::new("999988881234".to_owned()).unwrap();
         let jpeg = Image::JPEG {
             height: 100,
             xdim: 3,
+            rotation: Rotation::Zero,
         };
         let generated = jpeg.generate(&ean13.encode()[..]).unwrap();
 
@@ -187,6 +230,7 @@ mod tests {
         let png = Image::PNG {
             height: 60,
             xdim: 1,
+            rotation: Rotation::Zero,
         };
         let generated = png.generate(&code39.encode()[..]).unwrap();
 
@@ -201,6 +245,7 @@ mod tests {
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
+            rotation: Rotation::Zero,
         };
         let generated = gif.generate(&code39.encode()[..]).unwrap();
 
@@ -210,11 +255,27 @@ mod tests {
     }
 
     #[test]
+    fn rotated_code39_as_gif() {
+        let code39 = Code39::new("HELLOWORLD".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::OneEighty,
+        };
+        let generated = gif.generate(&code39.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code39_180.gif"); }
+
+        assert_eq!(generated.len(), 1831);
+    }
+
+    #[test]
     fn code39_as_jpeg() {
         let code39 = Code39::new("SWAGLORDTHE3RD".to_owned()).unwrap();
         let jpeg = Image::JPEG {
             height: 160,
             xdim: 1,
+            rotation: Rotation::Zero,
         };
         let generated = jpeg.generate(&code39.encode()[..]).unwrap();
 
@@ -229,6 +290,7 @@ mod tests {
         let png = Image::PNG {
             height: 70,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = png.generate(&ean8.encode()[..]).unwrap();
 
@@ -238,11 +300,27 @@ mod tests {
     }
 
     #[test]
+    fn rotated_ean8_as_png() {
+        let ean8 = EAN8::new("5512345".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 70,
+            xdim: 2,
+            rotation: Rotation::TwoSeventy,
+        };
+        let generated = png.generate(&ean8.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean8_270.png"); }
+
+        assert_eq!(generated.len(), 303);
+    }
+
+    #[test]
     fn ean8_as_gif() {
         let ean8 = EAN8::new("9992227".to_owned()).unwrap();
         let gif = Image::GIF {
             height: 70,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = gif.generate(&ean8.encode()[..]).unwrap();
 
@@ -257,6 +335,7 @@ mod tests {
         let jpeg = Image::JPEG {
             height: 70,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = jpeg.generate(&ean8.encode()[..]).unwrap();
 
@@ -271,6 +350,7 @@ mod tests {
         let png = Image::PNG {
             height: 70,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = png.generate(&ean2.encode()[..]).unwrap();
 
@@ -285,6 +365,7 @@ mod tests {
         let gif = Image::GIF {
             height: 70,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = gif.generate(&ean5.encode()[..]).unwrap();
 
@@ -299,6 +380,7 @@ mod tests {
         let jpeg = Image::JPEG {
             height: 140,
             xdim: 5,
+            rotation: Rotation::Zero,
         };
         let generated = jpeg.generate(&ean5.encode()[..]).unwrap();
 
@@ -313,6 +395,7 @@ mod tests {
         let png = Image::PNG {
             height: 100,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = png.generate(&itf.encode()[..]).unwrap();
 
@@ -327,6 +410,7 @@ mod tests {
         let png = Image::PNG {
             height: 100,
             xdim: 2,
+            rotation: Rotation::Zero,
         };
         let generated = png.generate(&stf.encode()[..]).unwrap();
 
@@ -341,6 +425,7 @@ mod tests {
         let gif = Image::GIF {
             height: 130,
             xdim: 1,
+            rotation: Rotation::Zero,
         };
         let generated = gif.generate(&itf.encode()[..]).unwrap();
 
@@ -355,6 +440,7 @@ mod tests {
         let jpeg = Image::JPEG {
             height: 130,
             xdim: 1,
+            rotation: Rotation::Zero,
         };
         let generated = jpeg.generate(&itf.encode()[..]).unwrap();
 
