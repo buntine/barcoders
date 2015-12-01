@@ -6,6 +6,7 @@
 //! or running the test suite.
 
 use std::iter::repeat;
+use error::Result;
 
 /// The ASCII barcode generator type.
 #[derive(Copy, Clone, Debug)]
@@ -35,8 +36,8 @@ impl ASCII {
                .collect()
     }
 
-    /// Generates the given barcode. Returns a `Result<String, &str>` indicating success.
-    pub fn generate(&self, barcode: &[u8]) -> Result<String, &str> {
+    /// Generates the given barcode. Returns a `Result<String, Error>` indicating success.
+    pub fn generate(&self, barcode: &[u8]) -> Result<String> {
         let mut output = String::new();
         let row = self.generate_row(&barcode);
 

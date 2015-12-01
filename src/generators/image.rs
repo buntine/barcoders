@@ -21,6 +21,7 @@ extern crate image;
 
 use image::GenericImage;
 use image::ImageBuffer;
+use error::{Result, Error};
 
 /// The image generator type.
 #[derive(Copy, Clone, Debug)]
@@ -76,9 +77,9 @@ impl Image {
         }
     }
 
-    /// Generates the given barcode. Returns a `Result<Vec<u8>, &str>` of the encoded bytes or
+    /// Generates the given barcode. Returns a `Result<Vec<u8>, Error>` of the encoded bytes or
     /// an error message.
-    pub fn generate(&self, barcode: &[u8]) -> Result<Vec<u8>, &str> {
+    pub fn generate(&self, barcode: &[u8]) -> Result<Vec<u8>> {
         let (xdim, height, format) = match *self {
             Image::GIF{height: h, xdim: x} => (x, h, image::GIF),
             Image::PNG{height: h, xdim: x} => (x, h, image::PNG),
@@ -108,7 +109,7 @@ impl Image {
 
         match image::ImageLuma8(buffer).save(&mut bytes, format) {
             Ok(_) => Ok(bytes),
-            _ => Err("Could not save image data to buffer"),
+            _ => Err(Error::Generate),
         }
     }
 }

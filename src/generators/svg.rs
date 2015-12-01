@@ -1,5 +1,7 @@
 //! Functionality for generating SVG representations of barcodes.
 
+use error::Result;
+
 /// The SVG barcode generator type.
 #[derive(Copy, Clone, Debug)]
 pub struct SVG {
@@ -29,9 +31,9 @@ impl SVG {
                 offset, width, self.height, fill)
     }
 
-    /// Generates the given barcode. Returns a `Result<String, &str>` of the SVG data or an
+    /// Generates the given barcode. Returns a `Result<String, Error>` of the SVG data or an
     /// error message.
-    pub fn generate(&self, barcode: &[u8]) -> Result<String, &str> {
+    pub fn generate(&self, barcode: &[u8]) -> Result<String> {
         let width = (barcode.len() as u32) * self.xdim;
         let rects: String = barcode.iter()
                            .enumerate()
