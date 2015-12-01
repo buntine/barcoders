@@ -90,7 +90,7 @@ use std::fs::File;
 use std::path::Path;
 
 let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
-let png = Image::PNG{height: 80, xdim: 1};
+let png = Image::PNG{height: 80, xdim: 1, rotation: Rotation::Zero};
 let encoded = barcode.encode();
 
 // Image generators return a Result<Vec<u8>, &str) of encoded bytes.
