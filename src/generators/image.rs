@@ -23,11 +23,16 @@ use image::GenericImage;
 use image::ImageBuffer;
 use error::{Result, Error};
 
+/// Possible rotation values for images.
 #[derive(Copy, Clone, Debug)]
 pub enum Rotation {
+    /// No rotation. This is the default.
     Zero,
+    /// Rotated 90 degrees.
     Ninety,
+    /// Rotated 180 degrees.
     OneEighty,
+    /// Rotated 270 degrees.
     TwoSeventy,
 }
 
@@ -156,7 +161,7 @@ mod tests {
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = true;
+    const WRITE_TO_FILE: bool = false;
 
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()
