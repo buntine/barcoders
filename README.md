@@ -15,14 +15,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "0.3.4"
+barcoders = "0.3.5"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate features:
 
 ```toml
 [dependencies]
-barcoders = {version = "0.3.4", features = ["image", "svg"]}
+barcoders = {version = "0.3.5", features = ["image", "svg"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.

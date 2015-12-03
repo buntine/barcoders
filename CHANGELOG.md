@@ -12,7 +12,7 @@ Possible log types:
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
 
-### UNRELEASED
+### v0.3.5 (2015-12-03)
 
 - [added] Rotation support for PNG, GIF, JPEG image generators.
 - [added] Error type for generators.
