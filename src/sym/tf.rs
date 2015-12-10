@@ -121,7 +121,7 @@ impl TF {
                                      })
                                      .collect();
 
-        helpers::join_vecs(&bars[..])
+        helpers::join_iters(bars.iter())
     }
 
     fn char_widths(&self, d: &u8) -> &'static str {
@@ -144,7 +144,7 @@ impl TF {
                                        .map(|c| self.interleave(c[0], c[1]))
                                        .collect();
 
-        helpers::join_vecs(&weaves[..])
+        helpers::join_iters(weaves.iter())
     }
 
     /// Encodes the barcode.
