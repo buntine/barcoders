@@ -1,5 +1,5 @@
 /// Joins and flattens the given slice of &[u8] slices into a Vec<u8>.
-///
+/// TODO: Work out how to use join_iters with slices and then remove this function.
 pub fn join_slices(slices: &[&[u8]]) -> Vec<u8> {
     slices.iter()
           .flat_map(|b| b.into_iter())
