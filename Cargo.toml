@@ -19,5 +19,5 @@ svg = []
 dev = ["clippy"]
 
 [dependencies]
-image = {version = "0.5.3", optional = true}
+image = {version = "0.5.4", optional = true}
 clippy = {version = "0.0.24", optional = true}

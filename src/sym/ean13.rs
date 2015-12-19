@@ -123,7 +123,7 @@ impl EAN13 {
                                        .map(|(d, s)| self.char_encoding(*s, &d))
                                        .collect();
 
-        helpers::join_arrays(&slices[..])
+        helpers::join_iters(slices.iter())
     }
 
     fn right_payload(&self) -> Vec<u8> {
@@ -132,7 +132,7 @@ impl EAN13 {
                                        .map(|d| self.char_encoding(2, &d))
                                        .collect();
 
-        helpers::join_arrays(&slices[..])
+        helpers::join_iters(slices.iter())
     }
 
     /// Encodes the barcode.
