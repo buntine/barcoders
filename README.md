@@ -22,7 +22,7 @@ If you want to generate barcodes into a particular format, turn on the appropria
 
 ```toml
 [dependencies]
-barcoders = {version = "0.3.5", features = ["image", "svg"]}
+barcoders = {version = "0.3.5", features = ["ascii", "svg"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -78,7 +78,7 @@ let barcode = EAN13::new("593456661897".to_owned()).unwrap();
 let encoded: Vec<u8> = barcode.encode();
 ```
 
-### Image generation
+### Image (GIF, JPEG, PNG) generation
 ```rust
 extern crate barcoders;
 
@@ -104,6 +104,31 @@ writer.write(&bytes[..]).unwrap();
 // Generated file ↓ ↓ ↓
 ```
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
+
+
+### SVG generation
+
+SVG is similar to the other image types, but I've supplied it as a separate feature as it doesn't require third-party dependencies.
+
+```rust
+extern crate barcoders;
+
+use barcoders::sym::code39::*;
+use barcoders::generators::svg::*;
+use std::io::prelude::*;
+use std::io::BufWriter;
+use std::fs::File;
+use std::path::Path;
+
+let barcode = Code39::new("56dFU4A777H".to_owned()).unwrap();
+let png = SVG{height: 200, xdim: 3};
+let encoded = barcode.encode();
+let data: String = png.generate(&encoded[..]).unwrap();
+
+let file = File::create(&Path::new("my_barcode.svg")).unwrap();
+let mut writer = BufWriter::new(file);
+writer.write(data.as_bytes()).unwrap();
+```
 
 
 ### ASCII generation

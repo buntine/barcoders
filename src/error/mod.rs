@@ -1,4 +1,4 @@
-//! Error types.
+//! Custom error types.
 
 use std::fmt;
 use std::error::Error as StdError;
