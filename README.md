@@ -120,7 +120,7 @@ use std::io::BufWriter;
 use std::fs::File;
 use std::path::Path;
 
-let barcode = Code39::new("56dFU4A777H".to_owned()).unwrap();
+let barcode = Code39::new("56DFU4A777H".to_owned()).unwrap();
 let png = SVG{height: 200, xdim: 3};
 let encoded = barcode.encode();
 let data: String = png.generate(&encoded[..]).unwrap();
