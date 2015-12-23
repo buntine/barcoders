@@ -8,11 +8,11 @@ pub fn join_slices(slices: &[&[u8]]) -> Vec<u8> {
 }
 
 /// Joins and flattens the given iterator of iterables into a Vec<u8>.
-pub fn join_iters<'a, T: Iterator>(vecs: T) -> Vec<u8>
+pub fn join_iters<'a, T: Iterator>(iters: T) -> Vec<u8>
         where T::Item: IntoIterator<Item=&'a u8> {
-    vecs.flat_map(|b| b.into_iter())
-        .cloned()
-        .collect()
+    iters.flat_map(|b| b.into_iter())
+         .cloned()
+         .collect()
 }
 
 /// Calculates the checksum digit using a modulo-10 weighting algorithm.
