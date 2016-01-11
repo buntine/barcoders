@@ -8,7 +8,7 @@ repository = "https://github.com/buntine/barcoders"
 documentation = "http://buntine.github.io/barcoders/barcoders/index.html"
 readme = "README.md"
 keywords = ["barcode", "barcodes", "barcode-encoding"]
-license = "MIT"
+license = "MIT OR Apache-2.0"
 exclude = [
     "media/*",
 ]
