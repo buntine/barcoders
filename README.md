@@ -93,7 +93,7 @@ let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
 let png = Image::PNG{height: 80, xdim: 1, rotation: Rotation::Zero};
 let encoded = barcode.encode();
 
-// Image generators return a Result<Vec<u8>, &str) of encoded bytes.
+// Image generators return a Result<Vec<u8>, barcoders::error::Error) of encoded bytes.
 let bytes = png.generate(&encoded[..]).unwrap();
 
 // Which you can then save to disk.
