@@ -9,7 +9,7 @@
 //! use barcoders::generators::image::*;
 //!
 //! // Specify your own struct fields.
-//! let png = Image::PNG{height: 80, xdim: 1};
+//! let png = Image::PNG{height: 80, xdim: 1, rotation: Rotation::Zero};
 //!
 //! // Or use the constructor for defaults.
 //! let png = Image::png();
