@@ -11,6 +11,10 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.3.6 (2016-01-04)
+
+- [changed] Relicensed to dual MIT/APACHE
+- [changed] Updated dependencies to latest stable sub-versions
 
 ### v0.3.5 (2015-12-03)
 
