@@ -22,14 +22,14 @@ impl Code128 {
     /// Returns Result<Code128, Error> indicating parse success.
     pub fn new(data: String) -> Result<Code128> {
         match Code128::parse(data) {
-            Ok(d) => Ok(Code128(d.chars().collect()))
+            Ok(d) => Ok(Code128(d.chars().collect())),
             Err(e) => Err(e),
         }
     }
 
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[char] {
-        &self.data[..]
+        &self.0[..]
     }
 
     /// Calculates the checksum character using a modulo-103 algorithm.
@@ -56,7 +56,7 @@ impl Code128 {
     fn payload(&self) -> Vec<u8> {
         let mut enc = vec![0];
 
-        for c in &self.data {
+        for c in &self.0 {
             self.push_encoding(&mut enc, self.char_encoding(&c));
         }
 
@@ -96,7 +96,7 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128 = Code128::new("12345".to_owned());
+        let code128 = Code128::new("12120".to_owned());
 
         assert!(code128.is_ok());
     }
@@ -117,8 +117,8 @@ mod tests {
 
     #[test]
     fn code128_raw_data() {
-        let code128 = Code128::new("12345".to_owned()).unwrap();
+        let code128 = Code128::new("12001".to_owned()).unwrap();
 
-        assert_eq!(code128.raw_data(), &['1', '2', '3', '4', '5']);
+        assert_eq!(code128.raw_data(), &['1', '2', '0', '0', '1']);
     }
 }
