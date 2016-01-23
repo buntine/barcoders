@@ -1,14 +1,16 @@
 //! Encoder for Code128 barcodes.
 //!
-//! Code128 is a high-density symbology that allows for the encoding of alphanumeric data. It's
-//! very popular and supported by most scanners.
+//! Code128 is a high-density symbology that allows for the encoding of alphanumeric data along
+//! with many special characters. Code128 also offers double-density encoding of digits.
+//!
+//! It's very popular and supported by most scanners.
 
 use sym::Parse;
 use sym::helpers;
 use error::Result;
 use std::ops::Range;
 
-// Character -> Binary mappings for each of the allowable character.
+// Character -> Binary mappings for each of the allowable characters.
 const CODE128_CHARS: [(char, [u8; 11]); 3] = [
     ('0', [1,0,1,0,0,1,1,0,1,1,0]), ('1', [1,1,0,1,0,0,1,0,1,0,1]), ('2', [1,0,1,1,0,0,1,0,1,0,1]),
 ];
