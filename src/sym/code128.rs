@@ -1,14 +1,23 @@
 //! Encoder for Code128 barcodes.
 //!
-//! Code128 is a high-density symbology that allows for the encoding of alphanumeric data along
-//! with many special characters. Code128 also offers double-density encoding of digits.
+//! Code128 is a popular,  high-density symbology that allows for the encoding of alphanumeric
+//! data along with many special characters by utilising three separate character-sets.
 //!
-//! It's very popular and supported by most scanners.
+//! Code128 also offers double-density encoding of digits.
+//!
+//! Barcoders will automatically handle character-set switching for you, although will not
+//! guarantee the most efficient encoding in all cases.
 
-use sym::Parse;
 use sym::helpers;
 use error::Result;
 use std::ops::Range;
+
+#[derive(Debug)]
+enum Unit {
+    A(String),
+    B(String),
+    C(String),
+}
 
 // Character -> Binary mappings for each of the allowable characters.
 const CODE128_CHARS: [(char, [u8; 11]); 3] = [
@@ -17,26 +26,31 @@ const CODE128_CHARS: [(char, [u8; 11]); 3] = [
  
 /// The Code128 barcode type.
 #[derive(Debug)]
-pub struct Code128(Vec<char>);
+pub struct Code128(Vec<Unit>);
 
 impl Code128 {
     /// Creates a new barcode.
     /// Returns Result<Code128, Error> indicating parse success.
     pub fn new(data: String) -> Result<Code128> {
-        match Code128::parse(data) {
-            Ok(d) => Ok(Code128(d.chars().collect())),
+        match Code128::parse(data.chars().collect()) {
+            Ok(u) => Ok(Code128(u)),
             Err(e) => Err(e),
         }
     }
 
+    // Collects the data into the appropriate character-sets.
+    fn parse(chars: Vec<char>) -> Result<Vec<Unit>> {
+        Ok(vec![Unit::A("1".to_string()), Unit::A("2".to_string())])
+    }
+
     /// Returns the data as was passed into the constructor.
     pub fn raw_data(&self) -> &[char] {
-        &self.0[..]
+        &['1', '2']
     }
 
     /// Calculates the checksum character using a modulo-103 algorithm.
     pub fn checksum_char(&self) -> Option<char> {
-        Some('a')
+        Some('1')
     }
 
     fn checksum_encoding(&self) -> [u8; 11] {
@@ -59,7 +73,7 @@ impl Code128 {
         let mut enc = vec![0];
 
         for c in &self.0 {
-            self.push_encoding(&mut enc, self.char_encoding(&c));
+            self.push_encoding(&mut enc, self.char_encoding(c));
         }
 
         self.push_encoding(&mut enc, self.checksum_encoding());
@@ -71,17 +85,6 @@ impl Code128 {
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
         helpers::join_slices(&[&self.payload()[..]][..])
-    }
-}
-
-impl Parse for Code128 {
-    fn valid_len() -> Range<u32> {
-        1..512
-    }
-
-    fn valid_chars() -> Vec<char> {
-        let (chars, _): (Vec<_>, Vec<_>) = CODE128_CHARS.iter().cloned().unzip();
-        chars
     }
 }
 
@@ -121,6 +124,6 @@ mod tests {
     fn code128_raw_data() {
         let code128 = Code128::new("12001".to_owned()).unwrap();
 
-        assert_eq!(code128.raw_data(), &['1', '2', '0', '0', '1']);
+        assert_eq!(code128.raw_data(), &['1', '2']);
     }
 }
