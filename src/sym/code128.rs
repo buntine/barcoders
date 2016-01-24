@@ -19,8 +19,8 @@ pub enum Unit {
 }
 
 // Character -> Binary mappings for each of the allowable characters.
-const CODE128_CHARS: [(char, [u8; 11]); 3] = [
-    ('0', [1,0,1,0,0,1,1,0,1,1,0]), ('1', [1,1,0,1,0,0,1,0,1,0,1]), ('2', [1,0,1,1,0,0,1,0,1,0,1]),
+const CODE128_CHARS: [(&'static str, [u8; 11]); 3] = [
+    ("0", [1,0,1,0,0,1,1,0,1,1,0]), ("1", [1,1,0,1,0,0,1,0,1,0,1]), ("2", [1,0,1,1,0,0,1,0,1,0,1]),
 ];
  
 /// The Code128 barcode type.
