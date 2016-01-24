@@ -5,8 +5,23 @@
 //!
 //! Code128 also offers double-density encoding of digits.
 //!
-//! Barcoders will automatically handle character-set switching for you, although will not
-//! guarantee the most efficient encoding in all cases.
+//! Barcoders provides special syntax for specifying the character set(s) which should be used in
+//! the barcode:
+//!
+//!   \a => Switch to character-set A
+//!   \b => Switch to character-set B
+//!   \c => Switch to character-set C
+//!
+//! As an example, this barcode uses character-set B:
+//!   \bHE1234A*1
+//!
+//! And this one starts at character-set A and then switches to C to encode the digits more
+//! effectively:
+//!   \aHE@$A\c123456
+//!
+//! To actually use a back-slash in the barcore data you should use two:
+//!
+//!   \a1234\\45AA
 
 use sym::helpers;
 use error::Result;
@@ -18,11 +33,21 @@ pub enum Unit {
     C(String),
 }
 
-// Character -> Binary mappings for each of the allowable characters.
-const CODE128_CHARS: [(&'static str, [u8; 11]); 3] = [
+// Character -> Binary mappings for each of the allowable characters in character-set A.
+const CODE128_CHARS_A: [(&'static str, [u8; 11]); 3] = [
     ("0", [1,0,1,0,0,1,1,0,1,1,0]), ("1", [1,1,0,1,0,0,1,0,1,0,1]), ("2", [1,0,1,1,0,0,1,0,1,0,1]),
 ];
- 
+
+// Character -> Binary mappings for each of the allowable characters in character-set B.
+const CODE128_CHARS_B: [(&'static str, [u8; 11]); 3] = [
+    ("A", [1,0,1,0,0,1,1,0,1,1,0]), ("B", [1,1,0,1,0,0,1,0,1,0,1]), ("C", [1,0,1,1,0,0,1,0,1,0,1]),
+];
+
+// Character -> Binary mappings for each of the allowable characters in character-set C.
+const CODE128_CHARS_C: [(&'static str, [u8; 11]); 3] = [
+    ("00", [1,0,1,0,0,1,1,0,1,1,0]), ("01", [1,1,0,1,0,0,1,0,1,0,1]), ("02", [1,0,1,1,0,0,1,0,1,0,1]),
+];
+
 /// The Code128 barcode type.
 #[derive(Debug)]
 pub struct Code128(Vec<Unit>);
