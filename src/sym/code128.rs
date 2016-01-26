@@ -255,10 +255,10 @@ mod tests {
         assert_eq!(code128_b.err().unwrap(), Error::Character);
     }
 
-    #[test]
-    fn code128_encode() {
-        let code128_a = Code128::new("À !! Ć0201".to_owned()).unwrap();
-
-        assert_eq!(collapse_vec(code128_a.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_owned());
-    }
+//    #[test]
+//    fn code128_encode() {
+//        let code128_a = Code128::new("À !! Ć0201".to_owned()).unwrap();
+//
+//        assert_eq!(collapse_vec(code128_a.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_owned());
+//    }
 }
