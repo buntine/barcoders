@@ -39,7 +39,7 @@ pub enum Unit {
 
 type Encoding = [u8; 11];
 
-pub enum UnitType {
+pub enum CharacterSet {
     A,
     B,
     C,
@@ -68,9 +68,25 @@ impl Code128 {
 
     // Tokenizes and collects the data into the appropriate character-sets.
     fn parse(chars: Vec<char>) -> Result<Vec<Unit>> {
+        let mut units: Vec<Unit> = vec![];
+        let mut char_set: Option<CharacterSet> = None;
+        let mut carry: Option<u32> = None;
+
+        for ch in chars {
+            match ch {
+                'À' => {},
+                'Ɓ' => {},
+                'Ć' => {},
+                d if d.is_digit(10) => {},
+                _ => {},
+            }
+        }
+
+        Ok(units)
+
 //        let mut units: Vec<Encoding> = vec![];
 //        let mut control_char = false;
-//        let mut unit_type: Option<UnitType> = None;
+//        let mut unit_type: Option<CharacterSet> = None;
 //        let mut carry: Option<u32> = None;
 //
 //        for ch in chars {
@@ -92,7 +108,7 @@ impl Code128 {
 //                },
 //                d if d.is_digit(10) => {
 //                    match carry {
-//                        Some(c) if unit_type == UnitType::C => {
+//                        Some(c) if unit_type == CharacterSet::C => {
 //                            units.pop();
 //
 //                            let b = try!(Code128::unit_encoding("00", ut));
@@ -103,11 +119,11 @@ impl Code128 {
 //                        }
 //                    }
 //                },
-//                'a' if control_char && (unit_type == Some(UnitType::B) || unit_type == Some(UnitType::C)) => {
+//                'a' if control_char && (unit_type == Some(CharacterSet::B) || unit_type == Some(CharacterSet::C)) => {
 //                }
-//                'b' if control_char && (unit_type == Some(UnitType::A) || unit_type == Some(UnitType::C)) => {
+//                'b' if control_char && (unit_type == Some(CharacterSet::A) || unit_type == Some(CharacterSet::C)) => {
 //                }
-//                'c' if control_char && (unit_type == Some(UnitType::A) || unit_type == Some(UnitType::B)) => {
+//                'c' if control_char && (unit_type == Some(CharacterSet::A) || unit_type == Some(CharacterSet::B)) => {
 //                }
 //                _ => {
 //                    carry = None;
@@ -117,9 +133,7 @@ impl Code128 {
 //            }
 //        }
 //
-//        units
-
-        Ok(vec![Unit::A(0)])
+//        Ok(units)
     }
 
     /// Calculates the checksum unit using a modulo-103 algorithm.
