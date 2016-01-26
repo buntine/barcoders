@@ -5,27 +5,27 @@
 //!
 //! Code128 also offers double-density encoding of digits.
 //!
-//! Barcoders provides special syntax for specifying the character set(s) which should be used in
-//! the barcode:
+//! Barcoders provides special Unicode syntax for specifying the character set(s) which should be
+//! used in the barcode:
 //!
-//!   \a => Switch to character-set A
-//!   \b => Switch to character-set B
-//!   \c => Switch to character-set C
+//!   \u{00C0} => Switch to character-set A (À)
+//!   \u{0181} => Switch to character-set B (Ɓ)
+//!   \u{0106} => Switch to character-set C (Ć)
 //!
 //! You must provide both the starting character-set along with any changes during the data. This
 //! means all Code128 barcodes must start with either "\a", "\b" or "\c". Simple alphanumeric data
 //! can generally use character-set A solely.
 //!
 //! As an example, this barcode uses character-set B:
-//!   \bHE1234A*1
+//!   \u{0181}HE1234A*1
+//! Or:
+//!   ƁHE1234A*1
 //!
 //! And this one starts at character-set A and then switches to C to encode the digits more
 //! effectively:
-//!   \aHE@$A\c123456
-//!
-//! To actually use a back-slash in the barcore data you should use two:
-//!
-//!   \a1234\\45AA
+//!   \u{00C0}HE@$A\u{0106}123456
+//! Or:
+//!   ÀHE@$AĆ123456
 
 use sym::helpers;
 use error::*;
