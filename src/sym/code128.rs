@@ -64,7 +64,7 @@ pub struct Code128(Vec<Unit>);
 
 impl CharacterSet {
     fn from_char(c: char) -> Result<CharacterSet> {
-        match ch {
+        match c {
             'À' => Ok(CharacterSet::A),
             'ɓ' => Ok(CharacterSet::B),
             'Ć' => Ok(CharacterSet::C),
