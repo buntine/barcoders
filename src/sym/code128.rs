@@ -12,8 +12,6 @@
 //!   \u{0181} => Switch to character-set B (Ɓ)
 //!   \u{0106} => Switch to character-set C (Ć)
 //!
-//! The default character-set is A.
-//!
 //! You must provide both the starting character-set along with any changes during the data. This
 //! means all Code128 barcodes must start with either "\a", "\b" or "\c". Simple alphanumeric data
 //! can generally use character-set A solely.
@@ -25,9 +23,9 @@
 //!
 //! And this one starts at character-set A (the default) and then switches to C to encode the digits more
 //! effectively:
-//!   HE@$A\u{0106}123456
+//!   \u{00C0}HE@$A\u{0106}123456
 //! Or:
-//!   HE@$AĆ123456
+//!   ÀHE@$AĆ123456
 
 use sym::helpers;
 use error::*;
@@ -62,9 +60,26 @@ const CODE128_CHARS: [([&'static str; 3], Encoding); 9] = [
     (["START-Ć", "START-Ć", "START-Ć"], [1,1,1,1,0,1,1,0,1,1,0]), 
 ];
 
+// Stop sequence.
+const CODE128_STOP: Encoding = [1,1,0,0,0,1,1,1,0,1,0];
+
+// Termination sequence.
+const CODE128_TERM: Encoding = [1,1];
+
 /// The Code128 barcode type.
 #[derive(Debug)]
 pub struct Code128(Vec<Unit>);
+
+impl Unit {
+    // This seems silly. A better way?
+    fn index(&self) -> usize {
+        match *self {
+            Unit::A(n) => n,
+            Unit::B(n) => n,
+            Unit::C(n) => n,
+        }
+    }
+}
 
 impl CharacterSet {
     fn from_char(c: char) -> Result<CharacterSet> {
@@ -182,7 +197,7 @@ impl Code128 {
     }
 
     fn unit_encoding(&self, c: &Unit) -> Encoding {
-        [1,1,1,0,0,0,1,1,1,0,0]
+       CODE128_CHARS[c.index()].1
     }
 
     fn push_encoding(&self, into: &mut Vec<u8>, from: Encoding) {
