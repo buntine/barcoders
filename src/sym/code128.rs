@@ -46,16 +46,20 @@ enum CharacterSet {
     A,
     B,
     C,
+    None,
 }
 
 // Character -> Binary mappings for each of the allowable characters in each character-set.
-const CODE128_CHARS: [([&'static str; 3], Encoding); 6] = [
+const CODE128_CHARS: [([&'static str; 3], Encoding); 9] = [
     ([" ", " ", "00"], [1,0,1,0,0,1,1,0,1,1,0]), 
     (["!", "!", "01"], [1,1,1,0,0,1,1,0,1,1,0]), 
     (["\"", "\"", "02"], [1,1,1,1,0,1,1,0,1,1,0]), 
     (["??", "À", "À"], [1,1,1,1,0,1,1,0,1,1,0]), 
     (["ɓ", "??", "ɓ"], [1,1,1,1,0,1,1,0,1,1,0]), 
     (["Ć", "Ć", "??"], [1,1,1,1,0,1,1,0,1,1,0]), 
+    (["START-À", "START-À", "START-À"], [1,1,1,1,0,1,1,0,1,1,0]), 
+    (["START-ɓ", "START-ɓ", "START-ɓ"], [1,1,1,1,0,1,1,0,1,1,0]), 
+    (["START-Ć", "START-Ć", "START-Ć"], [1,1,1,1,0,1,1,0,1,1,0]), 
 ];
 
 /// The Code128 barcode type.
@@ -72,29 +76,31 @@ impl CharacterSet {
         }
     }
 
-    fn unit(&self, n: usize) -> Unit {
+    fn unit(&self, n: usize) -> Result<Unit> {
         match *self {
-            CharacterSet::A => Unit::A(n),
-            CharacterSet::B => Unit::B(n),
-            CharacterSet::C => Unit::C(n),
+            CharacterSet::A => Ok(Unit::A(n)),
+            CharacterSet::B => Ok(Unit::B(n)),
+            CharacterSet::C => Ok(Unit::C(n)),
+            CharacterSet::None => Err(Error::Character),
         }
     }
 
-    fn index(&self) -> usize {
+    fn index(&self) -> Result<usize> {
         match *self {
-            CharacterSet::A => 0,
-            CharacterSet::B => 1,
-            CharacterSet::C => 2,
+            CharacterSet::A => Ok(0),
+            CharacterSet::B => Ok(1),
+            CharacterSet::C => Ok(2),
+            CharacterSet::None => Err(Error::Character),
         }
     }
 
     fn lookup(&self, s: &str) -> Result<Unit> {
-        let p = self.index();
+        let p = try!(self.index());
         let mut i: usize = 0;
 
         for c in CODE128_CHARS.iter() {
             if c.0[p] == s {
-                return Ok(self.unit(i))
+                return self.unit(i);
             } else {
                 i = i+1;
             }
@@ -117,22 +123,27 @@ impl Code128 {
     // Tokenizes and collects the data into the appropriate character-sets.
     fn parse(chars: Vec<char>) -> Result<Vec<Unit>> {
         let mut units: Vec<Unit> = vec![];
-        let mut char_set = CharacterSet::A;
+        let mut char_set = CharacterSet::None;
         let mut carry: Option<char> = None;
 
         for ch in chars {
             match ch {
-                'À' | 'ɓ' | 'Ć' => { 
-                    if !units.is_empty() {
-                        if char_set == CharacterSet::C && carry.is_some() {
-                            return Err(Error::Character);
-                        } else {
-                            let u = try!(char_set.lookup(&ch.to_string()));
-                            units.push(u);
-                        }
-                    }
-
+                'À' | 'ɓ' | 'Ć' if units.is_empty() => { 
                     char_set = try!(CharacterSet::from_char(ch));
+
+                    let c = format!("START-{}", ch);
+                    let u = try!(char_set.lookup(&c));
+                    units.push(u);
+                },
+                'À' | 'ɓ' | 'Ć' => { 
+                    if char_set == CharacterSet::C && carry.is_some() {
+                        return Err(Error::Character);
+                    } else {
+                        let u = try!(char_set.lookup(&ch.to_string()));
+                        units.push(u);
+
+                        char_set = try!(CharacterSet::from_char(ch));
+                    }
                 },
                 d if d.is_digit(10) && char_set == CharacterSet::C => {
                     match carry {
@@ -153,8 +164,8 @@ impl Code128 {
         }
 
         match carry {
-            None => Ok(units),
-            Some(_) => Err(Error::Character)
+            Some(_) => Err(Error::Character),
+            None => Ok(units)
         }
     }
 
@@ -211,8 +222,8 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128_a = Code128::new("  !! Ć0201".to_owned());
-        let code128_b = Code128::new("!!  \" ".to_owned());
+        let code128_a = Code128::new("À !! Ć0201".to_owned());
+        let code128_b = Code128::new("À!!  \" ".to_owned());
 
         assert!(code128_a.is_ok());
         assert!(code128_b.is_ok());
