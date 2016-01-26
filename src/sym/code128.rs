@@ -32,7 +32,7 @@
 use sym::helpers;
 use error::*;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Unit {
     A(usize),
     B(usize),
@@ -41,7 +41,7 @@ pub enum Unit {
 
 type Encoding = [u8; 11];
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CharacterSet {
     A,
     B,
@@ -49,10 +49,13 @@ pub enum CharacterSet {
 }
 
 // Character -> Binary mappings for each of the allowable characters in each character-set.
-const CODE128_CHARS: [([&'static str; 3], Encoding); 3] = [
+const CODE128_CHARS: [([&'static str; 3], Encoding); 6] = [
     ([" ", " ", "00"], [1,0,1,0,0,1,1,0,1,1,0]), 
     (["!", "!", "01"], [1,1,1,0,0,1,1,0,1,1,0]), 
     (["\"", "\"", "02"], [1,1,1,1,0,1,1,0,1,1,0]), 
+    (["??", "À", "À"], [1,1,1,1,0,1,1,0,1,1,0]), 
+    (["ɓ", "??", "ɓ"], [1,1,1,1,0,1,1,0,1,1,0]), 
+    (["Ć", "Ć", "??"], [1,1,1,1,0,1,1,0,1,1,0]), 
 ];
 
 /// The Code128 barcode type.
@@ -60,6 +63,15 @@ const CODE128_CHARS: [([&'static str; 3], Encoding); 3] = [
 pub struct Code128(Vec<Unit>);
 
 impl CharacterSet {
+    fn from_char(c: char) -> Result<CharacterSet> {
+        match ch {
+            'À' => Ok(CharacterSet::A),
+            'ɓ' => Ok(CharacterSet::B),
+            'Ć' => Ok(CharacterSet::C),
+            _ => Err(Error::Character),
+        }
+    }
+
     fn unit(&self, n: usize) -> Unit {
         match *self {
             CharacterSet::A => Unit::A(n),
@@ -76,13 +88,13 @@ impl CharacterSet {
         }
     }
 
-    fn lookup(&self, s: &str) -> Result<usize> {
+    fn lookup(&self, s: &str) -> Result<Unit> {
         let p = self.index();
         let mut i: usize = 0;
 
         for c in CODE128_CHARS.iter() {
             if c.0[p] == s {
-                return Ok(i)
+                return Ok(self.unit(i))
             } else {
                 i = i+1;
             }
@@ -110,115 +122,40 @@ impl Code128 {
 
         for ch in chars {
             match ch {
-                'À' => { 
+                'À' | 'ɓ' | 'Ć' => { 
                     if !units.is_empty() {
-                        units.push(char_set.unit(0)); // TODO: Lookup "CODE-A"
-
                         if char_set == CharacterSet::C && carry.is_some() {
                             return Err(Error::Character);
+                        } else {
+                            let u = try!(char_set.lookup(&ch.to_string()[..]));
+                            units.push(u);
                         }
                     }
 
-                    char_set = CharacterSet::A;
-                },
-                'ɓ' => { 
-                    if !units.is_empty() {
-                        units.push(char_set.unit(0)); // TODO: lookup "CODE-B"
-
-                        if char_set == CharacterSet::C && carry.is_some() {
-                            return Err(Error::Character);
-                        }
-                    }
-
-                    char_set = CharacterSet::B;
-                },
-                'Ć' => { 
-                    if !units.is_empty() {
-                        units.push(char_set.unit(0)); // TODO: Lookup "CODE-C"
-
-                        if char_set == CharacterSet::C && carry.is_some() {
-                            return Err(Error::Character);
-                        }
-                    }
-
-                    char_set = CharacterSet::C;
+                    char_set = try!(CharacterSet::from_char(ch));
                 },
                 d if d.is_digit(10) && char_set == CharacterSet::C => {
                     match carry {
                         None => carry = Some(d),
                         Some(n) => {
                             let num = format!("{}{}", n, d);
-                            let i = try!(char_set.lookup(&num[..]));
-
-                            units.push(char_set.unit(i));
+                            let u = try!(char_set.lookup(&num[..]));
+                            units.push(u);
                             carry = None;
                         }
                     }
                 },
                 _ => {
-                    if char_set == CharacterSet::C {
-                        return Err(Error::Character);
-                    } else {
-                        let i = try!(char_set.lookup(&ch.to_string()[..]));
-
-                        units.push(char_set.unit(i))
-                    }
+                    let u = try!(char_set.lookup(&ch.to_string()[..]));
+                    units.push(u);
                 },
             }
         }
 
-        Ok(units)
-
-//        let mut units: Vec<Encoding> = vec![];
-//        let mut control_char = false;
-//        let mut unit_type: Option<CharacterSet> = None;
-//        let mut carry: Option<u32> = None;
-//
-//        for ch in chars {
-//            match ch {
-//                '\\' => {
-//                    carry = None;
-//
-//                    if control_char {
-//                        match unit_type {
-//                            Some(ut) => {
-//                                let b = try!(Code128::unit_encoding("\\", ut));
-//                                units.push(b);
-//                            },
-//                            None => return Err(Error::Character('\\'))
-//                        }
-//                    } else {
-//                        control_char = true;
-//                    }
-//                },
-//                d if d.is_digit(10) => {
-//                    match carry {
-//                        Some(c) if unit_type == CharacterSet::C => {
-//                            units.pop();
-//
-//                            let b = try!(Code128::unit_encoding("00", ut));
-//                            units.push(b);
-//                        },
-//                        _ => {
-//
-//                        }
-//                    }
-//                },
-//                'a' if control_char && (unit_type == Some(CharacterSet::B) || unit_type == Some(CharacterSet::C)) => {
-//                }
-//                'b' if control_char && (unit_type == Some(CharacterSet::A) || unit_type == Some(CharacterSet::C)) => {
-//                }
-//                'c' if control_char && (unit_type == Some(CharacterSet::A) || unit_type == Some(CharacterSet::B)) => {
-//                }
-//                _ => {
-//                    carry = None;
-//
-//
-//                }
-//            }
-//        }
-//
-//        Ok(units)
+        match carry {
+            None => Ok(units),
+            Some(_) => Err(Error::Character)
+        }
     }
 
     /// Calculates the checksum unit using a modulo-103 algorithm.
@@ -274,24 +211,22 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128 = Code128::new("  !! Ć0201".to_owned());
+        let code128_a = Code128::new("  !! Ć0201".to_owned());
+        let code128_b = Code128::new("!!  \" ".to_owned());
 
-        assert!(code128.is_ok());
+        assert!(code128_a.is_ok());
+        assert!(code128_b.is_ok());
     }
 
-//    #[test]
-//    fn invalid_data_code128() {
-//        let code128 = Code128::new("☺ ".to_owned());
-//
-//        assert_eq!(code128.err().unwrap(), Error::Character);
-//    }
-//
-//    #[test]
-//    fn invalid_len_code128() {
-//        let code128 = Code128::new("".to_owned());
-//
-//        assert_eq!(code128.err().unwrap(), Error::Length);
-//    }
+    #[test]
+    fn invalid_data_code128() {
+        let code128_a = Code128::new("☺ ".to_owned());
+        let code128_b = Code128::new("HELLOĆ12352".to_owned());
+
+        assert_eq!(code128_a.err().unwrap(), Error::Character);
+        assert_eq!(code128_b.err().unwrap(), Error::Character);
+    }
+
 //
 //    #[test]
 //    fn code128_raw_data() {
