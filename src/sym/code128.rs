@@ -33,7 +33,7 @@ use sym::helpers;
 use error::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Unit {
+enum Unit {
     A(usize),
     B(usize),
     C(usize),
@@ -42,7 +42,7 @@ pub enum Unit {
 type Encoding = [u8; 11];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum CharacterSet {
+enum CharacterSet {
     A,
     B,
     C,
@@ -127,7 +127,7 @@ impl Code128 {
                         if char_set == CharacterSet::C && carry.is_some() {
                             return Err(Error::Character);
                         } else {
-                            let u = try!(char_set.lookup(&ch.to_string()[..]));
+                            let u = try!(char_set.lookup(&ch.to_string()));
                             units.push(u);
                         }
                     }
@@ -139,14 +139,14 @@ impl Code128 {
                         None => carry = Some(d),
                         Some(n) => {
                             let num = format!("{}{}", n, d);
-                            let u = try!(char_set.lookup(&num[..]));
+                            let u = try!(char_set.lookup(&num));
                             units.push(u);
                             carry = None;
                         }
                     }
                 },
                 _ => {
-                    let u = try!(char_set.lookup(&ch.to_string()[..]));
+                    let u = try!(char_set.lookup(&ch.to_string()));
                     units.push(u);
                 },
             }
