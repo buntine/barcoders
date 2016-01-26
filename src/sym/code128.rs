@@ -64,7 +64,7 @@ const CODE128_CHARS: [([&'static str; 3], Encoding); 9] = [
 const CODE128_STOP: Encoding = [1,1,0,0,0,1,1,1,0,1,0];
 
 // Termination sequence.
-const CODE128_TERM: Encoding = [1,1];
+const CODE128_TERM: [u8; 2] = [1,1];
 
 /// The Code128 barcode type.
 #[derive(Debug)]
@@ -186,7 +186,7 @@ impl Code128 {
 
     /// Calculates the checksum unit using a modulo-103 algorithm.
     pub fn checksum_value(&self) -> Option<u32> {
-        Some(23)
+        Some(1)
     }
 
     fn checksum_encoding(&self) -> Encoding {
@@ -220,7 +220,9 @@ impl Code128 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(&[&self.payload()[..]][..])
+        helpers::join_slices(&[&self.payload()[..],
+                               &CODE128_STOP[..],
+                               &CODE128_TERM[..]][..])
     }
 }
 
@@ -253,11 +255,10 @@ mod tests {
         assert_eq!(code128_b.err().unwrap(), Error::Character);
     }
 
-//
-//    #[test]
-//    fn code128_raw_data() {
-//        let code128 = Code128::new("12001".to_owned()).unwrap();
-//
-//        assert_eq!(code128.raw_data(), &[Unit::A("1".to_string()), Unit::A("2".to_string())]);
-//    }
+    #[test]
+    fn code128_encode() {
+        let code128_a = Code128::new("À !! Ć0201".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code128_a.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_owned());
+    }
 }
