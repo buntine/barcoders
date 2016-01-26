@@ -81,7 +81,7 @@ impl CharacterSet {
         let mut i: usize = 0;
 
         for c in CODE128_CHARS.iter() {
-            if c.0[i] == s {
+            if c.0[p] == s {
                 return Ok(i)
             } else {
                 i = i+1;
@@ -151,6 +151,7 @@ impl Code128 {
                             let i = try!(char_set.lookup(&num[..]));
 
                             units.push(char_set.unit(i));
+                            carry = None;
                         }
                     }
                 },
@@ -273,7 +274,7 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128 = Code128::new("  !! ".to_owned());
+        let code128 = Code128::new("  !! Ć0201".to_owned());
 
         assert!(code128.is_ok());
     }
