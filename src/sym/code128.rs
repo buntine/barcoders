@@ -246,11 +246,10 @@ impl Code128 {
 
     fn push_encoding(&self, into: &mut Vec<u8>, from: Encoding) {
         into.extend(from.iter().cloned());
-        into.push(0);
     }
 
     fn payload(&self) -> Vec<u8> {
-        let mut enc = vec![0];
+        let mut enc = vec![];
 
         for c in &self.0 {
             self.push_encoding(&mut enc, self.unit_encoding(c));
@@ -292,17 +291,19 @@ mod tests {
 
     #[test]
     fn invalid_data_code128() {
-        let code128_a = Code128::new("☺ ".to_owned());
-        let code128_b = Code128::new("HELLOĆ12352".to_owned());
+        let code128_a = Code128::new("À☺ ".to_owned()); // Unknown character.
+        let code128_b = Code128::new("ÀHELLOĆ12352".to_owned()); // Trailing carry at the end.
+        let code128_c = Code128::new("HELLO".to_owned()); // No Character-Set specified.
 
         assert_eq!(code128_a.err().unwrap(), Error::Character);
         assert_eq!(code128_b.err().unwrap(), Error::Character);
+        assert_eq!(code128_c.err().unwrap(), Error::Character);
     }
 
-//    #[test]
-//    fn code128_encode() {
-//        let code128_a = Code128::new("À !! Ć0201".to_owned()).unwrap();
-//
-//        assert_eq!(collapse_vec(code128_a.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_owned());
-//    }
+    #[test]
+    fn code128_encode() {
+        let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110011011001100011101011".to_owned());
+    }
 }
