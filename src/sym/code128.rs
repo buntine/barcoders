@@ -99,9 +99,9 @@ const CODE128_CHARS: [([&'static str; 3], Encoding); 106] = [
     (["\u{001E}", "~", "94"], [1,0,0,0,1,0,1,1,1,1,0]), (["\u{001F}", "\u{00F7}", "95"], [1,0,1,1,1,1,0,1,0,0,0]),
     (["FNC3", "FNC3", "96"], [1,0,1,1,1,1,0,0,0,1,0]), (["FNC2", "FNC2", "97"], [1,1,1,1,0,1,0,1,0,0,0]),
     (["SHIFT", "SHIFT", "98"], [1,1,1,1,0,1,0,0,0,1,0]), (["Ć", "Ć", "99"], [1,0,1,1,1,0,1,1,1,1,0]),
-    (["ɓ", "FNC4", "ɓ"], [1,0,1,1,1,1,0,1,1,1,0]), (["FNC4", "À", "À"], [1,1,1,0,1,0,1,1,1,1,0]), 
+    (["Ɓ", "FNC4", "Ɓ"], [1,0,1,1,1,1,0,1,1,1,0]), (["FNC4", "À", "À"], [1,1,1,0,1,0,1,1,1,1,0]), 
     (["FNC1", "FNC1", "FNC1"], [1,1,1,1,0,1,0,1,1,1,0]), (["START-À", "START-À", "START-À"], [1,1,0,1,0,0,0,0,1,0,0]), 
-    (["START-ɓ", "START-ɓ", "START-ɓ"], [1,1,0,1,0,0,1,0,0,0,0]), (["START-Ć", "START-Ć", "START-Ć"], [1,1,0,1,0,0,1,1,1,0,0]), 
+    (["START-Ɓ", "START-Ɓ", "START-Ɓ"], [1,1,0,1,0,0,1,0,0,0,0]), (["START-Ć", "START-Ć", "START-Ć"], [1,1,0,1,0,0,1,1,1,0,0]), 
 ];
 
 // Stop sequence.
@@ -129,7 +129,7 @@ impl CharacterSet {
     fn from_char(c: char) -> Result<CharacterSet> {
         match c {
             'À' => Ok(CharacterSet::A),
-            'ɓ' => Ok(CharacterSet::B),
+            'Ɓ' => Ok(CharacterSet::B),
             'Ć' => Ok(CharacterSet::C),
             _ => Err(Error::Character),
         }
@@ -187,14 +187,14 @@ impl Code128 {
 
         for ch in chars {
             match ch {
-                'À' | 'ɓ' | 'Ć' if units.is_empty() => { 
+                'À' | 'Ɓ' | 'Ć' if units.is_empty() => { 
                     char_set = try!(CharacterSet::from_char(ch));
 
                     let c = format!("START-{}", ch);
                     let u = try!(char_set.lookup(&c));
                     units.push(u);
                 },
-                'À' | 'ɓ' | 'Ć' => { 
+                'À' | 'Ɓ' | 'Ć' => { 
                     if char_set == CharacterSet::C && carry.is_some() {
                         return Err(Error::Character);
                     } else {
@@ -295,9 +295,25 @@ mod tests {
     #[test]
     fn code128_encode() {
         let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
+        let code128_b = Code128::new("ÀXYĆ2199".to_owned()).unwrap();
+        let code128_c = Code128::new("ƁxyZÀ199!*1".to_owned()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110011011001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110110011011001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110110011011001100011101011".to_owned());
     }
+
+    #[test]
+    fn code128_encode_longhand() {
+        let code128_a = Code128::new("\u{00C0}HELLO".to_owned()).unwrap();
+        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199".to_owned()).unwrap();
+        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110011011001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110110011011001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110110011011001100011101011".to_owned());
+    }
+
 
     #[test]
     fn code128_checksum_calculation() {
