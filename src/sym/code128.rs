@@ -228,42 +228,34 @@ impl Code128 {
         }
     }
 
-    /// Calculates the checksum unit using a modulo-103 algorithm.
-    pub fn checksum_value(&self) -> Option<u32> {
-        Some(1)
+    /// Calculates the checksum index using a modulo-103 algorithm.
+    pub fn checksum_value(&self) -> u8 {
+        1
     }
 
     fn checksum_encoding(&self) -> Encoding {
-        match self.checksum_value() {
-            Some(u) => self.unit_encoding(&Unit::A(u as usize)),
-            None => panic!("Cannot compute checksum"),
-        }
+        let v = self.checksum_value();
+        self.unit_encoding(&Unit::A(v as usize))
     }
 
     fn unit_encoding(&self, c: &Unit) -> Encoding {
        CODE128_CHARS[c.index()].1
     }
 
-    fn push_encoding(&self, into: &mut Vec<u8>, from: Encoding) {
-        into.extend(from.iter().cloned());
-    }
-
     fn payload(&self) -> Vec<u8> {
-        let mut enc = vec![];
+        let slices: Vec<Encoding> = self.0
+                                        .iter()
+                                        .map(|u| self.unit_encoding(&u))
+                                        .collect();
 
-        for c in &self.0 {
-            self.push_encoding(&mut enc, self.unit_encoding(c));
-        }
-
-        self.push_encoding(&mut enc, self.checksum_encoding());
-
-        enc
+        helpers::join_iters(slices.iter())
     }
 
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
         helpers::join_slices(&[&self.payload()[..],
+                               &self.checksum_encoding()[..],
                                &CODE128_STOP[..],
                                &CODE128_TERM[..]][..])
     }
@@ -305,5 +297,14 @@ mod tests {
         let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110011011001100011101011".to_owned());
+    }
+
+    #[test]
+    fn code128_checksum_calculation() {
+        let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
+        let code128_b = Code128::new("Ć19534763".to_owned()).unwrap();
+
+        assert_eq!(code128_a.checksum_value(), 1);
+        assert_eq!(code128_b.checksum_value(), 1);
     }
 }
