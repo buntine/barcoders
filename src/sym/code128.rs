@@ -13,7 +13,7 @@
 //!   \u{0106} => Switch to character-set C (Ć)
 //!
 //! You must provide both the starting character-set along with any changes during the data. This
-//! means all Code128 barcodes must start with either "\a", "\b" or "\c". Simple alphanumeric data
+//! means all Code128 barcodes must start with either "À", "Ɓ" or "Ć". Simple alphanumeric data
 //! can generally use character-set A solely.
 //!
 //! As an example, this barcode uses character-set B:
@@ -169,6 +169,10 @@ impl Code128 {
     /// Creates a new barcode.
     /// Returns Result<Code128, Error> indicating parse success.
     pub fn new(data: String) -> Result<Code128> {
+        if data.len() < 2 { 
+            return Err(Error::Length);
+        }
+
         match Code128::parse(data.chars().collect()) {
             Ok(u) => Ok(Code128(u)),
             Err(e) => Err(e),
@@ -226,9 +230,10 @@ impl Code128 {
 
     /// Calculates the checksum index using a modulo-103 algorithm.
     pub fn checksum_value(&self) -> u8 {
-        let sum: i32 = self.0.iter()
-                             .zip((0..self.0.len() as i32))
-                             .fold(0, |t, (u, i)| t + (u.index() as i32 * cmp::max(1, i)));
+        let sum: i32 = self.0
+                           .iter()
+                           .zip((0..self.0.len() as i32))
+                           .fold(0, |t, (u, i)| t + (u.index() as i32 * cmp::max(1, i)));
 
         (sum % 103) as u8
     }
@@ -279,6 +284,13 @@ mod tests {
 
         assert!(code128_a.is_ok());
         assert!(code128_b.is_ok());
+    }
+
+    #[test]
+    fn invalid_length_code128() {
+        let code128_a = Code128::new("".to_owned());
+
+        assert_eq!(code128_a.err().unwrap(), Error::Length);
     }
 
     #[test]
