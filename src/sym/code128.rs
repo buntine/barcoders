@@ -30,6 +30,8 @@
 use sym::helpers;
 use error::*;
 
+use std::cmp;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Unit {
     A(usize),
@@ -155,17 +157,11 @@ impl CharacterSet {
 
     fn lookup(&self, s: &str) -> Result<Unit> {
         let p = try!(self.index());
-        let mut i: usize = 0;
 
-        for c in CODE128_CHARS.iter() {
-            if c.0[p] == s {
-                return self.unit(i);
-            } else {
-                i = i+1;
-            }
+        match CODE128_CHARS.iter().position(|&c| c.0[p] == s) {
+            Some(i) => self.unit(i),
+            None => Err(Error::Character),
         }
-
-        Err(Error::Character)
     }
 }
 
@@ -230,7 +226,11 @@ impl Code128 {
 
     /// Calculates the checksum index using a modulo-103 algorithm.
     pub fn checksum_value(&self) -> u8 {
-        1
+        let sum: i32 = self.0.iter()
+                             .zip((0..self.0.len() as i32))
+                             .fold(0, |t, (u, i)| t + (u.index() as i32 * cmp::max(1, i)));
+
+        (sum % 103) as u8
     }
 
     fn checksum_encoding(&self) -> Encoding {
@@ -319,8 +319,10 @@ mod tests {
     fn code128_checksum_calculation() {
         let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
         let code128_b = Code128::new("Ć19534763".to_owned()).unwrap();
+        let code128_c = Code128::new("ÀHIĆ345678".to_owned()).unwrap();
 
         assert_eq!(code128_a.checksum_value(), 1);
         assert_eq!(code128_b.checksum_value(), 1);
+        assert_eq!(code128_c.checksum_value(), 67);
     }
 }
