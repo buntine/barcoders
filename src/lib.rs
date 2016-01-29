@@ -18,6 +18,7 @@
 //!   * EAN-2
 //!   * EAN-5
 //! * Code39
+//! * Code128
 //! * Two-Of-Five
 //!   * Interleaved (ITF)
 //!   * Standard (STF)

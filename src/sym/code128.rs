@@ -1,6 +1,6 @@
 //! Encoder for Code128 barcodes.
 //!
-//! Code128 is a popular,  high-density symbology that allows for the encoding of alphanumeric
+//! Code128 is a popular, high-density symbology that allows for the encoding of alphanumeric
 //! data along with many special characters by utilising three separate character-sets.
 //!
 //! Code128 also offers double-density encoding of digits.

@@ -11,10 +11,14 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.4.0 (2016-01-30)
+
+- [added] Code128 symbology encoder.
+
 ### v0.3.6 (2016-01-04)
 
-- [changed] Relicensed to dual MIT/APACHE
-- [changed] Updated dependencies to latest stable sub-versions
+- [changed] Relicensed to dual MIT/APACHE.
+- [changed] Updated dependencies to latest stable sub-versions.
 
 ### v0.3.5 (2015-12-03)
 
@@ -23,8 +27,8 @@ Possible log types:
 
 ### v0.3.4 (2015-11-30)
 
-- [added] Error types for all encoders
+- [added] Error types for all encoders.
 
 ### v0.3.3 (2015-11-28)
 
-- [added] SVG encoder
+- [added] SVG generator.
