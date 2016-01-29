@@ -152,6 +152,7 @@ mod tests {
     use sym::ean13::*;
     use sym::ean8::*;
     use sym::code39::*;
+    use sym::code128::*;
     use sym::ean_supp::*;
     use sym::tf::*;
     use generators::image::*;
@@ -161,7 +162,7 @@ mod tests {
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = false;
+    const WRITE_TO_FILE: bool = true;
 
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()
@@ -275,18 +276,48 @@ mod tests {
     }
 
     #[test]
-    fn code39_as_jpeg() {
-        let code39 = Code39::new("SWAGLORDTHE3RD".to_owned()).unwrap();
-        let jpeg = Image::JPEG {
-            height: 160,
+    fn code128_as_png() {
+        let code128 = Code128::new("ÀHIĆ345678".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
         };
-        let generated = jpeg.generate(&code39.encode()[..]).unwrap();
+        let generated = png.generate(&code128.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code39.jpg"); }
+        if WRITE_TO_FILE { write_file(&generated[..], "code128.png"); }
 
-        assert_eq!(generated.len(), 6436);
+        assert_eq!(generated.len(), 538);
+    }
+
+    #[test]
+    fn code128_as_gif() {
+        let code128 = Code128::new("ÀHELLOWORLD".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 90,
+            xdim: 3,
+            rotation: Rotation::Zero,
+        };
+        let generated = gif.generate(&code128.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code128.gif"); }
+
+        assert_eq!(generated.len(), 3659);
+    }
+
+    #[test]
+    fn rotated_code128_as_gif() {
+        let code128 = Code128::new("ÀHELLOWORLD".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 90,
+            xdim: 3,
+            rotation: Rotation::OneEighty,
+        };
+        let generated = gif.generate(&code128.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code128_180.gif"); }
+
+        assert_eq!(generated.len(), 3670);
     }
 
     #[test]
