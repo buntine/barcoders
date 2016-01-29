@@ -54,6 +54,7 @@ mod tests {
     use ::sym::ean13::*;
     use ::sym::ean8::*;
     use ::sym::code39::*;
+    use ::sym::code128::*;
     use ::sym::ean_supp::*;
     use ::sym::tf::*;
     use ::generators::svg::*;
@@ -106,6 +107,17 @@ mod tests {
         if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
 
         assert_eq!(generated.len(), 6514);
+    }
+
+    #[test]
+    fn code128_as_svg() {
+        let code128 = Code128::new("ÀHIĆ345678".to_owned()).unwrap();
+        let svg = SVG::new();
+        let generated = svg.generate(&code128.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code128.svg"); }
+
+        assert_eq!(generated.len(), 2764);
     }
 
     #[test]
