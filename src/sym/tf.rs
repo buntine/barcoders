@@ -20,10 +20,10 @@ const TF_WIDTHS: [&'static str; 10] = [
     "NWNWN",
 ];
 
-const IFT_START: [u8; 4] = [1, 0, 1, 0];
-const IFT_STOP: [u8; 4] = [1, 1, 0, 1];
-const SFT_START: [u8; 8] = [1, 1, 0, 1, 1, 0, 1, 0];
-const SFT_STOP: [u8; 8] = [1, 1, 0, 1, 0, 1, 1, 0];
+const ITF_START: [u8; 4] = [1, 0, 1, 0];
+const ITF_STOP: [u8; 4] = [1, 1, 0, 1];
+const STF_START: [u8; 8] = [1, 1, 0, 1, 1, 0, 1, 0];
+const STF_STOP: [u8; 8] = [1, 1, 0, 1, 0, 1, 1, 0];
 
 /// The 2-of-5 barcode type.
 #[derive(Debug)]
@@ -35,7 +35,7 @@ pub enum TF {
 }
 
 impl TF {
-    /// Creates a new IFT barcode.
+    /// Creates a new ITF barcode.
     /// If the length of the given data is odd, a checksum value will be computed and appended to
     /// the data for encoding.
     ///
@@ -61,7 +61,7 @@ impl TF {
         }
     }
 
-    /// Creates a new SFT barcode.
+    /// Creates a new STF barcode.
     ///
     /// Returns Result<TF::Standard, Error> indicating parse success.
     pub fn standard(data: String) -> Result<TF> {
@@ -152,10 +152,10 @@ impl TF {
     pub fn encode(&self) -> Vec<u8> {
         match *self {
             TF::Standard(_) => {
-                helpers::join_slices(&[&SFT_START[..], &self.stf_payload()[..], &SFT_STOP[..]][..])
+                helpers::join_slices(&[&STF_START[..], &self.stf_payload()[..], &STF_STOP[..]][..])
             }
             TF::Interleaved(_) => {
-                helpers::join_slices(&[&IFT_START[..], &self.itf_payload()[..], &IFT_STOP[..]][..])
+                helpers::join_slices(&[&ITF_START[..], &self.itf_payload()[..], &ITF_STOP[..]][..])
             }
         }
     }
