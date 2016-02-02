@@ -1,0 +1,2 @@
+- Implement simple regex into Parse and remoev valid_chars, valid_length, etc.
+- Remove raw_data method everywhere.
