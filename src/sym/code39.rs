@@ -66,11 +66,6 @@ impl Code39 {
         Code39::init(data, true)
     }
 
-    /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> &[char] {
-        &self.data[..]
-    }
-
     /// Calculates the checksum character using a modulo-43 algorithm.
     pub fn checksum_char(&self) -> Option<char> {
         let get_char_pos = |&c| CODE39_CHARS.iter().position(|t| t.0 == c).unwrap();
@@ -168,13 +163,6 @@ mod tests {
         let code39 = Code39::new("".to_owned());
 
         assert_eq!(code39.err().unwrap(), Error::Length);
-    }
-
-    #[test]
-    fn code39_raw_data() {
-        let code39 = Code39::new("12345".to_owned()).unwrap();
-
-        assert_eq!(code39.raw_data(), &['1', '2', '3', '4', '5']);
     }
 
     #[test]

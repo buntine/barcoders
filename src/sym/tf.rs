@@ -76,8 +76,7 @@ impl TF {
         }
     }
 
-    /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> &[u8] {
+    fn raw_data(&self) -> &[u8] {
         match *self {
             TF::Standard(ref d) => &d[..],
             TF::Interleaved(ref d) => &d[..],

@@ -60,8 +60,7 @@ impl EANSUPP {
         }
     }
 
-    /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> &[u8] {
+    fn raw_data(&self) -> &[u8] {
         match *self {
             EANSUPP::EAN2(ref d) => &d[..],
             EANSUPP::EAN5(ref d) => &d[..],
@@ -181,20 +180,6 @@ mod tests {
         let ean2 = EANSUPP::new("123".to_owned());
 
         assert_eq!(ean2.err().unwrap(), Error::Length);
-    }
-
-    #[test]
-    fn ean2_raw_data() {
-        let ean2 = EANSUPP::new("98".to_owned()).unwrap();
-
-        assert_eq!(ean2.raw_data(), &[9, 8]);
-    }
-
-    #[test]
-    fn ean5_raw_data() {
-        let ean5 = EANSUPP::new("98567".to_owned()).unwrap();
-
-        assert_eq!(ean5.raw_data(), &[9, 8, 5, 6, 7]);
     }
 
     #[test]

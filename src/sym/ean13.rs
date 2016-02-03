@@ -78,11 +78,6 @@ impl EAN13 {
         }
     }
 
-    /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> &[u8] {
-        &self.0[..]
-    }
-
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
         helpers::modulo_10_checksum(&self.0[..], true)
@@ -197,13 +192,6 @@ mod tests {
         let ean13 = EAN13::new("1111112222222333333".to_owned());
 
         assert_eq!(ean13.err().unwrap(), Error::Length)
-    }
-
-    #[test]
-    fn ean13_raw_data() {
-        let ean13 = EAN13::new("123456123456".to_owned()).unwrap();
-
-        assert_eq!(ean13.raw_data(), &[1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6]);
     }
 
     #[test]

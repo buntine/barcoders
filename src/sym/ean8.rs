@@ -32,11 +32,6 @@ impl EAN8 {
         }
     }
 
-    /// Returns the data as was passed into the constructor.
-    pub fn raw_data(&self) -> &[u8] {
-        &self.0[..]
-    }
-
     /// Calculates the checksum digit using a weighting algorithm.
     pub fn checksum_digit(&self) -> u8 {
         helpers::modulo_10_checksum(&self.0[..], false)
@@ -145,13 +140,6 @@ mod tests {
         let ean8 = EAN8::new("1111112222222333333".to_owned());
 
         assert_eq!(ean8.err().unwrap(), Error::Length);
-    }
-
-    #[test]
-    fn ean8_raw_data() {
-        let ean8 = EAN8::new("1234567".to_owned()).unwrap();
-
-        assert_eq!(ean8.raw_data(), &[1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
