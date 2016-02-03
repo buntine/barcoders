@@ -11,7 +11,6 @@ use sym::Parse;
 use sym::helpers;
 use error::Result;
 use std::ops::Range;
-use std::char;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Unit {
