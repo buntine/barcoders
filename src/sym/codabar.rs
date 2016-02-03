@@ -86,7 +86,12 @@ impl Codabar {
     ///
     /// Returns Result<Codabar, Error> indicating parse success.
     pub fn new(data: String) -> Result<Codabar> {
-        Ok(Codabar(vec![Unit::One]))
+        let d = try!(Codabar::parse(data));
+        let units = d.chars()
+                     .map(|c| Unit::from_char(c).unwrap())
+                     .collect();
+
+        Ok(Codabar(units))
     }
 
     /// Encodes the barcode.
@@ -105,7 +110,8 @@ impl Parse for Codabar {
 
     /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
-        (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
+        vec!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+             '-', '/', '.', ':', '+', '$', 'A', 'B', 'C', 'D']
     }
 }
 
@@ -118,6 +124,20 @@ mod tests {
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
         chars.collect()
+    }
+
+    #[test]
+    fn invalid_length_codabar() {
+        let codabar = Codabar::new("".to_owned());
+
+        assert_eq!(codabar.err().unwrap(), Error::Length);
+    }
+
+    #[test]
+    fn invalid_data_codabar() {
+        let codabar = Codabar::new("A12345G".to_owned());
+
+        assert_eq!(codabar.err().unwrap(), Error::Character);
     }
 
     #[test]
