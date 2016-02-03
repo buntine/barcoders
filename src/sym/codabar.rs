@@ -24,6 +24,59 @@ enum Unit {
     C, D,
 }
 
+impl Unit {
+    fn lookup(&self) -> Vec<u8> {
+        match *self {
+            Unit::Zero => vec![1,1,1,1,1],
+            Unit::One => vec![1,1,1,1,1],
+            Unit::Two => vec![1,1,1,1,1],
+            Unit::Three => vec![1,1,1,1,1],
+            Unit::Four => vec![1,1,1,1,1],
+            Unit::Five => vec![1,1,1,1,1],
+            Unit::Six => vec![1,1,1,1,1],
+            Unit::Seven => vec![1,1,1,1,1],
+            Unit::Eight => vec![1,1,1,1,1],
+            Unit::Nine => vec![1,1,1,1,1],
+            Unit::Dash => vec![1,1,1,1,1],
+            Unit::Dollar => vec![1,1,1,1,1],
+            Unit::Colon => vec![1,1,1,1,1],
+            Unit::Slash => vec![1,1,1,1,1],
+            Unit::Point => vec![1,1,1,1,1],
+            Unit::Plus => vec![1,1,1,1,1],
+            Unit::A => vec![1,1,1,1,1],
+            Unit::B => vec![1,1,1,1,1],
+            Unit::C => vec![1,1,1,1,1],
+            Unit::D => vec![1,1,1,1,1],
+        }
+    }
+
+    fn from_char(c: char) -> Option<Unit> {
+        match c {
+            '0' => Some(Unit::Zero),
+            '1' => Some(Unit::One),
+            '2' => Some(Unit::Two),
+            '3' => Some(Unit::Three),
+            '4' => Some(Unit::Four),
+            '5' => Some(Unit::Five),
+            '6' => Some(Unit::Six),
+            '7' => Some(Unit::Seven),
+            '8' => Some(Unit::Eight),
+            '9' => Some(Unit::Nine),
+            '-' => Some(Unit::Dash),
+            '$' => Some(Unit::Dollar),
+            '/' => Some(Unit::Slash),
+            ':' => Some(Unit::Colon),
+            '.' => Some(Unit::Point),
+            '+' => Some(Unit::Plus),
+            'A' => Some(Unit::A),
+            'B' => Some(Unit::B),
+            'C' => Some(Unit::C),
+            'D' => Some(Unit::D),
+            _ => None
+        }
+    }
+}
+
 /// The Codabar barcode type.
 #[derive(Debug)]
 pub struct Codabar(Vec<Unit>);
