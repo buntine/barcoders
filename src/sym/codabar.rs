@@ -8,7 +8,6 @@
 //! the industry.
 
 use sym::Parse;
-use sym::helpers;
 use error::Result;
 use std::ops::Range;
 
@@ -96,7 +95,19 @@ impl Codabar {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        vec![1,0]
+        let mut enc: Vec<u8> = vec![];
+
+        for (i, u) in self.0.iter().enumerate() {
+            enc.extend(u.lookup()
+                        .iter()
+                        .cloned());
+
+            if i < self.0.len() - 1 {
+                enc.push(0);
+            }
+        }
+
+        enc
     }
 }
 
@@ -141,7 +152,7 @@ mod tests {
 
     #[test]
     fn codabar_encode() {
-        let codabar = Codabar::new("A1234567B".to_owned()).unwrap();
+        let codabar = Codabar::new("A1234B".to_owned()).unwrap();
 
         assert_eq!(collapse_vec(codabar.encode()), "10".to_owned());
     }
