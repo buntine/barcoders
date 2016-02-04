@@ -152,8 +152,10 @@ mod tests {
 
     #[test]
     fn codabar_encode() {
-        let codabar = Codabar::new("A1234B".to_owned()).unwrap();
-
-        assert_eq!(collapse_vec(codabar.encode()), "10".to_owned());
+        let codabar_a = Codabar::new("A1234B".to_owned()).unwrap();
+        let codabar_b = Codabar::new("A40156B".to_owned()).unwrap();
+ 
+        assert_eq!(collapse_vec(codabar_a.encode()), "1011001001010101100101010010110110010101010110100101010010011".to_owned());
+        assert_eq!(collapse_vec(codabar_b.encode()), "10110010010101101001010101001101010110010110101001010010101101010010011".to_owned());
     }
 }
