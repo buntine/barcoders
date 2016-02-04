@@ -11,6 +11,11 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.5.0 (2016-02-04)
+
+- [added] Codabar symbology encoder.
+- [removed] 'raw_data' method from all encoders.
+
 ### v0.4.0 (2016-01-30)
 
 - [added] Code128 symbology encoder.

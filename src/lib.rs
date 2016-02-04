@@ -22,6 +22,7 @@
 //! * Two-Of-Five
 //!   * Interleaved (ITF)
 //!   * Standard (STF)
+//! * Codabar
 //! * More coming!
 //!
 //! ### Generators
