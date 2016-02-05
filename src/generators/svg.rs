@@ -57,6 +57,7 @@ mod tests {
     use ::sym::code128::*;
     use ::sym::ean_supp::*;
     use ::sym::tf::*;
+    use ::sym::codabar::*;
     use ::generators::svg::*;
     use std::io::prelude::*;
     use std::io::BufWriter;
@@ -105,6 +106,17 @@ mod tests {
         let generated = svg.generate(&code39.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
+
+        assert_eq!(generated.len(), 6514);
+    }
+
+    #[test]
+    fn codabar_as_svg() {
+        let codabar = Codabar::new("A12----34A".to_owned()).unwrap();
+        let svg = SVG::new();
+        let generated = svg.generate(&codabar.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "codabar.svg"); }
 
         assert_eq!(generated.len(), 6514);
     }

@@ -155,6 +155,7 @@ mod tests {
     use sym::code128::*;
     use sym::ean_supp::*;
     use sym::tf::*;
+    use sym::codabar::*;
     use generators::image::*;
     use std::io::prelude::*;
     use std::io::BufWriter;
@@ -271,6 +272,51 @@ mod tests {
         let generated = gif.generate(&code39.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39_180.gif"); }
+
+        assert_eq!(generated.len(), 1831);
+    }
+
+    #[test]
+    fn codabar_as_png() {
+        let codabar = Codabar::new("B12354999A".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::Zero,
+        };
+        let generated = png.generate(&codabar.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "codabar.png"); }
+
+        assert_eq!(generated.len(), 963);
+    }
+
+    #[test]
+    fn codabar_as_gif() {
+        let codabar = Codabar::new("A5675+++3$$B".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 80,
+            xdim: 2,
+            rotation: Rotation::Zero,
+        };
+        let generated = gif.generate(&codabar.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "codabar.gif"); }
+
+        assert_eq!(generated.len(), 1767);
+    }
+
+    #[test]
+    fn rotated_codabar_as_gif() {
+        let codabar = Codabar::new("C1234D".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::Ninety,
+        };
+        let generated = gif.generate(&codabar.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "codabar_180.gif"); }
 
         assert_eq!(generated.len(), 1831);
     }
