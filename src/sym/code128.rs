@@ -8,24 +8,30 @@
 //! Barcoders provides special Unicode syntax for specifying the character set(s) which should be
 //! used in the barcode:
 //!
-//!     \u{00C0} => Switch to character-set A (À)
-//!     \u{0181} => Switch to character-set B (Ɓ)
-//!     \u{0106} => Switch to character-set C (Ć)
+//! <ul><li>\u{00C0} = Switch to character-set A (À)</li>
+//! <li>\u{0181} = Switch to character-set B (Ɓ)</li>
+//! <li>\u{0106} = Switch to character-set C (Ć)</li></ul>
 //!
 //! You must provide both the starting character-set along with any changes during the data. This
 //! means all Code128 barcodes must start with either "À", "Ɓ" or "Ć". Simple alphanumeric data
 //! can generally use character-set A solely.
 //!
 //! As an example, this barcode uses character-set B:
-//!     \u{0181}HE1234A*1
+//!
+//! <ul><li>\u{0181}HE1234A*1</li></ul>
+//!
 //! Or:
-//!     ƁHE1234A*1
+//!
+//! <ul><li>ƁHE1234A*1</li></ul>
 //!
 //! And this one starts at character-set A (the default) and then switches to C to encode the digits more
 //! effectively:
-//!     \u{00C0}HE@$A\u{0106}123456
+//!
+//! <ul><li>\u{00C0}HE@$A\u{0106}123456</li></ul>
+//!
 //! Or:
-//!     ÀHE@$AĆ123456
+//!
+//! <ul><li>ÀHE@$AĆ123456</li></ul>
 
 use sym::helpers;
 use error::*;
