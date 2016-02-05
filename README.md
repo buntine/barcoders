@@ -123,9 +123,9 @@ use std::fs::File;
 use std::path::Path;
 
 let barcode = Code39::new("56DFU4A777H".to_owned()).unwrap();
-let png = SVG{height: 200, xdim: 3};
+let svg = SVG{height: 200, xdim: 3};
 let encoded = barcode.encode();
-let data: String = png.generate(&encoded[..]).unwrap();
+let data: String = svg.generate(&encoded[..]).unwrap();
 
 let file = File::create(&Path::new("my_barcode.svg")).unwrap();
 let mut writer = BufWriter::new(file);
