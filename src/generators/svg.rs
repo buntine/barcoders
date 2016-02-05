@@ -118,7 +118,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.svg"); }
 
-        assert_eq!(generated.len(), 6514);
+        assert_eq!(generated.len(), 2987);
     }
 
     #[test]
