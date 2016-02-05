@@ -288,7 +288,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.png"); }
 
-        assert_eq!(generated.len(), 963);
+        assert_eq!(generated.len(), 365);
     }
 
     #[test]
@@ -303,7 +303,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.gif"); }
 
-        assert_eq!(generated.len(), 1767);
+        assert_eq!(generated.len(), 2538);
     }
 
     #[test]
@@ -318,7 +318,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar_180.gif"); }
 
-        assert_eq!(generated.len(), 1831);
+        assert_eq!(generated.len(), 984);
     }
 
     #[test]
