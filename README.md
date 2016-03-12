@@ -165,8 +165,8 @@ assert_eq!(ascii.unwrap(),
 
 ## Tests
 
-Note, some of the image tests (intentionally) leave behind image files in ./target/debug that should be visually
-inspected for correctness.
+Note, if you want to output actual image/svg files to the filesystem, set the `WRITE_TO_FILE` variable in
+the appropriate test modules.
 
 Full suite:
 ```
