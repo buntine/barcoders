@@ -126,8 +126,8 @@ impl Unit {
     // This seems silly. A better way?
     fn index(&self) -> usize {
         match *self {
-            Unit::A(n) => n,
-            Unit::B(n) => n,
+            Unit::A(n) |
+            Unit::B(n) |
             Unit::C(n) => n,
         }
     }

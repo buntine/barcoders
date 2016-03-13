@@ -62,7 +62,7 @@ impl EANSUPP {
 
     fn raw_data(&self) -> &[u8] {
         match *self {
-            EANSUPP::EAN2(ref d) => &d[..],
+            EANSUPP::EAN2(ref d) |
             EANSUPP::EAN5(ref d) => &d[..],
         }
     }
