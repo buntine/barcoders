@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["ascii","Functionality for generating ASCII representations of barcodes."],["image","Functionality for generating image representations of barcodes."],["svg","Functionality for generating SVG representations of barcodes."]]});

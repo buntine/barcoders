@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","The possible errors that can occur during barcode encoding and generation."]],"type":[["Result","Alias-type for Result<T, barcoders::error::Error>."]]});

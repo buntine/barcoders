@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["EANSUPP","The Supplemental EAN barcode type."]]});

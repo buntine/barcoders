@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `code128` mod in crate `barcoders`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, code128">
+
+    <title>barcoders::sym::code128 - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>barcoders</a>::<wbr><a href='../index.html'>sym</a></p><script>window.sidebarCurrent = {name: 'code128', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>barcoders</a>::<wbr><a href='../index.html'>sym</a>::<wbr><a class='mod' href=''>code128</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-329' class='srclink' href='../../../src/barcoders/sym/code128.rs.html#1-345' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Encoder for Code128 barcodes.</p>
+
+<p>Code128 is a popular, high-density symbology that allows for the encoding of alphanumeric
+data along with many special characters by utilising three separate character-sets.</p>
+
+<p>Code128 also offers double-density encoding of digits.</p>
+
+<p>Barcoders provides special Unicode syntax for specifying the character set(s) which should be
+used in the barcode:</p>
+
+<ul><li>\u{00C0} = Switch to character-set A (À)</li>
+<li>\u{0181} = Switch to character-set B (Ɓ)</li>
+<li>\u{0106} = Switch to character-set C (Ć)</li></ul>
+
+<p>You must provide both the starting character-set along with any changes during the data. This
+means all Code128 barcodes must start with either &quot;À&quot;, &quot;Ɓ&quot; or &quot;Ć&quot;. Simple alphanumeric data
+can generally use character-set A solely.</p>
+
+<p>As an example, this barcode uses character-set B:</p>
+
+<ul><li>\u{0181}HE1234A*1</li></ul>
+
+<p>Or:</p>
+
+<ul><li>ƁHE1234A*1</li></ul>
+
+<p>And this one starts at character-set A (the default) and then switches to C to encode the digits more
+effectively:</p>
+
+<ul><li>\u{00C0}HE@$A\u{0106}123456</li></ul>
+
+<p>Or:</p>
+
+<ul><li>ÀHE@$AĆ123456</li></ul>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.Code128.html'
+                               title='barcoders::sym::code128::Code128'>Code128</a></td>
+                        <td class='docblock short'>
+                             <p>The Code128 barcode type.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "barcoders";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

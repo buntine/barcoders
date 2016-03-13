@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Code39","The Code39 barcode type."]]});

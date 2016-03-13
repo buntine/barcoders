@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SVG","The SVG barcode generator type."]]});

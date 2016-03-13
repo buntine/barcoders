@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["error","Custom error types."],["generators","Supported methods of barcode generation."],["sym","Supported barcode symbologies."]]});

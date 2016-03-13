@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `TF` enum in crate `barcoders`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TF">
+
+    <title>barcoders::sym::tf::TF - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>barcoders</a>::<wbr><a href='../index.html'>sym</a>::<wbr><a href='index.html'>tf</a></p><script>window.sidebarCurrent = {name: 'TF', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../../index.html'>barcoders</a>::<wbr><a href='../index.html'>sym</a>::<wbr><a href='index.html'>tf</a>::<wbr><a class='enum' href=''>TF</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-628' class='srclink' href='../../../src/barcoders/sym/tf.rs.html#30-35' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum TF {
+    Standard(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;),
+    Interleaved(<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;),
+}</pre><div class='docblock'><p>The 2-of-5 barcode type.</p>
+</div><h2 class='variants'>Variants</h2>
+<table><tr><td id='variant.Standard'><code>Standard</code></td><td><div class='docblock'><p>The standard 2-of-5 barcode type.</p>
+</div></td></tr><tr><td id='variant.Interleaved'><code>Interleaved</code></td><td><div class='docblock'><p>The interleaved 2-of-5 barcode type.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='enum' href='../../../barcoders/sym/tf/enum.TF.html' title='barcoders::sym::tf::TF'>TF</a></code></h3><div class='impl-items'><h4 id='method.interleaved' class='method'><code>fn <a href='#method.interleaved' class='fnname'>interleaved</a>(data: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='type' href='../../../barcoders/error/type.Result.html' title='barcoders::error::Result'>Result</a>&lt;<a class='enum' href='../../../barcoders/sym/tf/enum.TF.html' title='barcoders::sym::tf::TF'>TF</a>&gt;</code></h4>
+<div class='docblock'><p>Creates a new ITF barcode.
+If the length of the given data is odd, a checksum value will be computed and appended to
+the data for encoding.</p>
+
+<p>Returns Result<TF::Interleaved, Error> indicating parse success.</p>
+</div><h4 id='method.standard' class='method'><code>fn <a href='#method.standard' class='fnname'>standard</a>(data: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='type' href='../../../barcoders/error/type.Result.html' title='barcoders::error::Result'>Result</a>&lt;<a class='enum' href='../../../barcoders/sym/tf/enum.TF.html' title='barcoders::sym::tf::TF'>TF</a>&gt;</code></h4>
+<div class='docblock'><p>Creates a new STF barcode.</p>
+
+<p>Returns Result<TF::Standard, Error> indicating parse success.</p>
+</div><h4 id='method.checksum_digit' class='method'><code>fn <a href='#method.checksum_digit' class='fnname'>checksum_digit</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;</code></h4>
+<div class='docblock'><p>Returns a Option<u8> reference to the checksum digit portion of the data.
+The Optional value is because Standard TF barcodes do not have a check digit.</p>
+</div><h4 id='method.encode' class='method'><code>fn <a href='#method.encode' class='fnname'>encode</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>&gt;</code></h4>
+<div class='docblock'><p>Encodes the barcode.
+Returns a Vec<u8> of binary digits.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../../../barcoders/sym/tf/enum.TF.html' title='barcoders::sym::tf::TF'>TF</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "barcoders";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

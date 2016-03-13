@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Image","The image generator type."],["Rotation","Possible rotation values for images."]]});

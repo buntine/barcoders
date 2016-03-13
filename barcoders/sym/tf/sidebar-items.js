@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["TF","The 2-of-5 barcode type."]]});

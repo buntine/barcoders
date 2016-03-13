@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["codabar","Encoder for Codabar barcodes."],["code128","Encoder for Code128 barcodes."],["code39","Encoder for Code39 barcodes."],["ean13","Encoder for UPC and EAN barcodes."],["ean8","Encoder for EAN-8 barcodes."],["ean_supp","Encoders for supplemental 2-digit and 5-digit EAN barcodes."],["tf","Encoder for 2-of-5 barcodes."]]});

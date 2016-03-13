@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ASCII","The ASCII barcode generator type."]]});
