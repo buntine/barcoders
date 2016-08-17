@@ -66,8 +66,8 @@ pub type JAN = EAN13;
 impl EAN13 {
     /// Creates a new barcode.
     /// Returns Result<EAN13, Error> indicating parse success.
-    pub fn new(data: String) -> Result<EAN13> {
-        match EAN13::parse(data) {
+    pub fn new<T: AsRef<str>>(data: T) -> Result<EAN13> {
+        match EAN13::parse(data.as_ref()) {
             Ok(d) => {
                 let digits = d.chars()
                               .map(|c| c.to_digit(10).expect("Unknown character") as u8)

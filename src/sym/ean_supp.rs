@@ -43,8 +43,8 @@ impl EANSUPP {
     /// Returns Result<EANSUPP, Error> indicating parse success.
     /// Either a EAN2 or EAN5 variant will be returned depending on
     /// the length of `data`.
-    pub fn new(data: String) -> Result<EANSUPP> {
-        match EANSUPP::parse(data) {
+    pub fn new<T: AsRef<str>>(data: T) -> Result<EANSUPP> {
+        match EANSUPP::parse(data.as_ref()) {
             Ok(d) => {
                 let digits: Vec<u8> = d.chars()
                                        .map(|c| c.to_digit(10).expect("Unknown character") as u8)

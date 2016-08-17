@@ -40,8 +40,8 @@ impl TF {
     /// the data for encoding.
     ///
     /// Returns Result<TF::Interleaved, Error> indicating parse success.
-    pub fn interleaved(data: String) -> Result<TF> {
-        match TF::parse(data) {
+    pub fn interleaved<T: AsRef<str>>(data: T) -> Result<TF> {
+        match TF::parse(data.as_ref()) {
             Ok(d) => {
                 let mut digits: Vec<u8> = d.chars()
                                            .map(|c| {
@@ -64,8 +64,8 @@ impl TF {
     /// Creates a new STF barcode.
     ///
     /// Returns Result<TF::Standard, Error> indicating parse success.
-    pub fn standard(data: String) -> Result<TF> {
-        match TF::parse(data) {
+    pub fn standard<T: AsRef<str>>(data: T) -> Result<TF> {
+        match TF::parse(data.as_ref()) {
             Ok(d) => {
                 let digits: Vec<u8> = d.chars()
                                        .map(|c| c.to_digit(10).expect("Unknown character") as u8)

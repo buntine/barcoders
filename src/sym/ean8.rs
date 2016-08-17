@@ -20,8 +20,8 @@ pub struct EAN8(Vec<u8>);
 impl EAN8 {
     /// Creates a new barcode.
     /// Returns Result<EAN8, String> indicating parse success.
-    pub fn new(data: String) -> Result<EAN8> {
-        match EAN8::parse(data) {
+    pub fn new<T: AsRef<str>>(data: T) -> Result<EAN8> {
+        match EAN8::parse(data.as_ref()) {
             Ok(d) => {
                 let digits = d.chars()
                               .map(|c| c.to_digit(10).expect("Unknown character") as u8)
