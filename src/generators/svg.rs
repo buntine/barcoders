@@ -33,7 +33,8 @@ impl SVG {
 
     /// Generates the given barcode. Returns a `Result<String, Error>` of the SVG data or an
     /// error message.
-    pub fn generate(&self, barcode: &[u8]) -> Result<String> {
+    pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
+        let barcode = barcode.as_ref();
         let width = (barcode.len() as u32) * self.xdim;
         let rects: String = barcode.iter()
                            .enumerate()
