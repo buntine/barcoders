@@ -37,9 +37,9 @@ impl ASCII {
     }
 
     /// Generates the given barcode. Returns a `Result<String, Error>` indicating success.
-    pub fn generate(&self, barcode: &[u8]) -> Result<String> {
+    pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
         let mut output = String::new();
-        let row = self.generate_row(&barcode);
+        let row = self.generate_row(barcode.as_ref());
 
         for (i, _l) in (0..self.height).enumerate() {
             output.push_str(&row[..]);

@@ -30,7 +30,7 @@ trait Parse {
     fn valid_chars() -> Vec<char>;
     fn valid_len() -> Range<u32>;
 
-    fn parse(data: String) -> Result<String, Error> {
+    fn parse(data: &str) -> Result<&str, Error> {
         let valid_chars = Self::valid_chars();
         let valid_len = Self::valid_len();
         let data_len = data.len() as u32;

@@ -42,7 +42,7 @@ pub struct Code39 {
 }
 
 impl Code39 {
-    fn init(data: String, checksum: bool) -> Result<Code39> {
+    fn init(data: &str, checksum: bool) -> Result<Code39> {
         match Code39::parse(data) {
             Ok(d) => {
                 Ok(Code39 {
@@ -56,14 +56,14 @@ impl Code39 {
 
     /// Creates a new barcode.
     /// Returns Result<Code39, Error> indicating parse success.
-    pub fn new(data: String) -> Result<Code39> {
-        Code39::init(data, false)
+    pub fn new<T: AsRef<str>>(data: T) -> Result<Code39> {
+        Code39::init(data.as_ref(), false)
     }
 
     /// Creates a new barcode with an appended check-digit, calculated using modulo-43..
     /// Returns Result<Code39, Error> indicating parse success.
-    pub fn with_checksum(data: String) -> Result<Code39> {
-        Code39::init(data, true)
+    pub fn with_checksum<T: AsRef<str>>(data: T) -> Result<Code39> {
+        Code39::init(data.as_ref(), true)
     }
 
     /// Calculates the checksum character using a modulo-43 algorithm.

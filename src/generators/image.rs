@@ -101,7 +101,8 @@ impl Image {
 
     /// Generates the given barcode. Returns a `Result<Vec<u8>, Error>` of the encoded bytes or
     /// an error message.
-    pub fn generate(&self, barcode: &[u8]) -> Result<Vec<u8>> {
+    pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<Vec<u8>> {
+        let barcode = barcode.as_ref();
         let (xdim, height, rotation, format) = match *self {
             Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
             Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r, image::PNG),

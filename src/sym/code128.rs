@@ -174,7 +174,8 @@ impl CharacterSet {
 impl Code128 {
     /// Creates a new barcode.
     /// Returns Result<Code128, Error> indicating parse success.
-    pub fn new(data: String) -> Result<Code128> {
+    pub fn new<T: AsRef<str>>(data: T) -> Result<Code128> {
+        let data = data.as_ref();
         if data.len() < 2 { 
             return Err(Error::Length);
         }
