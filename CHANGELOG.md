@@ -11,6 +11,12 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.6.0 (2016-08-18)
+
+- [changed] Avoid use of owned String in parsing.
+- [changed] Updated dependencies.
+- [fixed] Usage documentation in README.
+
 ### v0.5.0 (2016-02-04)
 
 - [added] Codabar symbology encoder.
