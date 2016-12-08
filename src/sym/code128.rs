@@ -162,7 +162,7 @@ impl CharacterSet {
     }
 
     fn lookup(&self, s: &str) -> Result<Unit> {
-        let p = try!(self.index());
+        let p = self.index()?;
 
         match CODE128_CHARS.iter().position(|&c| c.0[p] == s) {
             Some(i) => self.unit(i),
@@ -195,20 +195,20 @@ impl Code128 {
         for ch in chars {
             match ch {
                 'À' | 'Ɓ' | 'Ć' if units.is_empty() => { 
-                    char_set = try!(CharacterSet::from_char(ch));
+                    char_set = CharacterSet::from_char(ch)?;
 
                     let c = format!("START-{}", ch);
-                    let u = try!(char_set.lookup(&c));
+                    let u = char_set.lookup(&c)?;
                     units.push(u);
                 },
                 'À' | 'Ɓ' | 'Ć' => { 
                     if char_set == CharacterSet::C && carry.is_some() {
                         return Err(Error::Character);
                     } else {
-                        let u = try!(char_set.lookup(&ch.to_string()));
+                        let u = char_set.lookup(&ch.to_string())?;
                         units.push(u);
 
-                        char_set = try!(CharacterSet::from_char(ch));
+                        char_set = CharacterSet::from_char(ch)?;
                     }
                 },
                 d if d.is_digit(10) && char_set == CharacterSet::C => {
@@ -216,14 +216,14 @@ impl Code128 {
                         None => carry = Some(d),
                         Some(n) => {
                             let num = format!("{}{}", n, d);
-                            let u = try!(char_set.lookup(&num));
+                            let u = char_set.lookup(&num)?;
                             units.push(u);
                             carry = None;
                         }
                     }
                 },
                 _ => {
-                    let u = try!(char_set.lookup(&ch.to_string()));
+                    let u = char_set.lookup(&ch.to_string())?;
                     units.push(u);
                 },
             }

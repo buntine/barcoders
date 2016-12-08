@@ -84,7 +84,7 @@ impl Codabar {
     ///
     /// Returns Result<Codabar, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Codabar> {
-        let d = try!(Codabar::parse(data.as_ref()));
+        let d = Codabar::parse(data.as_ref())?;
         let units = d.chars()
                      .map(|c| Unit::from_char(c).unwrap())
                      .collect();
