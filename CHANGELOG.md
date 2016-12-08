@@ -11,7 +11,12 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
-### v0.6.0 (2016-08-18)
+### v0.6.0 (2016-12-09)
+
+- [changed] Swapped try!() macros for ? operator that was stableized in Rust 1.13
+- [changed] Usage documentation in README.
+
+### v0.5.1 (2016-08-18)
 
 - [changed] Avoid use of owned String in parsing.
 - [changed] Updated dependencies.
