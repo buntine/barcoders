@@ -1,11 +1,11 @@
 [package]
 name = "barcoders"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["Andrew Buntine <info@bunts.io>"]
 description = "A barcode-encoding library"
 homepage = "https://github.com/buntine/barcoders"
 repository = "https://github.com/buntine/barcoders"
-documentation = "http://buntine.github.io/barcoders/barcoders/index.html"
+documentation = "https://docs.rs/barcoders"
 readme = "README.md"
 keywords = ["barcode", "barcodes", "barcode-encoding"]
 license = "MIT OR Apache-2.0"

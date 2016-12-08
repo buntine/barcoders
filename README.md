@@ -31,7 +31,7 @@ See below for the feature associated to the generation functionality you desire.
 
 ## Documentation
 
-[Documentation and examples are available here](http://buntine.github.io/barcoders/barcoders/index.html).
+[Documentation and examples are available here](https://docs.rs/barcoders).
 
 ## Current Support
 
