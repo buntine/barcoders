@@ -13,6 +13,9 @@
 #[cfg(feature = "ascii")]
 pub mod ascii;
 
+#[cfg(feature = "json")]
+pub mod json;
+
 #[cfg(feature = "image")]
 pub mod image;
 
