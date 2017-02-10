@@ -54,31 +54,19 @@ mod tests {
     use ::generators::json::*;
 
     #[test]
-    fn ean_13_as_ascii() {
+    fn ean_13_as_json() {
         let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&ean13.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&ean13.encode()[..]).unwrap();
 
-        assert_eq!(generated,
-"
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-# # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-".trim().to_owned());
+        assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\": \"10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101\"}".trim().to_owned());
     }
 
     #[test]
-    fn ean_13_as_ascii_small_height_double_width() {
+    fn ean_13_as_json_small_height_double_width() {
         let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
-        let ascii = ASCII{height: 6, xdim: 2};
-        let generated = ascii.generate(&ean13.encode()[..]).unwrap();
+        let json = JSON{height: 6, xdim: 2};
+        let generated = json.generate(&ean13.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -92,10 +80,10 @@ mod tests {
     }
 
     #[test]
-    fn ean_8_as_ascii() {
+    fn ean_8_as_json() {
         let ean8 = EAN8::new("1234567".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&ean8.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&ean8.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -113,10 +101,10 @@ mod tests {
     }
 
     #[test]
-    fn ean_8_as_ascii_small_height_double_width() {
+    fn ean_8_as_json_small_height_double_width() {
         let ean8 = EAN8::new("1234567".to_owned()).unwrap();
-        let ascii = ASCII{height: 5, xdim: 2};
-        let generated = ascii.generate(&ean8.encode()[..]).unwrap();
+        let json = JSON{height: 5, xdim: 2};
+        let generated = json.generate(&ean8.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -129,10 +117,10 @@ mod tests {
     }
 
     #[test]
-    fn code_39_as_ascii() {
+    fn code_39_as_json() {
         let code39 = Code39::new("TEST8052".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&code39.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&code39.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -150,10 +138,10 @@ mod tests {
     }
 
     #[test]
-    fn code_39_as_ascii_small_height_double_weight() {
+    fn code_39_as_json_small_height_double_weight() {
         let code39 = Code39::new("1234".to_owned()).unwrap();
-        let ascii = ASCII{height: 7, xdim: 2};
-        let generated = ascii.generate(&code39.encode()[..]).unwrap();
+        let json = JSON{height: 7, xdim: 2};
+        let generated = json.generate(&code39.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -168,10 +156,10 @@ mod tests {
     }
 
     #[test]
-    fn codabar_as_ascii() {
+    fn codabar_as_json() {
         let codabar = Codabar::new("A98B".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&codabar.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&codabar.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -189,10 +177,10 @@ mod tests {
     }
 
     #[test]
-    fn codabar_as_ascii_small_height_double_weight() {
+    fn codabar_as_json_small_height_double_weight() {
         let codabar = Codabar::new("A40156B".to_owned()).unwrap();
-        let ascii = ASCII{height: 7, xdim: 2};
-        let generated = ascii.generate(&codabar.encode()[..]).unwrap();
+        let json = JSON{height: 7, xdim: 2};
+        let generated = json.generate(&codabar.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -207,10 +195,10 @@ mod tests {
     }
 
     #[test]
-    fn code_128_as_ascii() {
+    fn code_128_as_json() {
         let code128 = Code128::new("ÀHELLO".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&code128.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&code128.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -228,10 +216,10 @@ mod tests {
     }
 
     #[test]
-    fn code_128_as_ascii_small_height_double_weight() {
+    fn code_128_as_json_small_height_double_weight() {
         let code128 = Code128::new("ÀHELLO".to_owned()).unwrap();
-        let ascii = ASCII{height: 7, xdim: 2};
-        let generated = ascii.generate(&code128.encode()[..]).unwrap();
+        let json = JSON{height: 7, xdim: 2};
+        let generated = json.generate(&code128.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -246,10 +234,10 @@ mod tests {
     }
 
     #[test]
-    fn ean2_as_ascii() {
+    fn ean2_as_json() {
         let ean2 = EANSUPP::new("34".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&ean2.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&ean2.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -267,10 +255,10 @@ mod tests {
     }
 
     #[test]
-    fn ean5_as_ascii() {
+    fn ean5_as_json() {
         let ean5 = EANSUPP::new("50799".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&ean5.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&ean5.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
@@ -288,10 +276,10 @@ mod tests {
     }
 
     #[test]
-    fn itf_as_ascii() {
+    fn itf_as_json() {
         let itf = TF::interleaved("12345".to_owned()).unwrap();
-        let ascii = ASCII::new();
-        let generated = ascii.generate(&itf.encode()[..]).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&itf.encode()[..]).unwrap();
 
         assert_eq!(generated,
 "
