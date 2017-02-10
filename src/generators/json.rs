@@ -11,7 +11,6 @@
 //! }
 //! ```
 
-use std::iter::repeat;
 use error::Result;
 
 /// The JSON  barcode generator type.
@@ -34,14 +33,23 @@ impl JSON {
 
     /// Generates the given barcode. Returns a `Result<String, Error>` indicating success.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
-        let mut bits = barcode.as_ref()
-                          .iter()
-                          .fold(String::new(), |acc, &b| {
-                              acc + "1" + ","
-                          });
+        let mut bits = barcode
+                           .as_ref()
+                           .iter()
+                           .fold(String::new(), |acc, &b| {
+                               let n = match b {
+                                   0 => "0",
+                                   _ => "1",
+                               };
+
+                               acc + n + ","
+                           });
+
+        // Kill trailing comma.
         bits.pop();
 
-        let output = format!("{{\"height\":{},\"xdim\":{},\"encoding\":[{}]}}", self.height, self.xdim, bits);
+        let output = format!("{{\"height\":{},\"xdim\":{},\"encoding\":[{}]}}",
+                             self.height, self.xdim, bits);
 
         Ok(output)
     }
