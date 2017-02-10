@@ -11,6 +11,12 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.7.0 (2017-02-11)
+
+- [added] Added JSON generator. Very simple, but useful for sending encoded data to third parties.
+- [fixed] Removed obsolete imports in ASCII generator.
+- [changed] Usage documentation in README.
+
 ### v0.6.0 (2016-12-09)
 
 - [changed] Swapped try!() macros for ? operator that was stableized in Rust 1.13

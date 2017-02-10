@@ -31,11 +31,12 @@
 //! functionality to be compiled into your app.
 //!
 //! * ASCII (feature: `ascii`)
+//! * JSON (feature: `json`)
 //! * SVG (feature: `svg`)
 //! * PNG (feature: `image`)
 //! * GIF (feature: `image`)
 //! * JPEG (feature: `image`)
-//! * More coming! (PostScript, etc)
+//! * Or add your own
 //!
 //! ## Examples
 //!
