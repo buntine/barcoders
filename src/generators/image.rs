@@ -19,7 +19,7 @@
 
 extern crate image;
 
-use image::GenericImage;
+//use image::GenericImage;
 use image::ImageBuffer;
 use error::{Result, Error};
 
@@ -164,7 +164,7 @@ mod tests {
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = false;
+    const WRITE_TO_FILE: bool = true;
 
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()

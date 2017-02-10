@@ -66,7 +66,7 @@ mod tests {
     use std::path::Path;
 
     const TEST_DATA_BASE: &'static str = "./target/debug";
-    const WRITE_TO_FILE: bool = false;
+    const WRITE_TO_FILE: bool = true;
 
     fn write_file(data: &str, file: &'static str) {
         let path = open_file(file);
