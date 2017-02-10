@@ -5,7 +5,6 @@
 //! You will pretty much never need to turn this feature on unless you are adding new functionality
 //! or running the test suite.
 
-use std::iter::repeat;
 use error::Result;
 
 /// The ASCII barcode generator type.
