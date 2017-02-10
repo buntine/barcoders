@@ -7,9 +7,7 @@
 //! {
 //!   "height": 10,
 //!   "xdim": 1,
-//!   "encoding": [
-//!     1, 0, 0, 1, 1, 0, ...
-//!   ]
+//!   "encoding": [1, 0, 0, 1, 1, 0, ...],
 //! }
 //! ```
 
@@ -36,7 +34,14 @@ impl JSON {
 
     /// Generates the given barcode. Returns a `Result<String, Error>` indicating success.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
-        let mut output = String::new();
+        let mut bits = barcode.as_ref()
+                          .iter()
+                          .fold(String::new(), |acc, &b| {
+                              acc + "1" + ","
+                          });
+        bits.pop();
+
+        let output = format!("{{\"height\":{},\"xdim\":{},\"encoding\":[{}]}}", self.height, self.xdim, bits);
 
         Ok(output)
     }
@@ -59,7 +64,7 @@ mod tests {
         let json = JSON::new();
         let generated = json.generate(&ean13.encode()[..]).unwrap();
 
-        assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\": \"10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101\"}".trim().to_owned());
+        assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\":[1,0,1,0,1,1,0,0,0,1,0,1,0,0,1,1,1,0,0,1,1,0,0,1,0,1,0,0,1,1,1,0,1,1,1,1,0,1,0,1,1,0,0,1,1,0,1,0,1,0,1,0,0,0,0,1,0,1,1,0,0,1,1,0,1,1,0,0,1,1,0,1,0,0,0,0,1,0,1,1,1,0,0,1,0,1,1,1,0,1,0,0,1,0,1]}".trim().to_owned());
     }
 
     #[test]
