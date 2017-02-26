@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/buntine/barcoders/badge.svg?branch=master&service=github)](https://coveralls.io/github/buntine/barcoders?branch=master)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Crates.io](http://meritbadge.herokuapp.com/barcoders)](https://crates.io/crates/barcoders)
-[![Clippy Linting Result](http://clippy.bashy.io/github/buntine/barcoders/master/badge.svg)](http://clippy.bashy.io/github/buntine/barcoders/master/log)
+[![Algorithmia](https://algorithmia.com/algorithms/anowell/barcoders/badge)](https://algorithmia.com/algorithms/anowell/barcoders)
 
 ![BARCODERS](/media/logo.jpg?raw=true "BARCODERS")
 
