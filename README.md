@@ -23,7 +23,7 @@ If you want to generate barcodes into a particular format, turn on the appropria
 
 ```toml
 [dependencies]
-barcoders = {version = "0.7.0", features = ["image", "ascii", "svg"]}
+barcoders = {version = "0.7.0", features = ["image", "ascii", "svg", "json"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -171,7 +171,7 @@ the appropriate test modules.
 
 Full suite:
 ```
-$ cargo test --features="image svg ascii"
+$ cargo test --features="image svg ascii json"
 ```
 
 Encoding only:
