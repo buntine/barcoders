@@ -44,20 +44,17 @@ impl EANSUPP {
     /// Either a EAN2 or EAN5 variant will be returned depending on
     /// the length of `data`.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EANSUPP> {
-        match EANSUPP::parse(data.as_ref()) {
-            Ok(d) => {
-                let digits: Vec<u8> = d.chars()
-                                       .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                                       .collect();
+        EANSUPP::parse(data.as_ref()).and_then(|d| {
+            let digits: Vec<u8> = d.chars()
+                                   .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                                   .collect();
 
-                match digits.len() {
-                    2 => Ok(EANSUPP::EAN2(digits)),
-                    5 => Ok(EANSUPP::EAN5(digits)),
-                    _ => Err(Error::Length),
-                }
+            match digits.len() {
+                2 => Ok(EANSUPP::EAN2(digits)),
+                5 => Ok(EANSUPP::EAN5(digits)),
+                _ => Err(Error::Length),
             }
-            Err(e) => Err(e),
-        }
+        })
     }
 
     fn raw_data(&self) -> &[u8] {

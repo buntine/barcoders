@@ -180,10 +180,9 @@ impl Code128 {
             return Err(Error::Length);
         }
 
-        match Code128::parse(data.chars().collect()) {
-            Ok(u) => Ok(Code128(u)),
-            Err(e) => Err(e),
-        }
+        Code128::parse(data.chars().collect()).and_then(|u| {
+            Ok(Code128(u))
+        })
     }
 
     // Tokenizes and collects the data into the appropriate character-sets.

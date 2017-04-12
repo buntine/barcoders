@@ -41,39 +41,33 @@ impl TF {
     ///
     /// Returns Result<TF::Interleaved, Error> indicating parse success.
     pub fn interleaved<T: AsRef<str>>(data: T) -> Result<TF> {
-        match TF::parse(data.as_ref()) {
-            Ok(d) => {
-                let mut digits: Vec<u8> = d.chars()
-                                           .map(|c| {
-                                               c.to_digit(10).expect("Unknown character") as u8
-                                           })
-                                           .collect();
-                let checksum_required = digits.len() % 2 == 1;
+        TF::parse(data.as_ref()).and_then(|d| {
+            let mut digits: Vec<u8> = d.chars()
+                                       .map(|c| {
+                                           c.to_digit(10).expect("Unknown character") as u8
+                                       })
+                                       .collect();
+            let checksum_required = digits.len() % 2 == 1;
 
-                if checksum_required {
-                    let check_digit = helpers::modulo_10_checksum(&digits[..], false);
-                    digits.push(check_digit);
-                }
-
-                Ok(TF::Interleaved(digits))
+            if checksum_required {
+                let check_digit = helpers::modulo_10_checksum(&digits[..], false);
+                digits.push(check_digit);
             }
-            Err(e) => Err(e),
-        }
+
+            Ok(TF::Interleaved(digits))
+        })
     }
 
     /// Creates a new STF barcode.
     ///
     /// Returns Result<TF::Standard, Error> indicating parse success.
     pub fn standard<T: AsRef<str>>(data: T) -> Result<TF> {
-        match TF::parse(data.as_ref()) {
-            Ok(d) => {
-                let digits: Vec<u8> = d.chars()
-                                       .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                                       .collect();
-                Ok(TF::Standard(digits))
-            }
-            Err(e) => Err(e),
-        }
+        TF::parse(data.as_ref()).and_then(|d| {
+            let digits: Vec<u8> = d.chars()
+                                   .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                                   .collect();
+            Ok(TF::Standard(digits))
+        })
     }
 
     fn raw_data(&self) -> &[u8] {

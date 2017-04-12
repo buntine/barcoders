@@ -43,15 +43,12 @@ pub struct Code39 {
 
 impl Code39 {
     fn init(data: &str, checksum: bool) -> Result<Code39> {
-        match Code39::parse(data) {
-            Ok(d) => {
-                Ok(Code39 {
-                    data: d.chars().collect(),
-                    checksum: checksum,
-                })
-            }
-            Err(e) => Err(e),
-        }
+        Code39::parse(data).and_then(|d| {
+            Ok(Code39 {
+                data: d.chars().collect(),
+                checksum: checksum,
+            })
+        })
     }
 
     /// Creates a new barcode.
