@@ -40,11 +40,11 @@ const PARITY: [[usize; 5]; 10] = [
     [1,1,0,1,0],
 ];
 
-/// The left-hard guard pattern.
+/// The left-hand guard pattern.
 pub const EAN_LEFT_GUARD: [u8; 3] = [1, 0, 1];
 /// The middle guard pattern.
 pub const EAN_MIDDLE_GUARD: [u8; 5] = [0, 1, 0, 1, 0];
-/// The right-hard guard pattern.
+/// The right-hand guard pattern.
 pub const EAN_RIGHT_GUARD: [u8; 3] = [1, 0, 1];
 
 /// The EAN-13 barcode type.
@@ -60,22 +60,19 @@ pub type Bookland = EAN13;
 pub type UPCA = EAN13;
 
 /// The JAN barcode type.
-/// JAN are EAN-13 that use number system of 49.
+/// JAN are EAN-13 that use number system 49.
 pub type JAN = EAN13;
 
 impl EAN13 {
     /// Creates a new barcode.
     /// Returns Result<EAN13, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN13> {
-        match EAN13::parse(data.as_ref()) {
-            Ok(d) => {
-                let digits = d.chars()
-                              .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                              .collect();
-                Ok(EAN13(digits))
-            }
-            Err(e) => Err(e),
-        }
+        EAN13::parse(data.as_ref()).and_then(|d| {
+            let digits = d.chars()
+                          .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                          .collect();
+            Ok(EAN13(digits))
+        })
     }
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
