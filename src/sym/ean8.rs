@@ -21,15 +21,12 @@ impl EAN8 {
     /// Creates a new barcode.
     /// Returns Result<EAN8, String> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN8> {
-        match EAN8::parse(data.as_ref()) {
-            Ok(d) => {
-                let digits = d.chars()
-                              .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                              .collect();
-                Ok(EAN8(digits))
-            }
-            Err(e) => Err(e),
-        }
+        EAN8::parse(data.as_ref()).and_then(|d| {
+            let digits = d.chars()
+                          .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                          .collect();
+            Ok(EAN8(digits))
+        })
     }
 
     /// Calculates the checksum digit using a weighting algorithm.
