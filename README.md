@@ -164,6 +164,28 @@ assert_eq!(ascii.unwrap(),
 ".trim().to_owned());
 ```
 
+
+### JSON generation
+```rust
+extern crate barcoders;
+
+use barcoders::sym::codabar::*;
+use barcoders::generators::json::*;
+
+let codabar = Codabar::new("A98B".to_owned()).unwrap();
+let json = JSON::new();
+let generated = json.generate(&codabar.encode()[..]);
+
+assert_eq!(generated.unwrap(),
+"
+{
+ \"height\": 10,
+ \"xdim\": 1,
+ \"encoding\": [1,0,1,1,0,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,1]
+}
+"
+```
+
 ## Tests
 
 Note, if you want to output actual image/svg files to the filesystem, set the `WRITE_TO_FILE` variable in

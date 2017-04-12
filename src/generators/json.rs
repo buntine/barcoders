@@ -34,16 +34,16 @@ impl JSON {
     /// Generates the given barcode. Returns a `Result<String, Error>` indicating success.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
         let mut bits = barcode
-                           .as_ref()
-                           .iter()
-                           .fold(String::new(), |acc, &b| {
-                               let n = match b {
-                                   0 => "0",
-                                   _ => "1",
-                               };
+            .as_ref()
+            .iter()
+            .fold(String::new(), |acc, &b| {
+                let n = match b {
+                    0 => "0",
+                    _ => "1",
+                };
 
-                               acc + n + ","
-                           });
+                acc + n + ","
+            });
 
         // Kill trailing comma.
         bits.pop();
