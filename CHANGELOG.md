@@ -11,6 +11,11 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.7.1 (staged)
+
+- [changed] Saving 88 bytes in SVG generation.
+- [changed] Refactor pattern matching statements to use 'and_then' combinator.
+
 ### v0.7.0 (2017-02-11)
 
 - [added] Added JSON generator. Very simple, but useful for sending encoded data to third parties.
