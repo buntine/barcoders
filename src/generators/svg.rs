@@ -37,16 +37,13 @@ impl SVG {
         let barcode = barcode.as_ref();
         let width = (barcode.len() as u32) * self.xdim;
         let rects: String = barcode.iter()
-                           .enumerate()
-                           .filter(|&(_, &n)| n == 1)
-                           .map(|(i, &n)| self.rect(n, (i as u32 * self.xdim), self.xdim))
-                           .collect();
-        let svg = format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">
-                             {s}
-                             {r}
-                           </svg>", w=width, h=self.height, s=self.rect(0, 0, width), r=rects);
+            .enumerate()
+            .filter(|&(_, &n)| n == 1)
+            .map(|(i, &n)| self.rect(n, (i as u32 * self.xdim), self.xdim))
+            .collect();
 
-        Ok(svg)
+        Ok(format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">{s}{r}</svg>",
+                   w=width, h=self.height, s=self.rect(0, 0, width), r=rects))
     }
 }
 
@@ -86,7 +83,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
 
-        assert_eq!(generated.len(), 2928);
+        assert_eq!(generated.len(), 2840);
     }
 
     #[test]
@@ -97,7 +94,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.svg"); }
 
-        assert_eq!(generated.len(), 1976);
+        assert_eq!(generated.len(), 1888);
     }
 
     #[test]
@@ -108,7 +105,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
 
-        assert_eq!(generated.len(), 6514);
+        assert_eq!(generated.len(), 6426);
     }
 
     #[test]
@@ -119,7 +116,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.svg"); }
 
-        assert_eq!(generated.len(), 2987);
+        assert_eq!(generated.len(), 2899);
     }
 
     #[test]
@@ -130,7 +127,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code128.svg"); }
 
-        assert_eq!(generated.len(), 2764);
+        assert_eq!(generated.len(), 2676);
     }
 
     #[test]
@@ -141,7 +138,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean2.svg"); }
 
-        assert_eq!(generated.len(), 801);
+        assert_eq!(generated.len(), 713);
     }
 
     #[test]
@@ -152,6 +149,6 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "itf.svg"); }
 
-        assert_eq!(generated.len(), 7249);
+        assert_eq!(generated.len(), 7161);
     }
 }
