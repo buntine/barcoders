@@ -13,7 +13,7 @@ use error::Result;
 use std::ops::Range;
 use std::char;
 
-const TF_WIDTHS: [&'static str; 10] = [
+const TF_WIDTHS: [&str; 10] = [
     "NNWWN", "WNNNW", "NWNNW",
     "WWNNN", "NNWNW", "WNWNN",
     "NWWNN", "NNNWW", "WNNWN",

@@ -56,7 +56,7 @@ enum CharacterSet {
 }
 
 // Character -> Binary mappings for each of the allowable characters in each character-set.
-const CODE128_CHARS: [([&'static str; 3], Encoding); 106] = [
+const CODE128_CHARS: [([&str; 3], Encoding); 106] = [
     ([" ", " ", "00"], [1,1,0,1,1,0,0,1,1,0,0]), (["!", "!", "01"], [1,1,0,0,1,1,0,1,1,0,0]), 
     (["\"", "\"", "02"], [1,1,0,0,1,1,0,0,1,1,0]), (["#", "#", "03"], [1,0,0,1,0,0,1,1,0,0,0]),
     (["$", "$", "04"], [1,0,0,1,0,0,0,1,1,0,0]), (["%", "%", "05"], [1,0,0,0,1,0,0,1,1,0,0]),

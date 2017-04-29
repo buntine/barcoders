@@ -62,7 +62,7 @@ mod tests {
     use std::fs::File;
     use std::path::Path;
 
-    const TEST_DATA_BASE: &'static str = "./target/debug";
+    const TEST_DATA_BASE: &str = "./target/debug";
     const WRITE_TO_FILE: bool = true;
 
     fn write_file(data: &str, file: &'static str) {
