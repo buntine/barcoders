@@ -156,7 +156,7 @@ impl TF {
 
 impl Parse for TF {
     /// Returns the valid length of data acceptable in this type of barcode.
-    /// 2-of5 barcodes are variable-length.
+    /// 2-of-5 barcodes are variable-length.
     fn valid_len() -> Range<u32> {
         1..256
     }
