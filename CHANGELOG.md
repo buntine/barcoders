@@ -13,6 +13,7 @@ Possible log types:
 
 ### v0.7.1 (staged)
 
+- [removed] Removed static lifetime indicators in consts (as implemented in Ruby 1.17).
 - [changed] Saving 88 bytes in SVG generation.
 - [changed] Refactor pattern matching statements to use 'and_then' combinator.
 
