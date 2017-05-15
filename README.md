@@ -136,6 +136,9 @@ writer.write(data.as_bytes()).unwrap();
 
 
 ### ASCII generation
+
+The ASCII generator is useful for testing purposes.
+
 ```rust
 extern crate barcoders;
 
@@ -145,7 +148,6 @@ use barcoders::generators::ascii::*;
 let barcode = EAN13::new("750103131130".to_owned()).unwrap();
 let encoded = barcode.encode();
 
-// The ASCII generator is useful for testing purposes.
 let ascii = ASCII::new();
 ascii.generate(&encoded[..]);
 
@@ -166,6 +168,9 @@ assert_eq!(ascii.unwrap(),
 
 
 ### JSON generation
+
+This may be useful for passing encoded data to third-party systems in a conventional format.
+
 ```rust
 extern crate barcoders;
 
@@ -188,8 +193,8 @@ assert_eq!(generated.unwrap(),
 
 ## Tests
 
-Note, if you want to output actual image/svg files to the filesystem, set the `WRITE_TO_FILE` variable in
-the appropriate test modules.
+Note, if you want to output actual image/svg files to the filesystem for visual confirmation, set
+the `WRITE_TO_FILE` variable in the appropriate test modules.
 
 Full suite:
 ```
