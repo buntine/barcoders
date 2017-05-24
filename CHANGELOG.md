@@ -11,9 +11,10 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
-### v0.7.1 (staged)
+### v0.8.0 (staged)
 
-- [removed] Removed static lifetime indicators in consts (as implemented in Ruby 1.17).
+- [changed] Updated image dependency from 0.10.3 to 0.13.0
+- [removed] Removed static lifetime indicators in consts (as implemented in Rust 1.17).
 - [changed] Saving 88 bytes in SVG generation.
 - [changed] Refactor pattern matching statements to use 'and_then' combinator.
 
