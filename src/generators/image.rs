@@ -199,7 +199,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.png"); }
 
-        assert_eq!(generated.len(), 529);
+        assert_eq!(generated.len(), 2001);
     }
 
     #[test]
@@ -214,7 +214,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13_90.png"); }
 
-        assert_eq!(generated.len(), 249);
+        assert_eq!(generated.len(), 213);
     }
 
     #[test]
@@ -229,7 +229,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.jpg"); }
 
-        assert_eq!(generated.len(), 6546);
+        assert_eq!(generated.len(), 7614);
     }
 
     #[test]
@@ -244,7 +244,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.png"); }
 
-        assert_eq!(generated.len(), 963);
+        assert_eq!(generated.len(), 1620);
     }
 
     #[test]
@@ -289,7 +289,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.png"); }
 
-        assert_eq!(generated.len(), 365);
+        assert_eq!(generated.len(), 250);
     }
 
     #[test]
@@ -334,7 +334,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code128.png"); }
 
-        assert_eq!(generated.len(), 538);
+        assert_eq!(generated.len(), 1524);
     }
 
     #[test]
@@ -379,7 +379,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.png"); }
 
-        assert_eq!(generated.len(), 1715);
+        assert_eq!(generated.len(), 240);
     }
 
     #[test]
@@ -394,7 +394,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8_270.png"); }
 
-        assert_eq!(generated.len(), 303);
+        assert_eq!(generated.len(), 244);
     }
 
     #[test]
@@ -424,7 +424,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.jpg"); }
 
-        assert_eq!(generated.len(), 2375);
+        assert_eq!(generated.len(), 2736);
     }
 
     #[test]
@@ -439,7 +439,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean2.png"); }
 
-        assert_eq!(generated.len(), 204);
+        assert_eq!(generated.len(), 542);
     }
 
     #[test]
@@ -469,7 +469,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean5.jpg"); }
 
-        assert_eq!(generated.len(), 6566);
+        assert_eq!(generated.len(), 7458);
     }
 
     #[test]
@@ -484,7 +484,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ift.png"); }
 
-        assert_eq!(generated.len(), 3284);
+        assert_eq!(generated.len(), 2131);
     }
 
     #[test]
@@ -499,7 +499,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "sft.png"); }
 
-        assert_eq!(generated.len(), 1763);
+        assert_eq!(generated.len(), 2049);
     }
 
     #[test]
@@ -529,6 +529,6 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
 
-        assert_eq!(generated.len(), 3888);
+        assert_eq!(generated.len(), 4384);
     }
 }
