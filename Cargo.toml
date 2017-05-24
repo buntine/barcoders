@@ -21,4 +21,4 @@ dev = ["clippy"]
 
 [dependencies]
 image = {version = "0.13.0", optional = true}
-clippy = {version = "0.0.83", optional = true}
+clippy = {version = "0.0.134", optional = true}
