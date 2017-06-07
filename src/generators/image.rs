@@ -21,6 +21,7 @@ extern crate image;
 
 //use image::GenericImage;
 use image::ImageBuffer;
+use image::Rgba;
 use error::{Result, Error};
 
 /// Possible rotation values for images.
@@ -147,7 +148,7 @@ impl Image {
 
     /// Generates the given barcode. Returns a `Result<Vec<ImageBuffer>, Error>` of the encoded bytes or
     /// an error message.
-    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer> {
+    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
         let barcode = barcode.as_ref();
         let (xdim, height, rotation, format) = match *self {
             Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
@@ -158,7 +159,6 @@ impl Image {
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
-        let mut bytes: Vec<u8> = vec![];
 
         for y in 0..height {
             for &b in barcode {
@@ -185,7 +185,7 @@ impl Image {
             _ => img,
         };
 
-        Ok(img)
+        Ok(img.to_rgba())
     }
 
 }
@@ -586,9 +586,7 @@ mod tests {
         };
         let generated = jpeg.generate_buffer(&itf.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
-
-        assert_eq!(generated.height, 130);
+        assert_eq!(generated.height(), 130);
     }
 
 }
