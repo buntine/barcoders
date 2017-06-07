@@ -70,6 +70,16 @@ pub enum Image {
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
     },
+    /// Generic image buffer generator type.
+    ImageBuffer {
+        /// The height of the barcode in pixels.
+        height: u32,
+        /// The X dimension. Specifies the width of the "narrow" bars. 
+        /// For JPEG, each will be ```self.xdim``` pixels wide.
+        xdim: u32,
+        /// The rotation to apply to the generated barcode.
+        rotation: Rotation,
+    },
 }
 
 impl Image {
@@ -108,6 +118,7 @@ impl Image {
             Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
             Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r, image::PNG),
             Image::JPEG{height: h, xdim: x, rotation: r} => (x, h, r, image::JPEG),
+            _ => return Err(Error::Generate)
         };
 
         let width = (barcode.len() as u32) * xdim;
@@ -150,12 +161,10 @@ impl Image {
     /// an error message.
     pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
         let barcode = barcode.as_ref();
-        let (xdim, height, rotation, format) = match *self {
-            Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
-            Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r, image::PNG),
-            Image::JPEG{height: h, xdim: x, rotation: r} => (x, h, r, image::JPEG),
+        let (xdim, height, rotation) = match *self {
+            Image::ImageBuffer{height: h, xdim: x, rotation: r} => (x, h, r),
+            _ => return Err(Error::Generate)
         };
-
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
@@ -187,7 +196,6 @@ impl Image {
 
         Ok(img.to_rgba())
     }
-
 }
 
 #[cfg(test)]
@@ -579,7 +587,7 @@ mod tests {
     #[test]
     fn itf_as_imagebuffer() {
         let itf = TF::interleaved("98766543561".to_owned()).unwrap();
-        let jpeg = Image::JPEG {
+        let jpeg = Image::ImageBuffer {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
