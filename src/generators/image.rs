@@ -136,7 +136,7 @@ impl Image {
             Rotation::Ninety => img.rotate90(),
             Rotation::OneEighty => img.rotate180(),
             Rotation::TwoSeventy => img.rotate270(),
-            Rotation::Zero => img,
+            _ => img,
         };
 
         match img.save(&mut bytes, format) {
@@ -144,6 +144,50 @@ impl Image {
             _ => Err(Error::Generate),
         }
     }
+
+    /// Generates the given barcode. Returns a `Result<Vec<ImageBuffer>, Error>` of the encoded bytes or
+    /// an error message.
+    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer> {
+        let barcode = barcode.as_ref();
+        let (xdim, height, rotation, format) = match *self {
+            Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
+            Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r, image::PNG),
+            Image::JPEG{height: h, xdim: x, rotation: r} => (x, h, r, image::JPEG),
+        };
+
+        let width = (barcode.len() as u32) * xdim;
+        let mut buffer = ImageBuffer::new(width, height);
+        let mut pos = 0;
+        let mut bytes: Vec<u8> = vec![];
+
+        for y in 0..height {
+            for &b in barcode {
+                let size = xdim;
+
+                if b == 0 {
+                    for p in 0..size {
+                        buffer.put_pixel(pos + p, y, image::Luma([255]));
+                    }
+                }
+
+                pos += size;
+            }
+
+            pos = 0;
+        }
+
+        let mut img = image::ImageLuma8(buffer);
+
+        img = match rotation {
+            Rotation::Ninety => img.rotate90(),
+            Rotation::OneEighty => img.rotate180(),
+            Rotation::TwoSeventy => img.rotate270(),
+            _ => img,
+        };
+
+        Ok(img)
+    }
+
 }
 
 #[cfg(test)]
@@ -531,4 +575,20 @@ mod tests {
 
         assert_eq!(generated.len(), 4384);
     }
+
+    #[test]
+    fn itf_as_imagebuffer() {
+        let itf = TF::interleaved("98766543561".to_owned()).unwrap();
+        let jpeg = Image::JPEG {
+            height: 130,
+            xdim: 1,
+            rotation: Rotation::Zero,
+        };
+        let generated = jpeg.generate_buffer(&itf.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
+
+        assert_eq!(generated.height, 130);
+    }
+
 }
