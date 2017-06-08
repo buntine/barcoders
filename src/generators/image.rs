@@ -113,42 +113,14 @@ impl Image {
     /// an error message.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<Vec<u8>> {
         let barcode = barcode.as_ref();
-        let (xdim, height, rotation, format) = match *self {
-            Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r, image::GIF),
-            Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r, image::PNG),
-            Image::JPEG{height: h, xdim: x, rotation: r} => (x, h, r, image::JPEG),
+        let format = match *self {
+            Image::GIF{..} => image::GIF,
+            Image::PNG{..} => image::PNG,
+            Image::JPEG{..} => image::JPEG,
             _ => return Err(Error::Generate)
         };
-
-        let width = (barcode.len() as u32) * xdim;
-        let mut buffer = ImageBuffer::new(width, height);
-        let mut pos = 0;
         let mut bytes: Vec<u8> = vec![];
-
-        for y in 0..height {
-            for &b in barcode {
-                let size = xdim;
-
-                if b == 0 {
-                    for p in 0..size {
-                        buffer.put_pixel(pos + p, y, Luma([255]));
-                    }
-                }
-
-                pos += size;
-            }
-
-            pos = 0;
-        }
-
-        let mut img = ImageLuma8(buffer);
-
-        img = match rotation {
-            Rotation::Ninety => img.rotate90(),
-            Rotation::OneEighty => img.rotate180(),
-            Rotation::TwoSeventy => img.rotate270(),
-            _ => img,
-        };
+        let img = self.place_pixels(&barcode);
 
         match img.save(&mut bytes, format) {
             Ok(_) => Ok(bytes),
@@ -160,7 +132,6 @@ impl Image {
     /// Generates the given barcode. Returns a `Result<Vec<ImageBuffer>, Error>` of the encoded bytes or
     /// an error message.
     pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Luma<u8>, Vec<u8>>> {
-        //let barcode = barcode.as_ref();
         let img = self.place_pixels(&barcode);
 
         Ok(img.to_luma())
@@ -194,7 +165,7 @@ impl Image {
             pos = 0;
         }
 
-        let mut img = ImageLuma8(buffer);
+        let img = ImageLuma8(buffer);
 
         match rotation {
             Rotation::Ninety => img.rotate90(),
