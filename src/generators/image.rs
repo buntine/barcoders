@@ -260,6 +260,20 @@ mod tests {
     }
 
     #[test]
+    fn ean_13_as_image_buffer() {
+        let ean13 = EAN13::new("7503995991130".to_owned()).unwrap();
+        let img = Image::ImageBuffer {
+            height: 99,
+            xdim: 1,
+            rotation: Rotation::Zero,
+        };
+        let generated = img.generate_buffer(&ean13.encode()[..]).unwrap();
+
+        assert_eq!(generated.height(), 99);
+        assert_eq!(generated.width(), 102);
+    }
+
+    #[test]
     fn code39_as_png() {
         let code39 = Code39::new("ILOVEMEL".to_owned()).unwrap();
         let png = Image::PNG {
@@ -395,6 +409,20 @@ mod tests {
     }
 
     #[test]
+    fn rotated_code128_as_image_buffer() {
+        let code128 = Code128::new("ƁCLOJURE".to_owned()).unwrap();
+        let img = Image::ImageBuffer {
+            height: 93,
+            xdim: 2,
+            rotation: Rotation::OneEighty,
+        };
+        let generated = img.generate_buffer(&code128.encode()[..]).unwrap();
+
+        assert_eq!(generated.height(), 93);
+        assert_eq!(generated.width(), 224);
+    }
+
+    #[test]
     fn ean8_as_png() {
         let ean8 = EAN8::new("5512345".to_owned()).unwrap();
         let png = Image::PNG {
@@ -500,6 +528,20 @@ mod tests {
     }
 
     #[test]
+    fn ean5_as_imagebuffer() {
+        let ean5 = EANSUPP::new("99888".to_owned()).unwrap();
+        let img = Image::ImageBuffer {
+            height: 140,
+            xdim: 1,
+            rotation: Rotation::Zero,
+        };
+        let generated = img.generate_buffer(&ean5.encode()[..]).unwrap();
+
+        assert_eq!(generated.height(), 140);
+        assert_eq!(generated.width(), 47);
+    }
+
+    #[test]
     fn itf_as_png() {
         let itf = TF::interleaved("1234567".to_owned()).unwrap();
         let png = Image::PNG {
@@ -562,13 +604,26 @@ mod tests {
     #[test]
     fn itf_as_imagebuffer() {
         let itf = TF::interleaved("98766543561".to_owned()).unwrap();
-        let jpeg = Image::ImageBuffer {
+        let img = Image::ImageBuffer {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
         };
-        let generated = jpeg.generate_buffer(&itf.encode()[..]).unwrap();
+        let generated = img.generate_buffer(&itf.encode()[..]).unwrap();
 
         assert_eq!(generated.height(), 130);
+        assert_eq!(generated.width(), 116);
+    }
+
+    #[test]
+    fn image_buffer_fails_on_generate() {
+        let itf = TF::interleaved("98766543561".to_owned()).unwrap();
+        let img = Image::ImageBuffer {
+            height: 130,
+            xdim: 1,
+            rotation: Rotation::Zero,
+        };
+
+        assert!(img.generate(&itf.encode()[..]).is_err());
     }
 }
