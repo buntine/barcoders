@@ -126,7 +126,6 @@ impl Image {
         }
     }
 
-
     /// Generates the given barcode to an image::ImageBuffer. Returns a `Result<ImageBuffer<Luma<u8>, Vec<u8>>, Error>`
     /// of the encoded bytes or an error message.
     pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Luma<u8>, Vec<u8>>> {
