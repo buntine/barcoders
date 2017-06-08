@@ -19,7 +19,6 @@
 
 extern crate image;
 
-//use image::GenericImage;
 use image::{ImageBuffer, Luma, ImageLuma8, DynamicImage};
 use error::{Result, Error};
 
@@ -112,7 +111,6 @@ impl Image {
     /// Generates the given barcode. Returns a `Result<Vec<u8>, Error>` of the encoded bytes or
     /// an error message.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<Vec<u8>> {
-        let barcode = barcode.as_ref();
         let format = match *self {
             Image::GIF{..} => image::GIF,
             Image::PNG{..} => image::PNG,
@@ -129,8 +127,8 @@ impl Image {
     }
 
 
-    /// Generates the given barcode. Returns a `Result<Vec<ImageBuffer>, Error>` of the encoded bytes or
-    /// an error message.
+    /// Generates the given barcode to an image::ImageBuffer. Returns a `Result<ImageBuffer<Luma<u8>, Vec<u8>>, Error>`
+    /// of the encoded bytes or an error message.
     pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Luma<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
 
@@ -574,5 +572,4 @@ mod tests {
 
         assert_eq!(generated.height(), 130);
     }
-
 }
