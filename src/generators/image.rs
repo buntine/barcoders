@@ -20,7 +20,7 @@
 extern crate image;
 
 //use image::GenericImage;
-use image::{ImageBuffer, Luma, ImageLuma8};
+use image::{ImageBuffer, Luma, ImageLuma8, DynamicImage};
 use error::{Result, Error};
 
 /// Possible rotation values for images.
@@ -156,13 +156,23 @@ impl Image {
         }
     }
 
+
     /// Generates the given barcode. Returns a `Result<Vec<ImageBuffer>, Error>` of the encoded bytes or
     /// an error message.
     pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Luma<u8>, Vec<u8>>> {
+        //let barcode = barcode.as_ref();
+        let img = self.place_pixels(&barcode);
+
+        Ok(img.to_luma())
+    }
+
+    fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
         let barcode = barcode.as_ref();
         let (xdim, height, rotation) = match *self {
+            Image::GIF{height: h, xdim: x, rotation: r} => (x, h, r),
+            Image::PNG{height: h, xdim: x, rotation: r} => (x, h, r),
+            Image::JPEG{height: h, xdim: x, rotation: r} => (x, h, r),
             Image::ImageBuffer{height: h, xdim: x, rotation: r} => (x, h, r),
-            _ => return Err(Error::Generate)
         };
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
@@ -186,14 +196,12 @@ impl Image {
 
         let mut img = ImageLuma8(buffer);
 
-        img = match rotation {
+        match rotation {
             Rotation::Ninety => img.rotate90(),
             Rotation::OneEighty => img.rotate180(),
             Rotation::TwoSeventy => img.rotate270(),
             _ => img,
-        };
-
-        Ok(img.to_luma())
+        }
     }
 }
 
