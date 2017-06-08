@@ -109,6 +109,15 @@ writer.write(&bytes[..]).unwrap();
 ```
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
 
+You can also request an [image::RgbaImage](http://www.piston.rs/image/image/type.RgbaImage.html), which you can colorize and manipulate:
+```rust
+let barcode = Code39::new("BEELZEBUB".to_owned()).unwrap();
+let buffer = Image::image_buffer()
+let encoded = barcode.encode();
+let img = buffer.generate_buffer(&encoded[..]).unwrap();
+
+// Manipulate and save the image here...
+```
 
 ### SVG generation
 

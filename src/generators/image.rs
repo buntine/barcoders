@@ -99,9 +99,18 @@ impl Image {
         }
     }
 
-    /// Returns a new PNG with default values.
+    /// Returns a new JPEG with default values.
     pub fn jpeg() -> Image {
         Image::JPEG {
+            height: 80,
+            xdim: 1,
+            rotation: Rotation::Zero,
+        }
+    }
+
+    /// Returns a new ImageBuffer with default values.
+    pub fn image_buffer() -> Image {
+        Image::ImageBuffer {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
