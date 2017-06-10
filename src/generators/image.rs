@@ -259,7 +259,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.png"); }
 
-        assert_eq!(generated.len(), 2001);
+        assert_eq!(generated.len(), 4282);
     }
 
     #[test]
@@ -275,7 +275,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13_90.png"); }
 
-        assert_eq!(generated.len(), 213);
+        assert_eq!(generated.len(), 326);
     }
 
     #[test]
@@ -291,7 +291,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.jpg"); }
 
-        assert_eq!(generated.len(), 7614);
+        assert_eq!(generated.len(), 8285);
     }
 
     #[test]
@@ -481,7 +481,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.png"); }
 
-        assert_eq!(generated.len(), 240);
+        assert_eq!(generated.len(), 2552);
     }
 
     #[test]
@@ -497,7 +497,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8_270.png"); }
 
-        assert_eq!(generated.len(), 244);
+        assert_eq!(generated.len(), 360);
     }
 
     #[test]
@@ -529,7 +529,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.jpg"); }
 
-        assert_eq!(generated.len(), 2736);
+        assert_eq!(generated.len(), 3139);
     }
 
     #[test]
@@ -577,7 +577,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean5.jpg"); }
 
-        assert_eq!(generated.len(), 7458);
+        assert_eq!(generated.len(), 8167);
     }
 
     #[test]
@@ -608,7 +608,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ift.png"); }
 
-        assert_eq!(generated.len(), 2131);
+        assert_eq!(generated.len(), 3478);
     }
 
     #[test]
@@ -624,7 +624,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "sft.png"); }
 
-        assert_eq!(generated.len(), 2049);
+        assert_eq!(generated.len(), 3748);
     }
 
     #[test]
@@ -656,7 +656,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
 
-        assert_eq!(generated.len(), 4384);
+        assert_eq!(generated.len(), 4845);
     }
 
     #[test]
