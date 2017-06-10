@@ -1,2 +1,3 @@
 - Allow user to set [RGB, Luma], colour and opacity in image generators.
-- Implement simple regex into Parse and remoev valid_chars, valid_length, etc.
+  - Work out what [u8; 4] is for in Rgba.
+- Implement simple regex into Parse and remove valid_chars, valid_length, etc.
