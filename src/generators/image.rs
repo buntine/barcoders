@@ -25,12 +25,15 @@ extern crate image;
 use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use error::{Result, Error};
 
+/// Represents the RGBA color for the barcode foreground.
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
+    /// Reg, Green, Blue, Alpha value.
     rgba: [u8; 4],
 }
 
 impl Color {
+    /// Constructor.
     pub fn new(rgba: [u8; 4]) -> Color {
         Color{rgba: rgba}
     }
@@ -65,6 +68,7 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
+        /// The RGBA color.
         color: Color,
     },
     /// PNG image generator type.
@@ -76,6 +80,7 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
+        /// The RGBA color.
         color: Color,
     },
     /// JPEG image generator type.
@@ -87,6 +92,7 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
+        /// The RGBA color.
         color: Color,
     },
     /// Generic image buffer generator type.
@@ -98,6 +104,7 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
+        /// The RGBA color.
         color: Color,
     },
 }
