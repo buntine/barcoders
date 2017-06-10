@@ -19,7 +19,7 @@
 
 extern crate image;
 
-use image::{ImageBuffer, Luma, ImageLuma8, Rgba, ImageRgba8, Rgb, ImageRgb8, DynamicImage};
+use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use error::{Result, Error};
 
 /// Possible rotation values for images.
@@ -137,10 +137,10 @@ impl Image {
 
     /// Generates the given barcode to an image::ImageBuffer. Returns a `Result<ImageBuffer<Rgba<u8>, Vec<u8>>, Error>`
     /// of the encoded bytes or an error message.
-    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Rgb<u8>, Vec<u8>>> {
+    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
 
-        Ok(img.to_rgb())
+        Ok(img.to_rgba())
     }
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
@@ -161,11 +161,11 @@ impl Image {
 
                 if b == 0 {
                     for p in 0..size {
-                        buffer.put_pixel(pos + p, y, Rgb([255, 255, 255]));
+                        buffer.put_pixel(pos + p, y, Rgba([255, 255, 255, 255]));
                     }
                 } else {
                     for p in 0..size {
-                        buffer.put_pixel(pos + p, y, Rgb([0, 0, 0]));
+                        buffer.put_pixel(pos + p, y, Rgba([0, 0, 0, 255]));
                     }
                 }
 
@@ -175,7 +175,7 @@ impl Image {
             pos = 0;
         }
 
-        let img = ImageRgb8(buffer);
+        let img = ImageRgba8(buffer);
 
         match rotation {
             Rotation::Ninety => img.rotate90(),
