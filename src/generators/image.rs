@@ -9,7 +9,10 @@
 //! use barcoders::generators::image::*;
 //!
 //! // Specify your own struct fields.
-//! let png = Image::PNG{height: 80, xdim: 1, rotation: Rotation::Zero};
+//! let png = Image::PNG{height: 80,
+//!                      xdim: 1,
+//!                      rotation: Rotation::Zero,
+//!                      color: Color::new([255, 255, 255, 255])};
 //!
 //! // Or use the constructor for defaults.
 //! let png = Image::png();
@@ -28,6 +31,10 @@ pub struct Color {
 }
 
 impl Color {
+    pub fn new(rgba: [u8; 4]) -> Color {
+        Color{rgba: rgba}
+    }
+
     fn to_rgba(&self) -> Rgba<u8> {
         Rgba(self.rgba)
     }
@@ -322,7 +329,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.png"); }
 
-        assert_eq!(generated.len(), 1620);
+        assert_eq!(generated.len(), 2972);
     }
 
     #[test]
@@ -370,7 +377,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.png"); }
 
-        assert_eq!(generated.len(), 250);
+        assert_eq!(generated.len(), 2527);
     }
 
     #[test]
@@ -418,7 +425,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code128.png"); }
 
-        assert_eq!(generated.len(), 1524);
+        assert_eq!(generated.len(), 2618);
     }
 
     #[test]
@@ -545,7 +552,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean2.png"); }
 
-        assert_eq!(generated.len(), 542);
+        assert_eq!(generated.len(), 1023);
     }
 
     #[test]
