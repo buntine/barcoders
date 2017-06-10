@@ -1,3 +1,2 @@
-- Allow user to colour and opacity in image generators.
 - If user doesn't set image color, default to Luma8 instead of Rgba8 to save bytes.
 - Implement simple regex into Parse and remove valid_chars, valid_length, etc.

@@ -24,12 +24,12 @@ use error::{Result, Error};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
-    rgb: [u8; 4],
+    rgba: [u8; 4],
 }
 
 impl Color {
     fn to_rgba(&self) -> Rgba<u8> {
-        Rgba(self.rgb)
+        Rgba(self.rgba)
     }
 }
 
@@ -102,7 +102,7 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -112,7 +112,7 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -122,7 +122,7 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -132,7 +132,7 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -179,15 +179,13 @@ impl Image {
         for y in 0..height {
             for &b in barcode {
                 let size = xdim;
+                let c = match b {
+                    0 => foreground,
+                    _ => background,
+                };
 
-                if b == 0 {
-                    for p in 0..size {
-                        buffer.put_pixel(pos + p, y, foreground);
-                    }
-                } else {
-                    for p in 0..size {
-                        buffer.put_pixel(pos + p, y, background);
-                    }
+                for p in 0..size {
+                    buffer.put_pixel(pos + p, y, c);
                 }
 
                 pos += size;
@@ -255,7 +253,7 @@ mod tests {
             height: 100,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
@@ -271,7 +269,7 @@ mod tests {
             height: 100,
             xdim: 1,
             rotation: Rotation::Ninety,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
@@ -287,7 +285,7 @@ mod tests {
             height: 100,
             xdim: 3,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = jpeg.generate(&ean13.encode()[..]).unwrap();
 
@@ -303,7 +301,7 @@ mod tests {
             height: 99,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = img.generate_buffer(&ean13.encode()[..]).unwrap();
 
@@ -318,7 +316,7 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&code39.encode()[..]).unwrap();
 
@@ -334,7 +332,7 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&code39.encode()[..]).unwrap();
 
@@ -350,7 +348,7 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::OneEighty,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&code39.encode()[..]).unwrap();
 
@@ -366,7 +364,7 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&codabar.encode()[..]).unwrap();
 
@@ -382,7 +380,7 @@ mod tests {
             height: 80,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&codabar.encode()[..]).unwrap();
 
@@ -398,7 +396,7 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Ninety,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&codabar.encode()[..]).unwrap();
 
@@ -414,7 +412,7 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&code128.encode()[..]).unwrap();
 
@@ -430,7 +428,7 @@ mod tests {
             height: 90,
             xdim: 3,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&code128.encode()[..]).unwrap();
 
@@ -446,7 +444,7 @@ mod tests {
             height: 90,
             xdim: 3,
             rotation: Rotation::OneEighty,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&code128.encode()[..]).unwrap();
 
@@ -462,7 +460,7 @@ mod tests {
             height: 93,
             xdim: 2,
             rotation: Rotation::OneEighty,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = img.generate_buffer(&code128.encode()[..]).unwrap();
 
@@ -477,7 +475,7 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&ean8.encode()[..]).unwrap();
 
@@ -493,7 +491,7 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::TwoSeventy,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&ean8.encode()[..]).unwrap();
 
@@ -509,7 +507,7 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&ean8.encode()[..]).unwrap();
 
@@ -525,7 +523,7 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = jpeg.generate(&ean8.encode()[..]).unwrap();
 
@@ -541,7 +539,7 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&ean2.encode()[..]).unwrap();
 
@@ -557,7 +555,7 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&ean5.encode()[..]).unwrap();
 
@@ -573,7 +571,7 @@ mod tests {
             height: 140,
             xdim: 5,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = jpeg.generate(&ean5.encode()[..]).unwrap();
 
@@ -589,7 +587,7 @@ mod tests {
             height: 140,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = img.generate_buffer(&ean5.encode()[..]).unwrap();
 
@@ -604,7 +602,7 @@ mod tests {
             height: 100,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&itf.encode()[..]).unwrap();
 
@@ -620,7 +618,7 @@ mod tests {
             height: 100,
             xdim: 2,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = png.generate(&stf.encode()[..]).unwrap();
 
@@ -636,7 +634,7 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = gif.generate(&itf.encode()[..]).unwrap();
 
@@ -652,7 +650,7 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = jpeg.generate(&itf.encode()[..]).unwrap();
 
@@ -668,7 +666,7 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
         let generated = img.generate_buffer(&itf.encode()[..]).unwrap();
 
@@ -683,7 +681,7 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgb: [255, 255, 255, 255]},
+            color: Color{rgba: [255, 255, 255, 255]},
         };
 
         assert!(img.generate(&itf.encode()[..]).is_err());
