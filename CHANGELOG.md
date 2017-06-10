@@ -13,7 +13,8 @@ Possible log types:
 
 ### v0.8.0 (staged)
 
-- [added] Added 'generate_buffer' method to 'generators::image::\*', which returns 'image::ImageBuffer'.
+- [changed] Image generator now accepts `Color` field to specify RGBA foreground attributes.
+- [added] Added 'generate_buffer' method to 'generators::image::\*', which returns 'image::ImageBuffer<Rgba<u8>, Vec<u8>>'.
 - [changed] Updated clippy dependency from 0.0.83 to 0.0.134
 - [changed] Updated image dependency from 0.10.3 to 0.13.0
 - [removed] Removed static lifetime indicators in consts (as implemented in Rust 1.17).

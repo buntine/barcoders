@@ -38,6 +38,11 @@ impl Color {
         Color{rgba: rgba}
     }
 
+    /// Constructor for black foreground.
+    pub fn black() -> Color {
+        Color::new([0, 0, 0, 255])
+    }
+
     fn to_rgba(&self) -> Rgba<u8> {
         Rgba(self.rgba)
     }
