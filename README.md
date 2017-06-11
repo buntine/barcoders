@@ -120,12 +120,13 @@ let img = buffer.generate_buffer(&encoded[..]).unwrap();
 ```
 
 You may also specify the barcode x-dimension, rotation, background/foreground colors and opacity by specifying the struct fields:
-```
+```rust
 let png = Image::PNG{height: 80,
                      xdim: 1,
                      rotation: Rotation::Zero,
-                     foreground: Color::new([0, 0, 0, 255]),
-                     background: Color::new([255, 255, 255, 255])};
+                     // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
+                     foreground: Color::new([255, 0, 0, 255]),
+                     background: Color::new([0, 255, 20, 255])};
 ```
 
 ### SVG generation
