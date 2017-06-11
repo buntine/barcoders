@@ -15,8 +15,8 @@
 //!                      foreground: Color::new([0, 0, 0, 255]),
 //!                      background: Color::new([255, 255, 255, 255])};
 //!
-//! // Or use the constructor for defaults.
-//! let png = Image::png();
+//! // Or use the constructor for defaults (you must specify the height).
+//! let png = Image::png(100);
 //! ```
 //!
 //! See the README for more examples.
@@ -125,9 +125,9 @@ pub enum Image {
 
 impl Image {
     /// Returns a new GIF with default values.
-    pub fn gif() -> Image {
+    pub fn gif(height: u32) -> Image {
         Image::GIF {
-            height: 80,
+            height: height,
             xdim: 1,
             rotation: Rotation::Zero,
             foreground: Color{rgba: [0, 0, 0, 255]},
@@ -136,9 +136,9 @@ impl Image {
     }
 
     /// Returns a new PNG with default values.
-    pub fn png() -> Image {
+    pub fn png(height: u32) -> Image {
         Image::PNG {
-            height: 80,
+            height: height,
             xdim: 1,
             rotation: Rotation::Zero,
             foreground: Color{rgba: [0, 0, 0, 255]},
@@ -147,9 +147,9 @@ impl Image {
     }
 
     /// Returns a new JPEG with default values.
-    pub fn jpeg() -> Image {
+    pub fn jpeg(height: u32) -> Image {
         Image::JPEG {
-            height: 80,
+            height: height,
             xdim: 1,
             rotation: Rotation::Zero,
             foreground: Color{rgba: [0, 0, 0, 255]},
@@ -158,9 +158,9 @@ impl Image {
     }
 
     /// Returns a new ImageBuffer with default values.
-    pub fn image_buffer() -> Image {
+    pub fn image_buffer(height: u32) -> Image {
         Image::ImageBuffer {
-            height: 80,
+            height: height,
             xdim: 1,
             rotation: Rotation::Zero,
             foreground: Color{rgba: [0, 0, 0, 255]},
@@ -268,7 +268,7 @@ mod tests {
     #[test]
     fn ean_13_as_gif() {
         let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
-        let gif = Image::gif();
+        let gif = Image::gif(80);
         let generated = gif.generate(&ean13.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.gif"); }
