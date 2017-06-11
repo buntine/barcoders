@@ -12,7 +12,8 @@
 //! let png = Image::PNG{height: 80,
 //!                      xdim: 1,
 //!                      rotation: Rotation::Zero,
-//!                      color: Color::new([0, 0, 0, 255])};
+//!                      foreground: Color::new([0, 0, 0, 255]),
+//!                      background: Color::new([255, 255, 255, 255])};
 //!
 //! // Or use the constructor for defaults.
 //! let png = Image::png();
@@ -25,7 +26,7 @@ extern crate image;
 use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use error::{Result, Error};
 
-/// Represents the RGBA color for the barcode foreground.
+/// Represents a RGBA color for the barcode foreground and background.
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
     /// Reg, Green, Blue, Alpha value.
@@ -73,8 +74,10 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
-        /// The RGBA color.
-        color: Color,
+        /// The RGBA color for the foreground.
+        foreground: Color,
+        /// The RGBA color for the foreground.
+        background: Color,
     },
     /// PNG image generator type.
     PNG {
@@ -85,8 +88,10 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
-        /// The RGBA color.
-        color: Color,
+        /// The RGBA color for the foreground.
+        foreground: Color,
+        /// The RGBA color for the foreground.
+        background: Color,
     },
     /// JPEG image generator type.
     JPEG {
@@ -97,8 +102,10 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
-        /// The RGBA color.
-        color: Color,
+        /// The RGBA color for the foreground.
+        foreground: Color,
+        /// The RGBA color for the foreground.
+        background: Color,
     },
     /// Generic image buffer generator type.
     ImageBuffer {
@@ -109,8 +116,10 @@ pub enum Image {
         xdim: u32,
         /// The rotation to apply to the generated barcode.
         rotation: Rotation,
-        /// The RGBA color.
-        color: Color,
+        /// The RGBA color for the foreground.
+        foreground: Color,
+        /// The RGBA color for the foreground.
+        background: Color,
     },
 }
 
@@ -121,7 +130,8 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgba: [0, 0, 0, 255]},
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -131,7 +141,8 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgba: [0, 0, 0, 255]},
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -141,7 +152,8 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgba: [0, 0, 0, 255]},
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -151,7 +163,8 @@ impl Image {
             height: 80,
             xdim: 1,
             rotation: Rotation::Zero,
-            color: Color{rgba: [0, 0, 0, 255]},
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -183,24 +196,22 @@ impl Image {
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
         let barcode = barcode.as_ref();
-        let (xdim, height, rotation, color) = match *self {
-            Image::GIF{height: h, xdim: x, rotation: r, color: c} => (x, h, r, c),
-            Image::PNG{height: h, xdim: x, rotation: r, color: c} => (x, h, r, c),
-            Image::JPEG{height: h, xdim: x, rotation: r, color: c} => (x, h, r, c),
-            Image::ImageBuffer{height: h, xdim: x, rotation: r, color: c} => (x, h, r, c),
+        let (xdim, height, rotation, bg, fg) = match *self {
+            Image::GIF{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            Image::PNG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            Image::JPEG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            Image::ImageBuffer{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
         };
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
-        let background = Rgba([255, 255, 255, 255]);
-        let foreground = color.to_rgba();
 
         for y in 0..height {
             for &b in barcode {
                 let size = xdim;
                 let c = match b {
-                    0 => background,
-                    _ => foreground,
+                    0 => bg,
+                    _ => fg,
                 };
 
                 for p in 0..size {
