@@ -374,7 +374,7 @@ mod tests {
 
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "colored_opaque_ean13.gif"); }
+        if WRITE_TO_FILE { write_file(&generated[..], "colored_opaque_ean13.png"); }
 
         assert_eq!(generated.len(), 1766);
     }
