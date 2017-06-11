@@ -1,6 +1,5 @@
 - Tests for color
 - Tests for opacity
-- Let user choose background color.
 - Update docs to mention correct fields for image generator
 - If user doesn't set image color, default to Luma8 instead of Rgba8 to save bytes.
 - Allow setting color and opacity in SVG
