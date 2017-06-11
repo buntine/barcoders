@@ -94,7 +94,7 @@ use std::fs::File;
 use std::path::Path;
 
 let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
-let png = Image::png(80) // You must specify the height in pixels.
+let png = Image::png(80); // You must specify the height in pixels.
 let encoded = barcode.encode();
 
 // Image generators return a Result<Vec<u8>, barcoders::error::Error) of encoded bytes.
@@ -112,7 +112,7 @@ writer.write(&bytes[..]).unwrap();
 You can also request an [image::RgbaImage](http://www.piston.rs/image/image/type.RgbaImage.html), which you can manipulate yourself:
 ```rust
 let barcode = Code39::new("BEELZEBUB".to_owned()).unwrap();
-let buffer = Image::image_buffer(100)
+let buffer = Image::image_buffer(100);
 let encoded = barcode.encode();
 let img = buffer.generate_buffer(&encoded[..]).unwrap();
 
