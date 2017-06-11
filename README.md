@@ -16,14 +16,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "0.7.0"
+barcoders = "0.8.0"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate feature(s):
 
 ```toml
 [dependencies]
-barcoders = {version = "0.7.0", features = ["image", "ascii", "svg", "json"]}
+barcoders = {version = "0.8.0", features = ["image", "ascii", "svg", "json"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -94,7 +94,7 @@ use std::fs::File;
 use std::path::Path;
 
 let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
-let png = Image::PNG{height: 80, xdim: 1, rotation: Rotation::Zero};
+let png = Image::png(80) // You must specify the height in pixels.
 let encoded = barcode.encode();
 
 // Image generators return a Result<Vec<u8>, barcoders::error::Error) of encoded bytes.
@@ -112,11 +112,20 @@ writer.write(&bytes[..]).unwrap();
 You can also request an [image::RgbaImage](http://www.piston.rs/image/image/type.RgbaImage.html), which you can manipulate yourself:
 ```rust
 let barcode = Code39::new("BEELZEBUB".to_owned()).unwrap();
-let buffer = Image::image_buffer()
+let buffer = Image::image_buffer(100)
 let encoded = barcode.encode();
 let img = buffer.generate_buffer(&encoded[..]).unwrap();
 
 // Manipulate and save the image here...
+```
+
+You may also specify the barcode x-dimension, rotation, background/foreground colors and opacity by specifying the struct fields:
+```
+let png = Image::PNG{height: 80,
+                     xdim: 1,
+                     rotation: Rotation::Zero,
+                     foreground: Color::new([0, 0, 0, 255]),
+                     background: Color::new([255, 255, 255, 255])};
 ```
 
 ### SVG generation
