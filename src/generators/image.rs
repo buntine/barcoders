@@ -344,6 +344,42 @@ mod tests {
     }
 
     #[test]
+    fn colored_ean_13_as_gif() {
+        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 99,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [255, 38, 42, 255]},
+            background: Color{rgba: [34, 52, 255, 255]},
+        };
+
+        let generated = gif.generate(&ean13.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "colored_ean13.gif"); }
+
+        assert_eq!(generated.len(), 1882);
+    }
+
+    #[test]
+    fn colored_semi_opaque_ean_13_as_png() {
+        let ean13 = EAN13::new("750153666132".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 99,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [255, 38, 42, 120]},
+            background: Color{rgba: [34, 52, 255, 120]},
+        };
+
+        let generated = png.generate(&ean13.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "colored_opaque_ean13.gif"); }
+
+        assert_eq!(generated.len(), 1766);
+    }
+
+    #[test]
     fn code39_as_png() {
         let code39 = Code39::new("ILOVEMEL".to_owned()).unwrap();
         let png = Image::PNG {
