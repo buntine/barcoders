@@ -121,7 +121,7 @@ let img = buffer.generate_buffer(&encoded[..]).unwrap();
 
 You may also specify the barcode x-dimension, rotation, background/foreground colors and opacity by specifying the struct fields:
 ```rust
-let png = Image::PNG{height: 80,
+let gif = Image::GIF{height: 80,
                      xdim: 1,
                      rotation: Rotation::Zero,
                      // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.

@@ -11,8 +11,13 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
-### v0.8.0 (staged)
+### v0.8.1 (staged)
 
+- [changed] SVG constructor now requires `height` argument.
+
+### v0.8.0 (2017-06-12)
+
+- [changed] Image enum variant constructors now require `height` argument.
 - [changed] Image generator now accepts `background` and `foreground` fields to specify RGBA attributes.
 - [added] Added 'generate_buffer' method to 'generators::image::\*', which returns 'image::ImageBuffer<Rgba<u8>, Vec<u8>>'.
 - [changed] Updated clippy dependency from 0.0.83 to 0.0.134

@@ -1,4 +1,20 @@
 //! Functionality for generating SVG representations of barcodes.
+//!
+//! An SVG can be constructed via the standard constructor pattern
+//! or via a constructor method if you want default values.
+//!
+//! For example:
+//!
+//! ```rust
+//! use barcoders::generators::svg::*;
+//!
+//! // Specify your own struct fields.
+//! let svg = SVG{height: 80,
+//!               xdim: 1};
+//!
+//! // Or use the constructor for defaults (you must specify the height).
+//! let svg = SVG::new(100);
+//! ```
 
 use error::Result;
 
@@ -14,9 +30,9 @@ pub struct SVG {
 
 impl SVG {
     /// Returns a new SVG with default values.
-    pub fn new() -> SVG {
+    pub fn new(height: u32) -> SVG {
         SVG {
-            height: 80,
+            height: height,
             xdim: 1,
         }
     }
@@ -78,7 +94,7 @@ mod tests {
     #[test]
     fn ean_13_as_svg() {
         let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
-        let svg = SVG::new();
+        let svg = SVG::new(80);
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
@@ -89,7 +105,7 @@ mod tests {
     #[test]
     fn ean_8_as_svg() {
         let ean8 = EAN8::new("9998823".to_owned()).unwrap();
-        let svg = SVG::new();
+        let svg = SVG::new(80);
         let generated = svg.generate(&ean8.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.svg"); }
@@ -100,7 +116,7 @@ mod tests {
     #[test]
     fn code39_as_svg() {
         let code39 = Code39::new("IGOT99PROBLEMS".to_owned()).unwrap();
-        let svg = SVG::new();
+        let svg = SVG::new(80);
         let generated = svg.generate(&code39.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
@@ -111,7 +127,7 @@ mod tests {
     #[test]
     fn codabar_as_svg() {
         let codabar = Codabar::new("A12----34A".to_owned()).unwrap();
-        let svg = SVG::new();
+        let svg = SVG::new(80);
         let generated = svg.generate(&codabar.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.svg"); }
@@ -122,7 +138,7 @@ mod tests {
     #[test]
     fn code128_as_svg() {
         let code128 = Code128::new("ÀHIĆ345678".to_owned()).unwrap();
-        let svg = SVG::new();
+        let svg = SVG::new(80);
         let generated = svg.generate(&code128.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "code128.svg"); }
@@ -133,7 +149,7 @@ mod tests {
     #[test]
     fn ean_2_as_svg() {
         let ean2 = EANSUPP::new("78".to_owned()).unwrap();
-        let svg = SVG::new();
+        let svg = SVG::new(80);
         let generated = svg.generate(&ean2.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean2.svg"); }
