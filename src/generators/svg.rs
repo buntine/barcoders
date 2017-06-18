@@ -18,6 +18,33 @@
 
 use error::Result;
 
+/// Represents a RGBA color for the barcode foreground and background.
+#[derive(Copy, Clone, Debug)]
+pub struct Color {
+    /// Reg, Green, Blue, Alpha value.
+    rgba: [u8; 4],
+}
+
+impl Color {
+    /// Constructor.
+    pub fn new(rgba: [u8; 4]) -> Color {
+        Color{rgba: rgba}
+    }
+
+    /// Constructor for black (#000000).
+    pub fn black() -> Color {
+        Color::new([0, 0, 0, 255])
+    }
+
+    fn to_hex(&self) -> String {
+        format!("#{}{}{}", self.rgba[0], self.rgba[1], self.rgba[2])
+    }
+
+    fn to_opacity(&self) -> String {
+        format!("{:.*}", 2, (self.rgba[3] / 255))
+    }
+}
+
 /// The SVG barcode generator type.
 #[derive(Copy, Clone, Debug)]
 pub struct SVG {

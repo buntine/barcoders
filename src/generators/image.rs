@@ -39,7 +39,7 @@ impl Color {
         Color{rgba: rgba}
     }
 
-    /// Constructor for black foreground.
+    /// Constructor for black (#000000).
     pub fn black() -> Color {
         Color::new([0, 0, 0, 255])
     }
