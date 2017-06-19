@@ -18,6 +18,24 @@
 
 use error::Result;
 
+trait ToHex {
+    fn to_hex(&self) -> String;
+
+    fn format_hex(n: u8) -> String {
+        format!("{}{}",
+                Self::to_hex_digit(n / 16),
+                Self::to_hex_digit(n % 16))
+    }
+
+    fn to_hex_digit(n: u8) -> char {
+        match n {
+            d if d < 10 => (d + 48) as char,
+            d if d < 16 => (d + 87) as char,
+            _ => '0',
+        }
+    }
+}
+
 /// Represents a RGBA color for the barcode foreground and background.
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
@@ -41,30 +59,19 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-    fn to_hex(&self) -> String {
-        let red = self.format_hex(self.rgba[0]);
-        let green = self.format_hex(self.rgba[1]);
-        let blue = self.format_hex(self.rgba[2]);
-
-        format!("#{}{}{}", red, green, blue)
-    }
-
-    fn format_hex(&self, n: u8) -> String {
-        format!("{}{}",
-                self.to_hex_digit(n / 16),
-                self.to_hex_digit(n % 16))
-    }
-
-    fn to_hex_digit(&self, n: u8) -> char {
-        match n {
-            d if d < 10 => (d + 48) as char,
-            d if d < 16 => (d + 87) as char,
-            _ => '0',
-        }
-    }
 
     fn to_opacity(&self) -> String {
         format!("{:.*}", 2, (self.rgba[3] / 255))
+    }
+}
+
+impl ToHex for Color {
+   fn to_hex(&self) -> String {
+        let red = Self::format_hex(self.rgba[0]);
+        let green = Self::format_hex(self.rgba[1]);
+        let blue = Self::format_hex(self.rgba[2]);
+
+        format!("#{}{}{}", red, green, blue)
     }
 }
 
@@ -176,6 +183,21 @@ mod tests {
 
         assert_eq!(generated.len(), 2840);
     }
+
+    #[test]
+    fn colored_semi_transparent_ean_13_as_svg() {
+        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let svg = SVG{height: 70,
+                      xdim: 1,
+                      background: Color{rgba: [255, 0, 0, 128]},
+                      foreground: Color{rgba: [0, 0, 255, 128]}};
+        let generated = svg.generate(&ean13.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean13_colored_semi_transparent.svg"); }
+
+        assert_eq!(generated.len(), 2840);
+    }
+
 
     #[test]
     fn ean_8_as_svg() {
