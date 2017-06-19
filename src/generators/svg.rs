@@ -42,7 +42,23 @@ impl Color {
     }
 
     fn to_hex(&self) -> String {
-        format!("#{}{}{}", self.rgba[0], self.rgba[1], self.rgba[2])
+        format!("#{}{}{}", self.part_to_hex(self.rgba[0]), self.part_to_hex(self.rgba[1]), self.part_to_hex(self.rgba[2]))
+    }
+
+    fn part_to_hex(&self, n: u8) -> String {
+        let first = match n / 16 {
+            d if d < 10 => (d + 48) as char,
+            d if d < 16 => (d + 87) as char,
+            _ => '0',
+        };
+
+        let second = match n % 16 {
+            d if d < 10 => (d + 48) as char,
+            d if d < 16 => (d + 87) as char,
+            _ => '0',
+        };
+
+        format!("{}{}", first, second)
     }
 
     fn to_opacity(&self) -> String {
