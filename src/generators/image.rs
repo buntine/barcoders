@@ -44,6 +44,11 @@ impl Color {
         Color::new([0, 0, 0, 255])
     }
 
+    /// Constructor for white (#FFFFFF).
+    pub fn white() -> Color {
+        Color::new([255, 255, 255, 255])
+    }
+
     fn to_rgba(&self) -> Rgba<u8> {
         Rgba(self.rgba)
     }
@@ -76,7 +81,7 @@ pub enum Image {
         rotation: Rotation,
         /// The RGBA color for the foreground.
         foreground: Color,
-        /// The RGBA color for the foreground.
+        /// The RGBA color for the background.
         background: Color,
     },
     /// PNG image generator type.
@@ -90,7 +95,7 @@ pub enum Image {
         rotation: Rotation,
         /// The RGBA color for the foreground.
         foreground: Color,
-        /// The RGBA color for the foreground.
+        /// The RGBA color for the background.
         background: Color,
     },
     /// JPEG image generator type.
@@ -104,7 +109,7 @@ pub enum Image {
         rotation: Rotation,
         /// The RGBA color for the foreground.
         foreground: Color,
-        /// The RGBA color for the foreground.
+        /// The RGBA color for the background.
         background: Color,
     },
     /// Generic image buffer generator type.
@@ -118,7 +123,7 @@ pub enum Image {
         rotation: Rotation,
         /// The RGBA color for the foreground.
         foreground: Color,
-        /// The RGBA color for the foreground.
+        /// The RGBA color for the background.
         background: Color,
     },
 }

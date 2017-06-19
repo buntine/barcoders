@@ -36,6 +36,11 @@ impl Color {
         Color::new([0, 0, 0, 255])
     }
 
+    /// Constructor for white (#FFFFFF).
+    pub fn white() -> Color {
+        Color::new([255, 255, 255, 255])
+    }
+
     fn to_hex(&self) -> String {
         format!("#{}{}{}", self.rgba[0], self.rgba[1], self.rgba[2])
     }
@@ -53,6 +58,10 @@ pub struct SVG {
     /// The X dimension. Specifies the width of the "narrow" bars. 
     /// For SVG, each will be ```self.xdim``` pixels wide.
     pub xdim: u32,
+    /// The RGBA color for the foreground.
+    pub foreground: Color,
+    /// The RGBA color for the foreground.
+    pub background: Color,
 }
 
 impl SVG {
@@ -61,6 +70,8 @@ impl SVG {
         SVG {
             height: height,
             xdim: 1,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
         }
     }
 
@@ -130,6 +141,20 @@ mod tests {
     }
 
     #[test]
+    fn colored_ean_13_as_svg() {
+        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let svg = SVG{height: 80,
+                      xdim: 1,
+                      background: Color{rgba: [255, 0, 0, 255]},
+                      foreground: Color{rgba: [0, 0, 255, 255]}};
+        let generated = svg.generate(&ean13.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "ean13_colored.svg"); }
+
+        assert_eq!(generated.len(), 2840);
+    }
+
+    #[test]
     fn ean_8_as_svg() {
         let ean8 = EAN8::new("9998823".to_owned()).unwrap();
         let svg = SVG::new(80);
@@ -187,7 +212,10 @@ mod tests {
     #[test]
     fn itf_as_svg() {
         let itf = TF::interleaved("1234123488993344556677118".to_owned()).unwrap();
-        let svg = SVG{height: 200, xdim:3};
+        let svg = SVG{height: 80,
+                      xdim: 1,
+                      background: Color::black(),
+                      foreground: Color::white()};
         let generated = svg.generate(&itf.encode()[..]).unwrap();
 
         if WRITE_TO_FILE { write_file(&generated[..], "itf.svg"); }
