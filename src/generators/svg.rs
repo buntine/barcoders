@@ -66,11 +66,11 @@ impl Color {
 
 impl ToHex for Color {
    fn to_hex(&self) -> String {
-        let red = Self::format_hex(self.rgba[0]);
-        let green = Self::format_hex(self.rgba[1]);
-        let blue = Self::format_hex(self.rgba[2]);
-
-        format!("#{}{}{}", red, green, blue)
+        self.rgba
+            .iter()
+            .take(3)
+            .map(|&c| Self::format_hex(c))
+            .collect()
     }
 }
 
@@ -110,7 +110,7 @@ impl SVG {
             o => format!(" fill-opacity=\"{}\" ", o),
         };
 
-        format!("<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"{}\"{}/>",
+        format!("<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"#{}\"{}/>",
                 offset, width, self.height, fill.to_hex(), opacity)
     }
 
