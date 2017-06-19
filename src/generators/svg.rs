@@ -59,9 +59,8 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-
     fn to_opacity(&self) -> String {
-        format!("{:.*}", 2, (self.rgba[3] / 255))
+        format!("{:.*}", 2, (self.rgba[3] as f64 / 255.0))
     }
 }
 
