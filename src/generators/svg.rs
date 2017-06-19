@@ -10,7 +10,9 @@
 //!
 //! // Specify your own struct fields.
 //! let svg = SVG{height: 80,
-//!               xdim: 1};
+//!               xdim: 1,
+//!               background: Color{rgba: [255, 0, 0, 255]},
+//!               foreground: Color::black()};
 //!
 //! // Or use the constructor for defaults (you must specify the height).
 //! let svg = SVG::new(100);
@@ -40,7 +42,7 @@ trait ToHex {
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
     /// Reg, Green, Blue, Alpha value.
-    rgba: [u8; 4],
+    pub rgba: [u8; 4],
 }
 
 impl Color {
@@ -166,7 +168,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
 
-        assert_eq!(generated.len(), 2840);
+        assert_eq!(generated.len(), 2890);
     }
 
     #[test]
@@ -180,7 +182,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13_colored.svg"); }
 
-        assert_eq!(generated.len(), 2840);
+        assert_eq!(generated.len(), 2890);
     }
 
     #[test]
@@ -194,7 +196,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean13_colored_semi_transparent.svg"); }
 
-        assert_eq!(generated.len(), 2840);
+        assert_eq!(generated.len(), 3940);
     }
 
 
@@ -206,7 +208,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean8.svg"); }
 
-        assert_eq!(generated.len(), 1888);
+        assert_eq!(generated.len(), 1921);
     }
 
     #[test]
@@ -217,7 +219,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
 
-        assert_eq!(generated.len(), 6426);
+        assert_eq!(generated.len(), 6539);
     }
 
     #[test]
@@ -228,7 +230,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "codabar.svg"); }
 
-        assert_eq!(generated.len(), 2899);
+        assert_eq!(generated.len(), 2950);
     }
 
     #[test]
@@ -239,7 +241,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code128.svg"); }
 
-        assert_eq!(generated.len(), 2676);
+        assert_eq!(generated.len(), 2723);
     }
 
     #[test]
@@ -250,7 +252,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "ean2.svg"); }
 
-        assert_eq!(generated.len(), 713);
+        assert_eq!(generated.len(), 725);
     }
 
     #[test]
@@ -264,6 +266,6 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "itf.svg"); }
 
-        assert_eq!(generated.len(), 7161);
+        assert_eq!(generated.len(), 7123);
     }
 }
