@@ -77,12 +77,17 @@ impl SVG {
 
     fn rect(&self, style: u8, offset: u32, width: u32) -> String {
         let fill = match style {
-            1 => "black",
-            _ => "white",
+            1 => self.foreground,
+            _ => self.background,
         };
 
-        format!("<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"{}\" />",
-                offset, width, self.height, fill)
+        let opacity = match &fill.to_opacity()[..] {
+            "1.00" | "1" => "".to_string(),
+            o => format!(" fill-opacity=\"{}\" ", o),
+        };
+
+        format!("<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"{}\"{}/>",
+                offset, width, self.height, fill.to_hex(), opacity)
     }
 
     /// Generates the given barcode. Returns a `Result<String, Error>` of the SVG data or an
