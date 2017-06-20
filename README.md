@@ -16,14 +16,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "0.8.0"
+barcoders = "0.8.1"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate feature(s):
 
 ```toml
 [dependencies]
-barcoders = {version = "0.8.0", features = ["image", "ascii", "svg", "json"]}
+barcoders = {version = "0.8.1", features = ["image", "ascii", "svg", "json"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -144,7 +144,7 @@ use std::fs::File;
 use std::path::Path;
 
 let barcode = Code39::new("56DFU4A777H".to_owned()).unwrap();
-let svg = SVG{height: 200, xdim: 3};
+let svg = SVG::new(200); // You must specify the height in pixels.
 let encoded = barcode.encode();
 let data: String = svg.generate(&encoded).unwrap();
 
@@ -153,6 +153,14 @@ let mut writer = BufWriter::new(file);
 writer.write(data.as_bytes()).unwrap();
 ```
 
+You may also specify the barcode x-dimension, background/foreground colors and opacity by specifying the struct fields:
+```rust
+let gif = SVG{height: 80,
+              xdim: 1,
+              // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
+              foreground: Color::black(),
+              background: Color::new([0, 255, 20, 255])};
+```
 
 ### ASCII generation
 
