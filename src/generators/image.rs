@@ -201,12 +201,14 @@ impl Image {
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
         let barcode = barcode.as_ref();
-        let (xdim, height, rotation, bg, fg) = match *self {
-            Image::GIF{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            Image::PNG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            Image::JPEG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            Image::ImageBuffer{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-        };
+        let (xdim, height, rotation, bg, fg) =
+            match_all! *self, 
+                       [Image::GIF,
+                        Image::PNG,
+                        Image::JPEG,
+                        Image::ImageBuffer] {
+                {height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba())
+            };
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
