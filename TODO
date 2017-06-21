@@ -1,4 +1,3 @@
-- DOCS: Update docs for SVG constructor when releasing 0.8.1
 - REFACTOR: Impl Default for Image variants.
 - REFACTOR: Fix monstrosity in place_pixels in image generator.
 - PERFORMANCE: If user doesn't set image color, default to Luma8 instead of Rgba8 to save bytes.
