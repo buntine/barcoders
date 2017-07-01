@@ -25,6 +25,31 @@ extern crate image;
 
 use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use error::{Result, Error};
+ 
+macro_rules! image_enum {
+    ( $( #[$attr:meta] $x:tt ),* ) => {
+        /// The image generator type.
+        #[derive(Copy, Clone, Debug)]
+        pub enum Image {
+        $(
+            #[$attr]
+            $x {
+                /// The height of the barcode in pixels.
+                height: u32,
+                /// The X dimension. Specifies the width of the "narrow" bars, each
+                /// of which will be ```self.xdim``` pixels wide.
+                xdim: u32,
+                /// The rotation to apply to the generated barcode.
+                rotation: Rotation,
+                /// The RGBA color for the foreground.
+                foreground: Color,
+                /// The RGBA color for the background.
+                background: Color,
+            },
+        )*
+        }
+    }
+}
 
 /// Represents a RGBA color for the barcode foreground and background.
 #[derive(Copy, Clone, Debug)]
@@ -67,66 +92,16 @@ pub enum Rotation {
     TwoSeventy,
 }
 
-/// The image generator type.
-#[derive(Copy, Clone, Debug)]
-pub enum Image {
+image_enum![
     /// GIF image generator type.
-    GIF {
-        /// The height of the barcode in pixels.
-        height: u32,
-        /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For GIF, each will be ```self.xdim``` pixels wide.
-        xdim: u32,
-        /// The rotation to apply to the generated barcode.
-        rotation: Rotation,
-        /// The RGBA color for the foreground.
-        foreground: Color,
-        /// The RGBA color for the background.
-        background: Color,
-    },
+    GIF,
     /// PNG image generator type.
-    PNG {
-        /// The height of the barcode in pixels.
-        height: u32,
-        /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For PNG, each will be ```self.xdim``` pixels wide.
-        xdim: u32,
-        /// The rotation to apply to the generated barcode.
-        rotation: Rotation,
-        /// The RGBA color for the foreground.
-        foreground: Color,
-        /// The RGBA color for the background.
-        background: Color,
-    },
+    PNG,
     /// JPEG image generator type.
-    JPEG {
-        /// The height of the barcode in pixels.
-        height: u32,
-        /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For JPEG, each will be ```self.xdim``` pixels wide.
-        xdim: u32,
-        /// The rotation to apply to the generated barcode.
-        rotation: Rotation,
-        /// The RGBA color for the foreground.
-        foreground: Color,
-        /// The RGBA color for the background.
-        background: Color,
-    },
-    /// Generic image buffer generator type.
-    ImageBuffer {
-        /// The height of the barcode in pixels.
-        height: u32,
-        /// The X dimension. Specifies the width of the "narrow" bars. 
-        /// For JPEG, each will be ```self.xdim``` pixels wide.
-        xdim: u32,
-        /// The rotation to apply to the generated barcode.
-        rotation: Rotation,
-        /// The RGBA color for the foreground.
-        foreground: Color,
-        /// The RGBA color for the background.
-        background: Color,
-    },
-}
+    JPEG,
+    /// Image Buffer generator type.
+    ImageBuffer
+];
 
 impl Image {
     /// Returns a new GIF with default values.
@@ -201,14 +176,12 @@ impl Image {
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
         let barcode = barcode.as_ref();
-        let (xdim, height, rotation, bg, fg) =
-            match_all! *self, 
-                       [Image::GIF,
-                        Image::PNG,
-                        Image::JPEG,
-                        Image::ImageBuffer] {
-                {height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba())
-            };
+        let (xdim, height, rotation, bg, fg) = match *self {
+            Image::GIF{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            Image::PNG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            Image::JPEG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            Image::ImageBuffer{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+        };
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
