@@ -26,14 +26,14 @@ extern crate image;
 use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use error::{Result, Error};
  
-macro_rules! image_enum {
-    ( $( #[$attr:meta] $x:tt ),* ) => {
+macro_rules! image_variants {
+    ( $( #[$attr:meta] $v:tt ),* ) => {
         /// The image generator type.
         #[derive(Copy, Clone, Debug)]
         pub enum Image {
         $(
             #[$attr]
-            $x {
+            $v {
                 /// The height of the barcode in pixels.
                 height: u32,
                 /// The X dimension. Specifies the width of the "narrow" bars, each
@@ -47,6 +47,18 @@ macro_rules! image_enum {
                 background: Color,
             },
         )*
+        }
+    }
+}
+
+macro_rules! image_defaults {
+    ($e:tt::$v:tt, $h:expr) => {
+        $e::$v {
+            height: $h,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
         }
     }
 }
@@ -92,7 +104,7 @@ pub enum Rotation {
     TwoSeventy,
 }
 
-image_enum![
+image_variants![
     /// GIF image generator type.
     GIF,
     /// PNG image generator type.
@@ -106,46 +118,22 @@ image_enum![
 impl Image {
     /// Returns a new GIF with default values.
     pub fn gif(height: u32) -> Image {
-        Image::GIF {
-            height: height,
-            xdim: 1,
-            rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
-        }
+        image_defaults!(Image::GIF, height)
     }
 
     /// Returns a new PNG with default values.
     pub fn png(height: u32) -> Image {
-        Image::PNG {
-            height: height,
-            xdim: 1,
-            rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
-        }
+        image_defaults!(Image::PNG, height)
     }
 
     /// Returns a new JPEG with default values.
     pub fn jpeg(height: u32) -> Image {
-        Image::JPEG {
-            height: height,
-            xdim: 1,
-            rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
-        }
+        image_defaults!(Image::JPEG, height)
     }
 
     /// Returns a new ImageBuffer with default values.
     pub fn image_buffer(height: u32) -> Image {
-        Image::ImageBuffer {
-            height: height,
-            xdim: 1,
-            rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
-        }
+        image_defaults!(Image::ImageBuffer, height)
     }
 
     /// Generates the given barcode. Returns a `Result<Vec<u8>, Error>` of the encoded bytes or

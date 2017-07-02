@@ -1,4 +1,3 @@
-- REFACTOR: Impl Default for Image variants.
 - REFACTOR: Fix monstrosity in place_pixels in image generator. (Potentially write a simple macro?)
 - PERFORMANCE: If user doesn't set image color, default to Luma8 instead of Rgba8 to save bytes.
 - REFACTOR: Implement simple regex into Parse and remove valid_chars, valid_length, etc.
