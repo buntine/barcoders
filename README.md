@@ -63,6 +63,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 * PNG (feature: `image`)
 * GIF (feature: `image`)
 * JPEG (feature: `image`)
+* Image Buffer (feature: `image`)
 * Or add your own
 
 ## Examples
