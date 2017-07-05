@@ -11,7 +11,11 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
-### v0.8.1 (staged)
+### v0.8.2 (staged)
+
+- [added] Code93 barcode encoder.
+
+### v0.8.1 (2017-06-20)
 
 - [changed] SVG constructor now requires `height` argument.
 
