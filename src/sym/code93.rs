@@ -4,16 +4,22 @@
 //! ASCII characters. It also produces denser barcodes than Code39.
 //!
 //! Code93 is a continuous, variable-length symbology.
+//!
+//! NOTE: This encoder currently only supports the basic Code93 implementation and not full-ASCII
+//! mode.
 
 use sym::Parse;
 use sym::helpers;
 use error::Result;
 use std::ops::Range;
 
-// Character -> Binary mappings for each of the 43 allowable character.
+// Character -> Binary mappings for each of the 47 allowable character.
 const CODE93_CHARS: [(char, [u8; 9]); 3] = [
     ('0', [1,0,0,0,1,0,1,0,0]), ('1', [1,0,1,0,0,1,0,0,0]), ('2', [1,0,1,0,0,0,1,0,0]),
 ];
+
+// Code93 barcodes must start and end with the '*' special character.
+const CODE93_GUARD: [u8; 9] = [1,0,1,0,1,1,1,1,0];
 
 /// The Code93 barcode type.
 #[derive(Debug)]
