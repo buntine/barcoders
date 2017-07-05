@@ -38,7 +38,7 @@ impl Code93 {
 
 impl Parse for Code93 {
     /// Returns the valid length of data acceptable in this type of barcode.
-    /// Codabar barcodes are variable-length.
+    /// Code93 barcodes are variable-length.
     fn valid_len() -> Range<u32> {
         1..256
     }
@@ -59,5 +59,19 @@ mod tests {
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
         chars.collect()
+    }
+
+    #[test]
+    fn invalid_length_code93() {
+        let code93 = Code93::new("".to_owned());
+
+        assert_eq!(code93.err().unwrap(), Error::Length);
+    }
+
+    #[test]
+    fn invalid_data_code93() {
+        let code93 = Code93::new("lowerCASE".to_owned());
+
+        assert_eq!(code93.err().unwrap(), Error::Character);
     }
 }
