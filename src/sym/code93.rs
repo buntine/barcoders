@@ -10,15 +10,23 @@ use sym::helpers;
 use error::Result;
 use std::ops::Range;
 
+// Character -> Binary mappings for each of the 43 allowable character.
+const CODE93_CHARS: [(char, [u8; 9]); 3] = [
+    ('0', [1,0,0,0,1,0,1,0,0]), ('1', [1,0,1,0,0,1,0,0,0]), ('2', [1,0,1,0,0,0,1,0,0]),
+];
+
 /// The Code93 barcode type.
 #[derive(Debug)]
-pub struct Code93(Vec<u8>);
+pub struct Code93(Vec<char>);
 
 impl Code93 {
     /// Creates a new barcode.
     /// Returns Result<Code93, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Code93> {
-        Ok(Code93(vec![]))
+        Code93::parse(data.as_ref()).and_then(|d| {
+            Ok(Code93(d.chars()
+                       .collect()))
+        })
     }
 
     /// Encodes the barcode.
@@ -37,7 +45,8 @@ impl Parse for Code93 {
 
     /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
-        vec![]
+        let (chars, _): (Vec<_>, Vec<_>) = CODE93_CHARS.iter().cloned().unzip();
+        chars
     }
 }
 
