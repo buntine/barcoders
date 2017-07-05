@@ -1,6 +1,6 @@
 //! Encoder for Code39 barcodes.
 //!
-//! Code39 barcodes are often referred to as "3-of-9".
+//! Code39 is a discrete, variable-length barcode. They are often referred to as "3-of-9".
 //!
 //! Code39 is the standard barcode used by the United States Department of Defense and is also
 //! popular in non-retail environments. It was one of the first symbologies to support encoding

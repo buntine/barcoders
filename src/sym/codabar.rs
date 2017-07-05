@@ -80,8 +80,7 @@ impl Unit {
 pub struct Codabar(Vec<Unit>);
 
 impl Codabar {
-    /// Creates a new Codabar barcode.
-    ///
+    /// Creates a new barcode.
     /// Returns Result<Codabar, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Codabar> {
         let d = Codabar::parse(data.as_ref())?;
