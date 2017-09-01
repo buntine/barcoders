@@ -15,7 +15,7 @@ use std::ops::Range;
 
 // Character -> Binary mappings for each of the 47 allowable character.
 // The special "full-ASCII" characters are represented with (, ), [, ].
-const CODE93_CHARS: [(char, [u8; 9]); 3] = [
+const CODE93_CHARS: [(char, [u8; 9]); 47] = [
     ('0', [1,0,0,0,1,0,1,0,0]), ('1', [1,0,1,0,0,1,0,0,0]), ('2', [1,0,1,0,0,0,1,0,0]),
     ('3', [1,0,1,0,0,0,0,1,0]), ('4', [1,0,0,1,0,1,0,0,0]), ('5', [1,0,0,1,0,0,1,0,0]),
     ('6', [1,0,0,1,0,0,0,1,0]), ('7', [1,0,1,0,1,0,0,0,0]), ('8', [1,0,0,0,1,0,0,1,0]),
@@ -31,11 +31,12 @@ const CODE93_CHARS: [(char, [u8; 9]); 3] = [
     ('-', [1,0,0,1,0,1,1,1,0]), ('.', [1,1,1,0,1,0,1,0,0]), (' ', [1,1,1,0,1,0,0,1,0]),
     ('$', [1,1,1,0,0,1,0,1,0]), ('/', [1,0,1,1,0,1,1,1,0]), ('+', [1,0,1,1,1,0,1,1,0]),
     ('%', [1,1,0,1,0,1,1,1,0]), ('(', [1,0,0,1,0,0,1,1,0]), (')', [1,1,1,0,1,1,0,1,0]),
-    ('[', [1,1,1,0,1,0,1,1,0]), ('[', [1,0,0,1,1,0,0,1,0]), ('*', [1,0,1,0,1,1,1,1,0]),
+    ('[', [1,1,1,0,1,0,1,1,0]), ('[', [1,0,0,1,1,0,0,1,0]),
 ];
 
 // Code93 barcodes must start and end with the '*' special character.
 const CODE93_GUARD: [u8; 9] = [1,0,1,0,1,1,1,1,0];
+const CODE93_TERMINATOR: [u8; 1] = [1];
 
 /// The Code93 barcode type.
 #[derive(Debug)]
@@ -51,10 +52,34 @@ impl Code93 {
         })
     }
 
+    fn char_encoding(&self, c: &char) -> [u8; 9]{
+        match CODE93_CHARS.iter().find(|&ch| ch.0 == *c) {
+            Some(&(_, enc)) => enc,
+            None => panic!(format!("Unknown char: {}", c)),
+        }
+    }
+
+    fn push_encoding(&self, into: &mut Vec<u8>, from: [u8; 9]) {
+        into.extend(from.iter().cloned());
+    }
+
+    fn payload(&self) -> Vec<u8> {
+        let mut enc = vec![];
+
+        for c in &self.0 {
+            self.push_encoding(&mut enc, self.char_encoding(&c));
+        }
+
+        enc
+    }
+
     /// Encodes the barcode.
     /// Returns a Vec<u8> of encoded binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        vec![]
+        let guard = &CODE93_GUARD[..];
+        let terminator = &CODE93_TERMINATOR[..];
+
+        helpers::join_slices(&[guard, &self.payload()[..], guard, terminator][..])
     }
 }
 
@@ -95,5 +120,13 @@ mod tests {
         let code93 = Code93::new("lowerCASE".to_owned());
 
         assert_eq!(code93.err().unwrap(), Error::Character);
+    }
+
+    #[test]
+    fn code93_encode() {
+        let code931 = Code93::new("TEST93".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101010111101".to_owned());
+        //assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
     }
 }
