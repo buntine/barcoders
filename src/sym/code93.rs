@@ -163,4 +163,8 @@ mod tests {
 
         assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
     }
+
+    // Tests for data longer than 15, data longer than 20
+    // Tests for checksum_char function
+    // Tests in generators for Code93
 }
