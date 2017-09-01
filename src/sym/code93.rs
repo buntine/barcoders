@@ -59,11 +59,10 @@ impl Code93 {
         }
     }
 
-    /// Calculates the C checksum character using a weighted modulo-47 algorithm.
-    pub fn c_checksum_char(&self) -> Option<char> {
-        let ref data = self.0;
+    /// Calculates a checksum character using a weighted modulo-47 algorithm.
+    fn checksum_char(&self, data: &Vec<char>, weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
-        let weight = |i| (data.len() - i) % 20;
+        let weight = |i| (data.len() - i) % weight_threshold;
         let positions = data.iter().map(&get_char_pos);
         let index = positions.enumerate()
                              .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
@@ -74,23 +73,18 @@ impl Code93 {
         }
     }
 
+
+    /// Calculates the C checksum character using a weighted modulo-47 algorithm.
+    pub fn c_checksum_char(&self) -> Option<char> {
+        self.checksum_char(&self.0, 20)
+    }
+
     /// Calculates the K checksum character using a weighted modulo-47 algorithm.
     pub fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
-        let mut data: Vec<char> = vec![];
-
-        data.extend(&self.0[..]);
+        let mut data: Vec<char> = self.0.clone();
         data.push(c_checksum);
 
-        let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
-        let weight = |i| (data.len() - i) % 15;
-        let positions = data.iter().map(&get_char_pos);
-        let index = positions.enumerate()
-                             .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
-
-        match CHARS.get(index % CHARS.len()) {
-            Some(&(c, _)) => Some(c),
-            None => None,
-        }
+        self.checksum_char(&data, 15)
     }
 
     fn push_encoding(&self, into: &mut Vec<u8>, from: [u8; 9]) {
