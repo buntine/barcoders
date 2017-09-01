@@ -59,19 +59,20 @@ impl Code93 {
         }
     }
 
-    fn checksum_encoding(&self) -> [u8; 9] {
-        match self.checksum_char() {
+    fn c_checksum_encoding(&self) -> [u8; 9] {
+        match self.c_checksum_char() {
             Some(c) => self.char_encoding(&c),
             None => panic!("Cannot compute checksum"),
         }
     }
 
     /// Calculates the checksum character using a weighted modulo-47 algorithm.
-    pub fn checksum_char(&self) -> Option<char> {
+    pub fn c_checksum_char(&self) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
+        let weight = |i| (self.0.len() - i) % 20;
         let positions = self.0.iter().map(&get_char_pos);
         let index = positions.enumerate()
-                             .fold(0, |acc, (i, pos)| acc + ((self.0.len() - i) * pos));
+                             .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
 
         match CHARS.get(index % CHARS.len()) {
             Some(&(c, _)) => Some(c),
@@ -90,7 +91,7 @@ impl Code93 {
             self.push_encoding(&mut enc, self.char_encoding(&c));
         }
 
-        self.push_encoding(&mut enc, self.checksum_encoding());
+        self.push_encoding(&mut enc, self.c_checksum_encoding());
 
         enc
     }
