@@ -52,8 +52,8 @@ impl Code93 {
         })
     }
 
-    fn char_encoding(&self, c: &char) -> [u8; 9] {
-        match CHARS.iter().find(|&ch| ch.0 == *c) {
+    fn char_encoding(&self, c: char) -> [u8; 9] {
+        match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
@@ -75,8 +75,12 @@ impl Code93 {
     }
 
     /// Calculates the K checksum character using a weighted modulo-47 algorithm.
-    pub fn k_checksum_char(&self, c_checksum: &char) -> Option<char> {
-        let ref data = self.0;
+    pub fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
+        let mut data: Vec<char> = vec![];
+
+        data.extend(&self.0[..]);
+        data.push(c_checksum);
+
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let weight = |i| (data.len() - i) % 15;
         let positions = data.iter().map(&get_char_pos);
@@ -96,15 +100,15 @@ impl Code93 {
     fn payload(&self) -> Vec<u8> {
         let mut enc = vec![];
         let c_checksum = self.c_checksum_char().expect("Cannot compute checksum C");
-        let k_checksum = self.k_checksum_char(&c_checksum).expect("Cannot compute checksum K");
+        let k_checksum = self.k_checksum_char(c_checksum).expect("Cannot compute checksum K");
 
-        for c in &self.0 {
-            self.push_encoding(&mut enc, self.char_encoding(&c));
+        for &c in &self.0 {
+            self.push_encoding(&mut enc, self.char_encoding(c));
         }
 
         // Checksums.
-        self.push_encoding(&mut enc, self.char_encoding(&c_checksum));
-        self.push_encoding(&mut enc, self.char_encoding(&k_checksum));
+        self.push_encoding(&mut enc, self.char_encoding(c_checksum));
+        self.push_encoding(&mut enc, self.char_encoding(k_checksum));
 
         enc
     }
