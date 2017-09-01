@@ -15,7 +15,7 @@ use std::ops::Range;
 
 // Character -> Binary mappings for each of the 47 allowable character.
 // The special "full-ASCII" characters are represented with (, ), [, ].
-const CODE93_CHARS: [(char, [u8; 9]); 47] = [
+const CHARS: [(char, [u8; 9]); 47] = [
     ('0', [1,0,0,0,1,0,1,0,0]), ('1', [1,0,1,0,0,1,0,0,0]), ('2', [1,0,1,0,0,0,1,0,0]),
     ('3', [1,0,1,0,0,0,0,1,0]), ('4', [1,0,0,1,0,1,0,0,0]), ('5', [1,0,0,1,0,0,1,0,0]),
     ('6', [1,0,0,1,0,0,0,1,0]), ('7', [1,0,1,0,1,0,0,0,0]), ('8', [1,0,0,0,1,0,0,1,0]),
@@ -35,8 +35,8 @@ const CODE93_CHARS: [(char, [u8; 9]); 47] = [
 ];
 
 // Code93 barcodes must start and end with the '*' special character.
-const CODE93_GUARD: [u8; 9] = [1,0,1,0,1,1,1,1,0];
-const CODE93_TERMINATOR: [u8; 1] = [1];
+const GUARD: [u8; 9] = [1,0,1,0,1,1,1,1,0];
+const TERMINATOR: [u8; 1] = [1];
 
 /// The Code93 barcode type.
 #[derive(Debug)]
@@ -53,7 +53,7 @@ impl Code93 {
     }
 
     fn char_encoding(&self, c: &char) -> [u8; 9]{
-        match CODE93_CHARS.iter().find(|&ch| ch.0 == *c) {
+        match CHARS.iter().find(|&ch| ch.0 == *c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
@@ -76,10 +76,11 @@ impl Code93 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of encoded binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        let guard = &CODE93_GUARD[..];
-        let terminator = &CODE93_TERMINATOR[..];
+        let guard = &GUARD[..];
+        let terminator = &TERMINATOR[..];
 
-        helpers::join_slices(&[guard, &self.payload()[..], guard, terminator][..])
+        helpers::join_slices(&[guard, &self.payload()[..],
+                               guard, terminator][..])
     }
 }
 
@@ -92,7 +93,7 @@ impl Parse for Code93 {
 
     /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
-        let (chars, _): (Vec<_>, Vec<_>) = CODE93_CHARS.iter().cloned().unzip();
+        let (chars, _): (Vec<_>, Vec<_>) = CHARS.iter().cloned().unzip();
         chars
     }
 }
@@ -126,7 +127,6 @@ mod tests {
     fn code93_encode() {
         let code931 = Code93::new("TEST93".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101010111101".to_owned());
-        //assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
+        assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
     }
 }

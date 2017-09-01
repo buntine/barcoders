@@ -1,3 +1,4 @@
+- REFACTOR: Remove qualifiers from namespaced constants: CODE39_CHARS -> CHARS.
 - FEATURE: Code93 encoder.
 - REFACTOR: Fix monstrosity in place_pixels in image generator. (Potentially write a simple macro?)
 - PERFORMANCE: If user doesn't set image color, default to Luma8 instead of Rgba8 to save bytes.

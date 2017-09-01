@@ -12,7 +12,7 @@ use error::Result;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 43 allowable character.
-const CODE39_CHARS: [(char, [u8; 12]); 43] = [
+const CHARS: [(char, [u8; 12]); 43] = [
     ('0', [1,0,1,0,0,1,1,0,1,1,0,1]), ('1', [1,1,0,1,0,0,1,0,1,0,1,1]), ('2', [1,0,1,1,0,0,1,0,1,0,1,1]),
     ('3', [1,1,0,1,1,0,0,1,0,1,0,1]), ('4', [1,0,1,0,0,1,1,0,1,0,1,1]), ('5', [1,1,0,1,0,0,1,1,0,1,0,1]),
     ('6', [1,0,1,1,0,0,1,1,0,1,0,1]), ('7', [1,0,1,0,0,1,0,1,1,0,1,1]), ('8', [1,1,0,1,0,0,1,0,1,1,0,1]),
@@ -31,7 +31,7 @@ const CODE39_CHARS: [(char, [u8; 12]); 43] = [
 ];
 
 // Code39 barcodes must start and end with the '*' special character.
-const CODE39_GUARD: [u8; 12] = [1,0,0,1,0,1,1,0,1,1,0,1];
+const GUARD: [u8; 12] = [1,0,0,1,0,1,1,0,1,1,0,1];
 
 /// The Code39 barcode type.
 #[derive(Debug)]
@@ -65,11 +65,11 @@ impl Code39 {
 
     /// Calculates the checksum character using a modulo-43 algorithm.
     pub fn checksum_char(&self) -> Option<char> {
-        let get_char_pos = |&c| CODE39_CHARS.iter().position(|t| t.0 == c).unwrap();
+        let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let indices = self.data.iter().map(&get_char_pos);
-        let index = indices.fold(0, |acc, i| acc + i) % CODE39_CHARS.len();
+        let index = indices.fold(0, |acc, i| acc + i) % CHARS.len();
 
-        match CODE39_CHARS.get(index) {
+        match CHARS.get(index) {
             Some(&(c, _)) => Some(c),
             None => None,
         }
@@ -83,7 +83,7 @@ impl Code39 {
     }
 
     fn char_encoding(&self, c: &char) -> [u8; 12] {
-        match CODE39_CHARS.iter().find(|&ch| ch.0 == *c) {
+        match CHARS.iter().find(|&ch| ch.0 == *c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
@@ -113,7 +113,7 @@ impl Code39 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        let guard = &CODE39_GUARD[..];
+        let guard = &GUARD[..];
 
         helpers::join_slices(&[guard, &self.payload()[..], guard][..])
     }
@@ -125,7 +125,7 @@ impl Parse for Code39 {
     }
 
     fn valid_chars() -> Vec<char> {
-        let (chars, _): (Vec<_>, Vec<_>) = CODE39_CHARS.iter().cloned().unzip();
+        let (chars, _): (Vec<_>, Vec<_>) = CHARS.iter().cloned().unzip();
         chars
     }
 }
