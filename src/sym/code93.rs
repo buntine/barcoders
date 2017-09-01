@@ -59,18 +59,27 @@ impl Code93 {
         }
     }
 
-    fn c_checksum_encoding(&self) -> [u8; 9] {
-        match self.c_checksum_char() {
-            Some(c) => self.char_encoding(&c),
-            None => panic!("Cannot compute checksum"),
+    /// Calculates the C checksum character using a weighted modulo-47 algorithm.
+    pub fn c_checksum_char(&self) -> Option<char> {
+        let ref data = self.0;
+        let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
+        let weight = |i| (data.len() - i) % 20;
+        let positions = data.iter().map(&get_char_pos);
+        let index = positions.enumerate()
+                             .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
+
+        match CHARS.get(index % CHARS.len()) {
+            Some(&(c, _)) => Some(c),
+            None => None,
         }
     }
 
-    /// Calculates the checksum character using a weighted modulo-47 algorithm.
-    pub fn c_checksum_char(&self) -> Option<char> {
+    /// Calculates the K checksum character using a weighted modulo-47 algorithm.
+    pub fn k_checksum_char(&self, c_checksum: &char) -> Option<char> {
+        let ref data = self.0;
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
-        let weight = |i| (self.0.len() - i) % 20;
-        let positions = self.0.iter().map(&get_char_pos);
+        let weight = |i| (data.len() - i) % 15;
+        let positions = data.iter().map(&get_char_pos);
         let index = positions.enumerate()
                              .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
 
@@ -86,12 +95,16 @@ impl Code93 {
 
     fn payload(&self) -> Vec<u8> {
         let mut enc = vec![];
+        let c_checksum = self.c_checksum_char().expect("Cannot compute checksum C");
+        let k_checksum = self.k_checksum_char(&c_checksum).expect("Cannot compute checksum K");
 
         for c in &self.0 {
             self.push_encoding(&mut enc, self.char_encoding(&c));
         }
 
-        self.push_encoding(&mut enc, self.c_checksum_encoding());
+        // Checksums.
+        self.push_encoding(&mut enc, self.char_encoding(&c_checksum));
+        self.push_encoding(&mut enc, self.char_encoding(&k_checksum));
 
         enc
     }
