@@ -62,7 +62,12 @@ impl Code93 {
     /// Calculates a checksum character using a weighted modulo-47 algorithm.
     fn checksum_char(&self, data: &Vec<char>, weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
-        let weight = |i| (data.len() - i) % weight_threshold;
+        let weight = |i| {
+            match (data.len() - i) % weight_threshold {
+                0 => weight_threshold,
+                n => n,
+            }
+        };
         let positions = data.iter().map(&get_char_pos);
         let index = positions.enumerate()
                              .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
@@ -159,12 +164,36 @@ mod tests {
 
     #[test]
     fn code93_encode() {
+        // Tests for data longer than 15, data longer than 20
         let code931 = Code93::new("TEST93".to_owned()).unwrap();
+        let code932 = Code93::new("FLAM".to_owned()).unwrap();
+        let code933 = Code93::new("99".to_owned()).unwrap();
 
         assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
+        assert_eq!(collapse_vec(code932.encode()), "1010111101100010101010110001101010001010011001001011001010011001010111101".to_owned());
+        assert_eq!(collapse_vec(code933.encode()), "1010111101000010101000010101101100101000101101010111101".to_owned());
     }
 
-    // Tests for data longer than 15, data longer than 20
-    // Tests for hand-checked encodings
-    // Tests for checksum_char function
+    #[test]
+    fn code93_c_checksum_with_over_20() {
+        // Tests that the C checksum resets the summing after 20 characters.
+        let code931 = Code93::new("1111111111111111111111".to_owned()).unwrap();
+
+        assert_eq!(code931.c_checksum_char().unwrap(), 'P');
+    }
+
+    #[test]
+    fn code93_checksum_calculation() {
+        let code931 = Code93::new("FLAM".to_owned()).unwrap();
+        let code932 = Code93::new("99".to_owned()).unwrap();
+        let ccs1 = code931.c_checksum_char().unwrap();
+        let ccs2 = code932.c_checksum_char().unwrap();
+
+        assert_eq!(ccs1, 'O');
+        assert_eq!(code931.k_checksum_char(ccs1).unwrap(), 'M');
+
+        assert_eq!(ccs2, 'R');
+        assert_eq!(code932.k_checksum_char(ccs2).unwrap(), 'P');
+
+    }
 }
