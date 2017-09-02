@@ -183,6 +183,15 @@ mod tests {
     }
 
     #[test]
+    fn code93_k_checksum_with_over_15() {
+        // Tests that the K checksum resets the summing after 15 characters.
+        let code931 = Code93::new("11111111111111111".to_owned()).unwrap();
+        let ccs1 = code931.c_checksum_char().unwrap();
+
+        assert_eq!(code931.k_checksum_char(ccs1).unwrap(), '(');
+    }
+
+    #[test]
     fn code93_checksum_calculation() {
         let code931 = Code93::new("FLAM".to_owned()).unwrap();
         let code932 = Code93::new("99".to_owned()).unwrap();

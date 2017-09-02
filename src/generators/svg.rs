@@ -231,7 +231,7 @@ mod tests {
 
         if WRITE_TO_FILE { write_file(&generated[..], "code93.svg"); }
 
-        assert_eq!(generated.len(), 4516);
+        assert_eq!(generated.len(), 4458);
     }
 
     #[test]
