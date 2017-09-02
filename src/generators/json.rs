@@ -61,6 +61,7 @@ mod tests {
     use ::sym::ean8::*;
     use ::sym::ean_supp::*;
     use ::sym::code39::*;
+    use ::sym::code93::*;
     use ::sym::code128::*;
     use ::sym::tf::*;
     use ::sym::codabar::*;
@@ -100,6 +101,24 @@ mod tests {
         let generated = json.generate(&ean8.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":5,\"xdim\":2,\"encoding\":[1,0,1,0,0,1,1,0,0,1,0,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,0,0,0,1,1,0,1,0,1,0,1,0,0,1,1,1,0,1,0,1,0,0,0,0,1,0,0,0,1,0,0,1,1,1,0,0,1,0,1,0,1]}".trim().to_owned());
+    }
+
+    #[test]
+    fn code_93_as_json() {
+        let code93 = Code93::new("MONKEYMAGIC".to_owned()).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&code93.encode()[..]).unwrap();
+
+        assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\":[1,0,1,0,1,1,1,1,0,1,0,1,0,0,1,1,0,0,1,0,0,1,0,1,1,0,0,1,0,1,0,0,0,1,1,0,1,0,0,0,1,1,0,1,0,1,1,0,0,1,0,0,1,0,1,0,0,1,1,0,1,1,0,1,0,1,0,0,1,1,0,0,1,1,0,1,0,1,0,0,0,1,0,1,1,0,1,0,0,0,1,0,1,1,0,0,0,1,0,1,1,0,1,0,0,0,1,0,1,0,0,1,1,0,1,1,0,1,0,1,0,0,1,0,0,0,1,0,1,0,1,1,1,1,0,1]}".trim().to_owned());
+    }
+
+    #[test]
+    fn code_93_as_json_small_height_double_weight() {
+        let code93 = Code93::new("1234".to_owned()).unwrap();
+        let json = JSON{height: 7, xdim: 2};
+        let generated = json.generate(&code93.encode()[..]).unwrap();
+
+        assert_eq!(generated, "{\"height\":7,\"xdim\":2,\"encoding\":[1,0,1,0,1,1,1,1,0,1,0,1,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,1,0,0,0,1,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,1,1,1,1,0,1]}".trim().to_owned());
     }
 
     #[test]

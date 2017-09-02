@@ -137,6 +137,7 @@ mod tests {
     use ::sym::ean13::*;
     use ::sym::ean8::*;
     use ::sym::code39::*;
+    use ::sym::code93::*;
     use ::sym::code128::*;
     use ::sym::ean_supp::*;
     use ::sym::tf::*;
@@ -220,6 +221,17 @@ mod tests {
         if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
 
         assert_eq!(generated.len(), 6539);
+    }
+
+    #[test]
+    fn code93_as_svg() {
+        let code93 = Code93::new("IGOT99PROBLEMS".to_owned()).unwrap();
+        let svg = SVG::new(80);
+        let generated = svg.generate(&code93.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code93.svg"); }
+
+        assert_eq!(generated.len(), 4516);
     }
 
     #[test]

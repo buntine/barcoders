@@ -210,6 +210,7 @@ mod tests {
     use sym::ean13::*;
     use sym::ean8::*;
     use sym::code39::*;
+    use sym::code93::*;
     use sym::code128::*;
     use sym::ean_supp::*;
     use sym::tf::*;
@@ -397,6 +398,58 @@ mod tests {
 
         assert_eq!(generated.len(), 1831);
     }
+
+    #[test]
+    fn code93_as_png() {
+        let code93 = Code93::new("ILOVEBAH".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
+        };
+        let generated = png.generate(&code93.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code93.png"); }
+
+        assert_eq!(generated.len(), 2803);
+    }
+
+    #[test]
+    fn code93_as_gif() {
+        let code93 = Code93::new("CIVIC VIDEO".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
+        };
+        let generated = gif.generate(&code93.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code93.gif"); }
+
+        assert_eq!(generated.len(), 1846);
+    }
+
+    #[test]
+    fn rotated_code93_as_gif() {
+        let code93 = Code93::new("TWISTIES 100".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::OneEighty,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
+        };
+        let generated = gif.generate(&code93.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code93_180.gif"); }
+
+        assert_eq!(generated.len(), 1933);
+    }
+
 
     #[test]
     fn codabar_as_png() {

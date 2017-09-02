@@ -165,6 +165,6 @@ mod tests {
     }
 
     // Tests for data longer than 15, data longer than 20
+    // Tests for hand-checked encodings
     // Tests for checksum_char function
-    // Tests in generators for Code93
 }
