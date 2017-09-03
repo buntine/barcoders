@@ -13,7 +13,7 @@ use error::Result;
 use std::ops::Range;
 use std::char;
 
-const TF_WIDTHS: [&str; 10] = [
+const WIDTHS: [&str; 10] = [
     "NNWWN", "WNNNW", "NWNNW",
     "WWNNN", "NNWNW", "WNWNN",
     "NWWNN", "NNNWW", "WNNWN",
@@ -87,8 +87,8 @@ impl TF {
     }
 
     fn interleave(&self, bars: u8, spaces: u8) -> Vec<u8> {
-        let bwidths = TF_WIDTHS[bars as usize].chars();
-        let swidths = TF_WIDTHS[spaces as usize].chars();
+        let bwidths = WIDTHS[bars as usize].chars();
+        let swidths = WIDTHS[spaces as usize].chars();
         let mut encoding: Vec<u8> = vec![];
 
         for (b, s) in bwidths.zip(swidths) {
@@ -118,7 +118,7 @@ impl TF {
     }
 
     fn char_widths(&self, d: &u8) -> &'static str {
-        TF_WIDTHS[*d as usize]
+        WIDTHS[*d as usize]
     }
 
     fn stf_payload(&self) -> Vec<u8> {

@@ -56,7 +56,7 @@ enum CharacterSet {
 }
 
 // Character -> Binary mappings for each of the allowable characters in each character-set.
-const CODE128_CHARS: [([&str; 3], Encoding); 106] = [
+const CHARS: [([&str; 3], Encoding); 106] = [
     ([" ", " ", "00"], [1,1,0,1,1,0,0,1,1,0,0]), (["!", "!", "01"], [1,1,0,0,1,1,0,1,1,0,0]), 
     (["\"", "\"", "02"], [1,1,0,0,1,1,0,0,1,1,0]), (["#", "#", "03"], [1,0,0,1,0,0,1,1,0,0,0]),
     (["$", "$", "04"], [1,0,0,1,0,0,0,1,1,0,0]), (["%", "%", "05"], [1,0,0,0,1,0,0,1,1,0,0]),
@@ -113,10 +113,10 @@ const CODE128_CHARS: [([&str; 3], Encoding); 106] = [
 ];
 
 // Stop sequence.
-const CODE128_STOP: Encoding = [1,1,0,0,0,1,1,1,0,1,0];
+const STOP: Encoding = [1,1,0,0,0,1,1,1,0,1,0];
 
 // Termination sequence.
-const CODE128_TERM: [u8; 2] = [1,1];
+const TERM: [u8; 2] = [1,1];
 
 /// The Code128 barcode type.
 #[derive(Debug)]
@@ -164,7 +164,7 @@ impl CharacterSet {
     fn lookup(&self, s: &str) -> Result<Unit> {
         let p = self.index()?;
 
-        match CODE128_CHARS.iter().position(|&c| c.0[p] == s) {
+        match CHARS.iter().position(|&c| c.0[p] == s) {
             Some(i) => self.unit(i),
             None => Err(Error::Character),
         }
@@ -250,7 +250,7 @@ impl Code128 {
     }
 
     fn unit_encoding(&self, c: &Unit) -> Encoding {
-       CODE128_CHARS[c.index()].1
+       CHARS[c.index()].1
     }
 
     fn payload(&self) -> Vec<u8> {
@@ -267,8 +267,8 @@ impl Code128 {
     pub fn encode(&self) -> Vec<u8> {
         helpers::join_slices(&[&self.payload()[..],
                                &self.checksum_encoding()[..],
-                               &CODE128_STOP[..],
-                               &CODE128_TERM[..]][..])
+                               &STOP[..],
+                               &TERM[..]][..])
     }
 }
 

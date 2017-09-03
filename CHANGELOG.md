@@ -11,9 +11,11 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
-### v0.8.2 (staged)
+### v0.8.2 (2017-09-03)
 
 - [added] Code93 barcode encoder.
+- [changed] Removed gratuitous qualifiers from some constants.
+- [changed] Updated image dependency from 0.13.0 to 0.15.0
 
 ### v0.8.1 (2017-06-20)
 
