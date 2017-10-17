@@ -3,13 +3,12 @@
 //! EAN-8 barcodes are EAN style barcodes for smaller packages on products like
 //! cigaretts, chewing gum, etc where package space is limited.
 
-use sym::Parse;
-use sym::helpers;
+use sym::{Parse, helpers};
 use error::Result;
-use sym::ean13::ENCODINGS;
-use sym::ean13::LEFT_GUARD;
-use sym::ean13::MIDDLE_GUARD;
-use sym::ean13::RIGHT_GUARD;
+use sym::ean13::{ENCODINGS,
+                 LEFT_GUARD,
+                 MIDDLE_GUARD,
+                 RIGHT_GUARD};
 use std::ops::Range;
 use std::char;
 

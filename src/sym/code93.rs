@@ -8,8 +8,7 @@
 //! NOTE: This encoder currently only supports the basic Code93 implementation and not full-ASCII
 //! mode.
 
-use sym::Parse;
-use sym::helpers;
+use sym::{Parse, helpers};
 use error::Result;
 use std::ops::Range;
 

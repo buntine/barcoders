@@ -9,8 +9,7 @@
 //!   * Bookland
 //!   * JAN
 
-use sym::Parse;
-use sym::helpers;
+use sym::{Parse, helpers};
 use error::Result;
 use std::ops::Range;
 use std::char;

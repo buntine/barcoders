@@ -6,8 +6,7 @@
 //! popular in non-retail environments. It was one of the first symbologies to support encoding
 //! of the ASCII alphabet.
 
-use sym::Parse;
-use sym::helpers;
+use sym::{Parse, helpers};
 use error::Result;
 use std::ops::Range;
 

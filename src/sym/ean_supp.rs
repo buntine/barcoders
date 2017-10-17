@@ -6,10 +6,9 @@
 //!
 //! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
-use sym::Parse;
+use sym::{Parse, helpers};
 use error::{Error, Result};
 use sym::ean13::ENCODINGS;
-use sym::helpers;
 use std::ops::Range;
 use std::char;
 
