@@ -6,10 +6,10 @@
 use sym::Parse;
 use sym::helpers;
 use error::Result;
-use sym::ean13::EAN_ENCODINGS;
-use sym::ean13::EAN_LEFT_GUARD;
-use sym::ean13::EAN_MIDDLE_GUARD;
-use sym::ean13::EAN_RIGHT_GUARD;
+use sym::ean13::ENCODINGS;
+use sym::ean13::LEFT_GUARD;
+use sym::ean13::MIDDLE_GUARD;
+use sym::ean13::RIGHT_GUARD;
 use std::ops::Range;
 use std::char;
 
@@ -53,7 +53,7 @@ impl EAN8 {
     }
 
     fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
-        EAN_ENCODINGS[side][*d as usize]
+        ENCODINGS[side][*d as usize]
     }
 
     fn left_digits(&self) -> &[u8] {
@@ -85,13 +85,13 @@ impl EAN8 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(&[&EAN_LEFT_GUARD[..],
+        helpers::join_slices(&[&LEFT_GUARD[..],
                                &self.number_system_encoding()[..],
                                &self.left_payload()[..],
-                               &EAN_MIDDLE_GUARD[..],
+                               &MIDDLE_GUARD[..],
                                &self.right_payload()[..],
                                &self.checksum_encoding()[..],
-                               &EAN_RIGHT_GUARD[..]][..])
+                               &RIGHT_GUARD[..]][..])
     }
 }
 

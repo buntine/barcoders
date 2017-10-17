@@ -19,7 +19,7 @@ pub struct ASCII {
 }
 
 /// Maps binary digits to ASCII representation (0=' ', 1='#')
-const ASCII_CHARS: [char; 2] = [' ', '#'];
+const CHARS: [char; 2] = [' ', '#'];
 
 impl ASCII {
     /// Returns a new ASCII with default values.
@@ -32,7 +32,7 @@ impl ASCII {
 
     fn generate_row(&self, barcode: &[u8]) -> String {
         barcode.iter()
-               .flat_map(|&d| repeat(ASCII_CHARS[d as usize]).take(self.xdim))
+               .flat_map(|&d| repeat(CHARS[d as usize]).take(self.xdim))
                .collect()
     }
 

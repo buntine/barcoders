@@ -11,6 +11,7 @@ keywords = ["barcode", "barcodes", "barcode-encoding"]
 license = "MIT OR Apache-2.0"
 exclude = [
     "media/*",
+    "TODO",
 ]
 
 [features]

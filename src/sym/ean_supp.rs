@@ -8,12 +8,12 @@
 
 use sym::Parse;
 use error::{Error, Result};
-use sym::ean13::EAN_ENCODINGS;
+use sym::ean13::ENCODINGS;
 use sym::helpers;
 use std::ops::Range;
 use std::char;
 
-const EANSUPP_LEFT_GUARD: [u8; 4] = [1, 0, 1, 1];
+const LEFT_GUARD: [u8; 4] = [1, 0, 1, 1];
 
 /// Maps parity (odd/even) for the EAN-5 barcodes based on the check digit.
 const EAN5_PARITY: [[usize; 5]; 10] = [
@@ -65,7 +65,7 @@ impl EANSUPP {
     }
 
     fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
-        EAN_ENCODINGS[side][*d as usize]
+        ENCODINGS[side][*d as usize]
     }
 
     /// Calculates the checksum digit using a modified modulo-10 weighting
@@ -124,7 +124,7 @@ impl EANSUPP {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(&[&EANSUPP_LEFT_GUARD[..], &self.payload()[..]][..])
+        helpers::join_slices(&[&LEFT_GUARD[..], &self.payload()[..]][..])
     }
 }
 

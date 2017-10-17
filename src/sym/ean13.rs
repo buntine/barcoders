@@ -22,7 +22,7 @@ use std::char;
 /// * Left side A (odd parity).
 /// * Left side B (even parity).
 /// * Right side encodings.
-pub const EAN_ENCODINGS: [[[u8; 7]; 10]; 3] = [
+pub const ENCODINGS: [[[u8; 7]; 10]; 3] = [
     [[0,0,0,1,1,0,1], [0,0,1,1,0,0,1], [0,0,1,0,0,1,1], [0,1,1,1,1,0,1], [0,1,0,0,0,1,1],
      [0,1,1,0,0,0,1], [0,1,0,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,0,1,1,1], [0,0,0,1,0,1,1],],
     [[0,1,0,0,1,1,1], [0,1,1,0,0,1,1], [0,0,1,1,0,1,1], [0,1,0,0,0,0,1], [0,0,1,1,1,0,1],
@@ -41,11 +41,11 @@ const PARITY: [[usize; 5]; 10] = [
 ];
 
 /// The left-hand guard pattern.
-pub const EAN_LEFT_GUARD: [u8; 3] = [1, 0, 1];
+pub const LEFT_GUARD: [u8; 3] = [1, 0, 1];
 /// The middle guard pattern.
-pub const EAN_MIDDLE_GUARD: [u8; 5] = [0, 1, 0, 1, 0];
+pub const MIDDLE_GUARD: [u8; 5] = [0, 1, 0, 1, 0];
 /// The right-hand guard pattern.
-pub const EAN_RIGHT_GUARD: [u8; 3] = [1, 0, 1];
+pub const RIGHT_GUARD: [u8; 3] = [1, 0, 1];
 
 /// The EAN-13 barcode type.
 #[derive(Debug)]
@@ -93,7 +93,7 @@ impl EAN13 {
     }
 
     fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
-        EAN_ENCODINGS[side][*d as usize]
+        ENCODINGS[side][*d as usize]
     }
 
     fn left_digits(&self) -> &[u8] {
@@ -130,13 +130,13 @@ impl EAN13 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(&[&EAN_LEFT_GUARD[..],
+        helpers::join_slices(&[&LEFT_GUARD[..],
                                &self.number_system_encoding()[..],
                                &self.left_payload()[..],
-                               &EAN_MIDDLE_GUARD[..],
+                               &MIDDLE_GUARD[..],
                                &self.right_payload()[..],
                                &self.checksum_encoding()[..],
-                               &EAN_RIGHT_GUARD[..]][..])
+                               &RIGHT_GUARD[..]][..])
     }
 }
 
