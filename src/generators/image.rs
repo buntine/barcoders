@@ -176,17 +176,13 @@ impl Image {
 
         for y in 0..height {
             for &b in barcode {
-                let size = xdim;
-                let c = match b {
-                    0 => bg,
-                    _ => fg,
-                };
+                let c = if b == 0 { bg } else { fg };
 
-                for p in 0..size {
+                for p in 0..xdim {
                     buffer.put_pixel(pos + p, y, c);
                 }
 
-                pos += size;
+                pos += xdim;
             }
 
             pos = 0;
