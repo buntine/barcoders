@@ -1,6 +1,7 @@
 *- REFACTOR: Remove qualifiers from namespaced constants: CODE39_CHARS -> CHARS.
 .- PERFORMANCE: If checksum_char functions were private, it would allow for them to return the encoding instead of the char and thus the extra lookup to char_encoding would be able to be skipped (see Code39, etc)
-- REFACTOR: Replace mutable "pos" variable in Image ganerator with Iterator as soon as "step_by" is stablized in Rust.
 - REFACTOR: Fix monstrosity in place_pixels in image generator. (Potentially write a simple macro?)
+- FEATURE: Code11 symbology
 - PERFORMANCE: If user doesn't set image color, default to Luma8 instead of Rgba8 to save bytes.
 - REFACTOR: Implement simple regex into Parse and remove valid_chars, valid_length, etc.
+- REFACTOR: Replace mutable "pos" variable in Image ganerator with Iterator as soon as "step_by" is stablized in Rust.

@@ -18,6 +18,7 @@ pub mod ean8;
 pub mod ean_supp;
 pub mod code39;
 pub mod code93;
+pub mod code11;
 pub mod code128;
 pub mod codabar;
 pub mod tf;
