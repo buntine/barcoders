@@ -47,6 +47,8 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 * EAN Supplementals
   * EAN-2
   * EAN-5
+* Code11
+  * USD-8
 * Code39
 * Code93
 * Code128

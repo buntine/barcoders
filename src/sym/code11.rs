@@ -47,11 +47,11 @@ impl Code11 {
     }
 
     /// Calculates a checksum character using a weighted modulo-11 algorithm.
-    fn checksum_char(&self, data: &Vec<char>, modulo: usize) -> Option<char> {
+    fn checksum_char(&self, data: &Vec<char>, modulo: usize, weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let weight = |i| {
-            match i % 10 {
-                0 => 10,
+            match i % weight_threshold {
+                0 => weight_threshold,
                 n => n,
             }
         };
@@ -69,7 +69,7 @@ impl Code11 {
 
     /// Calculates the C checksum character using a weighted modulo-11 algorithm.
     pub fn c_checksum_char(&self) -> Option<char> {
-        self.checksum_char(&self.0, 11)
+        self.checksum_char(&self.0, 11, 10)
     }
 
     /// Calculates the K checksum character using a weighted modulo-9 algorithm.
@@ -77,11 +77,12 @@ impl Code11 {
         let mut data: Vec<char> = self.0.clone();
         data.push(c_checksum);
 
-        self.checksum_char(&data, 9)
+        self.checksum_char(&data, 9, 9)
     }
 
     fn push_encoding(&self, into: &mut Vec<u8>, from: &[u8]) {
         into.extend(from.iter().cloned());
+        into.extend(&[0]);
     }
 
     fn payload(&self) -> Vec<u8> {
@@ -94,12 +95,12 @@ impl Code11 {
 
         self.push_encoding(&mut enc, self.char_encoding(c_checksum));
 
-        // K-Checksum is only appended on barcodes greater than 10 characters.
-        if self.0.len() > 10 {
+        // K-checksum is only appended on barcodes greater than 10 characters.
+        //if self.0.len() > 10 {
             let k_checksum = self.k_checksum_char(c_checksum).expect("Cannot compute checksum K");
 
             self.push_encoding(&mut enc, self.char_encoding(k_checksum));
-        }
+        //}
 
         enc
     }
@@ -109,8 +110,9 @@ impl Code11 {
     pub fn encode(&self) -> Vec<u8> {
         let guard = &GUARD[..];
 
-        helpers::join_slices(&[guard, &self.payload()[..],
-                               guard][..])
+        helpers::join_slices(&[guard, &[0],
+                             &self.payload()[..],
+                             guard][..])
     }
 }
 
@@ -151,5 +153,14 @@ mod tests {
         let code11 = Code11::new("NOTDIGITS".to_owned());
 
         assert_eq!(code11.err().unwrap(), Error::Character);
+    }
+
+    #[test]
+    fn code11_encode() {
+        let code111 = Code11::new("123-45".to_owned()).unwrap();
+        let code112 = Code11::new("666".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code111.encode()), "101100101101011010010110110010101011010101101101101101011011010100101101011001".to_owned());
+        assert_eq!(collapse_vec(code112.encode()), "1011001010011010100110101001101011001010110010101011001".to_owned());
     }
 }
