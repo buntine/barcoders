@@ -11,11 +11,11 @@ use std::ops::Range;
 
 // Character -> Binary mappings for each of the allowable characters.
 // The special "full-ASCII" characters are represented with (, ), [, ].
-const CHARS: [(char, Vec<u8>); 11] = [
-    ('0', vec![1,0,1,0,1,1]), ('1', vec![1,1,0,1,0,1,1]), ('2', vec![1,0,0,1,0,1,1]),
-    ('3', vec![1,1,0,0,1,0,1]), ('4', vec![1,0,1,1,0,1,1]), ('5', vec![1,1,0,1,1,0,1]),
-    ('6', vec![1,0,0,1,1,0,1]), ('7', vec![1,0,1,0,0,1,1]), ('8', vec![1,1,0,1,0,0,1]),
-    ('9', vec![1,1,0,1,0,1]), ('-', vec![1,0,1,1,0,1]),
+const CHARS: [(char, &[u8]); 11] = [
+    ('0', &[1,0,1,0,1,1]), ('1', &[1,1,0,1,0,1,1]), ('2', &[1,0,0,1,0,1,1]),
+    ('3', &[1,1,0,0,1,0,1]), ('4', &[1,0,1,1,0,1,1]), ('5', &[1,1,0,1,1,0,1]),
+    ('6', &[1,0,0,1,1,0,1]), ('7', &[1,0,1,0,0,1,1]), ('8', &[1,1,0,1,0,0,1]),
+    ('9', &[1,1,0,1,0,1]), ('-', &[1,0,1,1,0,1]),
 ];
 
 // Code11 barcodes must start and end with a special character.
@@ -39,14 +39,14 @@ impl Code11 {
         })
     }
 
-    fn char_encoding(&self, c: char) -> Vec<u8> {
+    fn char_encoding(&self, c: char) -> &[u8] {
         match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
     }
 
-    /// Calculates a checksum character using a weighted modulo-47 algorithm.
+    /// Calculates a checksum character using a weighted modulo-11 algorithm.
     fn checksum_char(&self, data: &Vec<char>, weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let weight = |i| {
@@ -66,12 +66,12 @@ impl Code11 {
     }
 
 
-    /// Calculates the C checksum character using a weighted modulo-47 algorithm.
+    /// Calculates the C checksum character using a weighted modulo-11 algorithm.
     pub fn c_checksum_char(&self) -> Option<char> {
         self.checksum_char(&self.0, 20)
     }
 
-    /// Calculates the K checksum character using a weighted modulo-47 algorithm.
+    /// Calculates the K checksum character using a weighted modulo-9 algorithm.
     pub fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
         let mut data: Vec<char> = self.0.clone();
         data.push(c_checksum);
@@ -79,7 +79,7 @@ impl Code11 {
         self.checksum_char(&data, 15)
     }
 
-    fn push_encoding(&self, into: &mut Vec<u8>, from: Vec<u8>) {
+    fn push_encoding(&self, into: &mut Vec<u8>, from: &[u8]) {
         into.extend(from.iter().cloned());
     }
 
