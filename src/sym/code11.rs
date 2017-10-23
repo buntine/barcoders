@@ -164,9 +164,11 @@ mod tests {
     fn code11_encode_less_than_10_chars() {
         let code111 = Code11::new("123-45".to_owned()).unwrap();
         let code112 = Code11::new("666".to_owned()).unwrap();
+        let code113 = Code11::new("12-9".to_owned()).unwrap();
 
         assert_eq!(collapse_vec(code111.encode()), "1011001011010110100101101100101010110101011011011011010110110101011001".to_owned());
         assert_eq!(collapse_vec(code112.encode()), "10110010100110101001101010011010110010101011001".to_owned());
+        assert_eq!(collapse_vec(code113.encode()), "10110010110101101001011010110101101010100110101011001".to_owned());
     }
 
     #[test]
