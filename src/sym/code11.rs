@@ -3,7 +3,8 @@
 //! Code11 is able to encode all of the decimal digits and the dash character. It is mainly
 //! used in the telecommunications industry.
 //!
-//! Code11 is a discrete symbology.
+//! Code11 is a discrete symbology. This encoder always provides a C checksum. For barcodes longer
+//! than 10 characters, a second checksum digit (K) is appended.
 
 use sym::{Parse, helpers};
 use error::Result;
@@ -47,7 +48,7 @@ impl Code11 {
     }
 
     /// Calculates a checksum character using a weighted modulo-11 algorithm.
-    fn checksum_char(&self, data: &Vec<char>, modulo: usize, weight_threshold: usize) -> Option<char> {
+    fn checksum_char(&self, data: &Vec<char>, weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let weight = |i| {
             match i % weight_threshold {
@@ -60,7 +61,11 @@ impl Code11 {
                              .enumerate()
                              .fold(0, |acc, (i, pos)| acc + (weight(i + 1) * pos));
 
-        match CHARS.get(index % modulo) {
+        // Some sources suggest that the C checksum should use modulo-11, whilst the K
+        // checksum should use modulo-9. But most generators always use modulo-11.
+        // This algorithm currently just uses 11 for both checksums, but can be easily 
+        // changed at a later date.
+        match CHARS.get(index % CHARS.len()) {
             Some(&(c, _)) => Some(c),
             None => None,
         }
@@ -69,15 +74,15 @@ impl Code11 {
 
     /// Calculates the C checksum character using a weighted modulo-11 algorithm.
     pub fn c_checksum_char(&self) -> Option<char> {
-        self.checksum_char(&self.0, 11, 10)
+        self.checksum_char(&self.0, 10)
     }
 
-    /// Calculates the K checksum character using a weighted modulo-9 algorithm.
+    /// Calculates the K checksum character using a weighted modulo-11 algorithm.
     pub fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
         let mut data: Vec<char> = self.0.clone();
         data.push(c_checksum);
 
-        self.checksum_char(&data, 9, 9)
+        self.checksum_char(&data, 9)
     }
 
     fn push_encoding(&self, into: &mut Vec<u8>, from: &[u8]) {
@@ -96,11 +101,11 @@ impl Code11 {
         self.push_encoding(&mut enc, self.char_encoding(c_checksum));
 
         // K-checksum is only appended on barcodes greater than 10 characters.
-        //if self.0.len() > 10 {
+        if self.0.len() > 10 {
             let k_checksum = self.k_checksum_char(c_checksum).expect("Cannot compute checksum K");
 
             self.push_encoding(&mut enc, self.char_encoding(k_checksum));
-        //}
+        }
 
         enc
     }
@@ -156,11 +161,18 @@ mod tests {
     }
 
     #[test]
-    fn code11_encode() {
+    fn code11_encode_less_than_10_chars() {
         let code111 = Code11::new("123-45".to_owned()).unwrap();
         let code112 = Code11::new("666".to_owned()).unwrap();
 
-        assert_eq!(collapse_vec(code111.encode()), "101100101101011010010110110010101011010101101101101101011011010100101101011001".to_owned());
-        assert_eq!(collapse_vec(code112.encode()), "1011001010011010100110101001101011001010110010101011001".to_owned());
+        assert_eq!(collapse_vec(code111.encode()), "1011001011010110100101101100101010110101011011011011010110110101011001".to_owned());
+        assert_eq!(collapse_vec(code112.encode()), "10110010100110101001101010011010110010101011001".to_owned());
+    }
+
+    #[test]
+    fn code11_encode_more_than_10_chars() {
+        let code111 = Code11::new("1234-5678-4321".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code111.encode()), "101100101101011010010110110010101011011010110101101101010011010101001101101001010110101011011011001010100101101101011011011010100110101011001".to_owned());
     }
 }
