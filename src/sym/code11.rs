@@ -87,7 +87,7 @@ impl Code11 {
 
     fn push_encoding(&self, into: &mut Vec<u8>, from: &[u8]) {
         into.extend(from.iter().cloned());
-        into.extend(&[0]);
+        into.extend(&SEPARATOR);
     }
 
     fn payload(&self) -> Vec<u8> {
@@ -115,7 +115,7 @@ impl Code11 {
     pub fn encode(&self) -> Vec<u8> {
         let guard = &GUARD[..];
 
-        helpers::join_slices(&[guard, &[0],
+        helpers::join_slices(&[guard, &SEPARATOR,
                              &self.payload()[..],
                              guard][..])
     }

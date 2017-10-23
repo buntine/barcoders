@@ -207,6 +207,7 @@ mod tests {
     use sym::ean8::*;
     use sym::code39::*;
     use sym::code93::*;
+    use sym::code11::*;
     use sym::code128::*;
     use sym::ean_supp::*;
     use sym::tf::*;
@@ -446,6 +447,39 @@ mod tests {
         assert_eq!(generated.len(), 1933);
     }
 
+    #[test]
+    fn code11_as_png() {
+        let code11 = Code11::new("9923-1111".to_owned()).unwrap();
+        let png = Image::PNG {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
+        };
+        let generated = png.generate(&code11.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code11.png"); }
+
+        assert_eq!(generated.len(), 1979);
+    }
+
+    #[test]
+    fn code11_as_gif() {
+        let code11 = Code11::new("122333444455556666".to_owned()).unwrap();
+        let gif = Image::GIF {
+            height: 60,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [0, 0, 0, 255]},
+            background: Color{rgba: [255, 255, 255, 255]},
+        };
+        let generated = gif.generate(&code11.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code11.gif"); }
+
+        assert_eq!(generated.len(), 1845);
+    }
 
     #[test]
     fn codabar_as_png() {

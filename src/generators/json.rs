@@ -62,6 +62,7 @@ mod tests {
     use ::sym::ean_supp::*;
     use ::sym::code39::*;
     use ::sym::code93::*;
+    use ::sym::code11::*;
     use ::sym::code128::*;
     use ::sym::tf::*;
     use ::sym::codabar::*;
@@ -200,5 +201,14 @@ mod tests {
         let generated = json.generate(&itf.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\":[1,0,1,0,1,1,1,0,1,0,0,0,1,0,1,0,1,1,1,0,0,0,1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,0,0,1,0,0,0,1,1,0,1]}".trim().to_owned());
+    }
+
+    #[test]
+    fn code11_as_json() {
+        let code11 = Code11::new("111-999-8".to_owned()).unwrap();
+        let json = JSON::new();
+        let generated = json.generate(&code11.encode()[..]).unwrap();
+
+        assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\":[1,0,1,1,0,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,1,0,0,1]}".trim().to_owned());
     }
 }

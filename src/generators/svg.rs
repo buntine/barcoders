@@ -138,6 +138,7 @@ mod tests {
     use ::sym::ean8::*;
     use ::sym::code39::*;
     use ::sym::code93::*;
+    use ::sym::code11::*;
     use ::sym::code128::*;
     use ::sym::ean_supp::*;
     use ::sym::tf::*;
@@ -280,4 +281,19 @@ mod tests {
 
         assert_eq!(generated.len(), 7123);
     }
+
+    #[test]
+    fn code11_as_svg() {
+        let code11 = Code11::new("9988-45643201".to_owned()).unwrap();
+        let svg = SVG{height: 80,
+                      xdim: 1,
+                      background: Color::black(),
+                      foreground: Color::white()};
+        let generated = svg.generate(&code11.encode()[..]).unwrap();
+
+        if WRITE_TO_FILE { write_file(&generated[..], "code11.svg"); }
+
+        assert_eq!(generated.len(), 4219);
+    }
+
 }
