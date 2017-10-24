@@ -63,7 +63,7 @@ impl Code39 {
     }
 
     /// Calculates the checksum character using a modulo-43 algorithm.
-    pub fn checksum_char(&self) -> Option<char> {
+    fn checksum_char(&self) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let indices = self.data.iter().map(&get_char_pos);
         let index = indices.fold(0, |acc, i| acc + i) % CHARS.len();
@@ -179,14 +179,5 @@ mod tests {
 
         assert_eq!(collapse_vec(code391.encode()), "100101101101011010010101101011001010110110110010101010100110101101101010010110100101101101".to_owned());
         assert_eq!(collapse_vec(code392.encode()), "1001011011010101100101101011010010110101101100101010110101011001010101100101101101001101010110100101011010110010101101011011010010100101101101".to_owned());
-    }
-
-    #[test]
-    fn code39_checksum_calculation() {
-        let code391 = Code39::new("1234".to_owned()).unwrap(); // Check char: 'A'
-        let code392 = Code39::new("159AZ".to_owned()).unwrap(); // Check char: 'H'
-
-        assert_eq!(code391.checksum_char().unwrap(), 'A');
-        assert_eq!(code392.checksum_char().unwrap(), 'H');
     }
 }

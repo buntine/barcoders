@@ -77,15 +77,6 @@ impl TF {
         }
     }
 
-    /// Returns a Option<u8> reference to the checksum digit portion of the data.
-    /// The Optional value is because Standard TF barcodes do not have a check digit.
-    pub fn checksum_digit(&self) -> Option<&u8> {
-        match *self {
-            TF::Standard(_) => None,
-            TF::Interleaved(ref d) => d.last(),
-        }
-    }
-
     fn interleave(&self, bars: u8, spaces: u8) -> Vec<u8> {
         let bwidths = WIDTHS[bars as usize].chars();
         let swidths = WIDTHS[spaces as usize].chars();
@@ -190,14 +181,6 @@ mod tests {
         let stf = TF::standard("12345".to_owned());
 
         assert!(stf.is_ok());
-    }
-
-    #[test]
-    fn new_itf_with_checksum() {
-        let itf = TF::interleaved("1234567".to_owned()).unwrap();
-
-        assert!(itf.raw_data().len() % 2 == 0);
-        assert_eq!(itf.checksum_digit(), Some(&0));
     }
 
     #[test]

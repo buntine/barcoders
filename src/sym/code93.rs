@@ -79,12 +79,12 @@ impl Code93 {
 
 
     /// Calculates the C checksum character using a weighted modulo-47 algorithm.
-    pub fn c_checksum_char(&self) -> Option<char> {
+    fn c_checksum_char(&self) -> Option<char> {
         self.checksum_char(&self.0, 20)
     }
 
     /// Calculates the K checksum character using a weighted modulo-47 algorithm.
-    pub fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
+    fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
         let mut data: Vec<char> = self.0.clone();
         data.push(c_checksum);
 
@@ -167,41 +167,11 @@ mod tests {
         let code931 = Code93::new("TEST93".to_owned()).unwrap();
         let code932 = Code93::new("FLAM".to_owned()).unwrap();
         let code933 = Code93::new("99".to_owned()).unwrap();
+        let code934 = Code93::new("1111111111111111111111".to_owned()).unwrap();
 
         assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
         assert_eq!(collapse_vec(code932.encode()), "1010111101100010101010110001101010001010011001001011001010011001010111101".to_owned());
         assert_eq!(collapse_vec(code933.encode()), "1010111101000010101000010101101100101000101101010111101".to_owned());
-    }
-
-    #[test]
-    fn code93_c_checksum_with_over_20() {
-        // Tests that the C checksum resets the summing after 20 characters.
-        let code931 = Code93::new("1111111111111111111111".to_owned()).unwrap();
-
-        assert_eq!(code931.c_checksum_char().unwrap(), 'P');
-    }
-
-    #[test]
-    fn code93_k_checksum_with_over_15() {
-        // Tests that the K checksum resets the summing after 15 characters.
-        let code931 = Code93::new("11111111111111111".to_owned()).unwrap();
-        let ccs1 = code931.c_checksum_char().unwrap();
-
-        assert_eq!(code931.k_checksum_char(ccs1).unwrap(), '(');
-    }
-
-    #[test]
-    fn code93_checksum_calculation() {
-        let code931 = Code93::new("FLAM".to_owned()).unwrap();
-        let code932 = Code93::new("99".to_owned()).unwrap();
-        let ccs1 = code931.c_checksum_char().unwrap();
-        let ccs2 = code932.c_checksum_char().unwrap();
-
-        assert_eq!(ccs1, 'O');
-        assert_eq!(code931.k_checksum_char(ccs1).unwrap(), 'M');
-
-        assert_eq!(ccs2, 'R');
-        assert_eq!(code932.k_checksum_char(ccs2).unwrap(), 'P');
-
+        assert_eq!(collapse_vec(code934.encode()), "1010111101010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001000101101110010101010111101".to_owned());
     }
 }

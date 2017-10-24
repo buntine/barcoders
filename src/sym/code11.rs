@@ -73,12 +73,12 @@ impl Code11 {
 
 
     /// Calculates the C checksum character using a weighted modulo-11 algorithm.
-    pub fn c_checksum_char(&self) -> Option<char> {
+    fn c_checksum_char(&self) -> Option<char> {
         self.checksum_char(&self.0, 10)
     }
 
     /// Calculates the K checksum character using a weighted modulo-11 algorithm.
-    pub fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
+    fn k_checksum_char(&self, c_checksum: char) -> Option<char> {
         let mut data: Vec<char> = self.0.clone();
         data.push(c_checksum);
 

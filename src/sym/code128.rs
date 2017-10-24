@@ -235,7 +235,7 @@ impl Code128 {
     }
 
     /// Calculates the checksum index using a modulo-103 algorithm.
-    pub fn checksum_value(&self) -> u8 {
+    fn checksum_value(&self) -> u8 {
         let sum: i32 = self.0
                            .iter()
                            .zip((0..self.0.len() as i32))
@@ -330,16 +330,5 @@ mod tests {
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011".to_owned());
         assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011".to_owned());
         assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110100101111001100011101011".to_owned());
-    }
-
-    #[test]
-    fn code128_checksum_calculation() {
-        let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
-        let code128_b = Code128::new("Ć19534763".to_owned()).unwrap();
-        let code128_c = Code128::new("ÀHIĆ345678".to_owned()).unwrap();
-
-        assert_eq!(code128_a.checksum_value(), 39);
-        assert_eq!(code128_b.checksum_value(), 5);
-        assert_eq!(code128_c.checksum_value(), 67);
     }
 }

@@ -29,7 +29,7 @@ impl EAN8 {
     }
 
     /// Calculates the checksum digit using a weighting algorithm.
-    pub fn checksum_digit(&self) -> u8 {
+    fn checksum_digit(&self) -> u8 {
         helpers::modulo_10_checksum(&self.0[..], false)
     }
 
@@ -145,14 +145,5 @@ mod tests {
 
         assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_owned());
         assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_owned());
-    }
-
-    #[test]
-    fn ean8_checksum_calculation() {
-        let ean81 = EAN8::new("4575678".to_owned()).unwrap(); // Check digit: 8
-        let ean82 = EAN8::new("9534763".to_owned()).unwrap(); // Check digit: 9
-
-        assert_eq!(ean81.checksum_digit(), 8);
-        assert_eq!(ean82.checksum_digit(), 9);
     }
 }

@@ -75,7 +75,7 @@ impl EAN13 {
     }
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
-    pub fn checksum_digit(&self) -> u8 {
+    fn checksum_digit(&self) -> u8 {
         helpers::modulo_10_checksum(&self.0[..], true)
     }
 
@@ -215,32 +215,5 @@ mod tests {
 
         assert_eq!(collapse_vec(ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_owned());
         assert_eq!(collapse_vec(ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_owned());
-    }
-
-    #[test]
-    fn ean13_as_upca_checksum_calculation() {
-        let ean131 = UPCA::new("003600029145".to_owned()).unwrap(); // Check digit: 2
-        let ean132 = UPCA::new("012345612345".to_owned()).unwrap(); // Check digit: 8
-
-        assert_eq!(ean131.checksum_digit(), 2);
-        assert_eq!(ean132.checksum_digit(), 8);
-    }
-
-    #[test]
-    fn ean13_as_bookland_checksum_calculation() {
-        let bookland1 = Bookland::new("978600029145".to_owned()).unwrap(); // Check digit: 7
-        let bookland2 = Bookland::new("978345612345".to_owned()).unwrap(); // Check digit: 5
-
-        assert_eq!(bookland1.checksum_digit(), 7);
-        assert_eq!(bookland2.checksum_digit(), 5);
-    }
-
-    #[test]
-    fn ean13_checksum_calculation() {
-        let ean131 = EAN13::new("457567816412".to_owned()).unwrap(); // Check digit: 6
-        let ean132 = EAN13::new("953476324586".to_owned()).unwrap(); // Check digit: 2
-
-        assert_eq!(ean131.checksum_digit(), 6);
-        assert_eq!(ean132.checksum_digit(), 2);
     }
 }
