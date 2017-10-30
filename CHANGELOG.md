@@ -11,12 +11,13 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
-### v0.9.0 (STAGED)
+### v0.9.0 (2017-10-30)
 
 - [added] Code11 barcode encoder.
-- [removed] Public checksum functions from public API's of all encoders (breaking change!)
-- [changed] Updated image dependency from 0.15.0 to 0.16.0
-- [changed] Updated clippy dependency from 0.0.134 to 0.0.166
+- [removed] Public checksum functions from public API's of all encoders (breaking change!).
+- [changed] Updated image dependency from 0.15.0 to 0.16.0.
+- [changed] Updated clippy dependency from 0.0.134 to 0.0.166.
+- [changed] Several internal refactorings.
 
 ### v0.8.2 (2017-09-03)
 
