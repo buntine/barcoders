@@ -23,7 +23,7 @@
 
 extern crate image;
 
-use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
+use image::{ImageBuffer, Rgba, Luma, ImageLuma8, ImageRgba8, DynamicImage};
 use error::{Result, Error};
  
 macro_rules! image_variants {
@@ -86,8 +86,8 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-    fn to_rgba(&self) -> Rgba<u8> {
-        Rgba(self.rgba)
+    fn to_rgba(&self) -> Luma<u8> {
+        Luma([self.rgba[0]])
     }
 }
 
@@ -156,10 +156,10 @@ impl Image {
 
     /// Generates the given barcode to an image::ImageBuffer. Returns a `Result<ImageBuffer<Rgba<u8>, Vec<u8>>, Error>`
     /// of the encoded bytes or an error message.
-    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
+    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Luma<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
 
-        Ok(img.to_rgba())
+        Ok(img.to_luma())
     }
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
@@ -188,7 +188,7 @@ impl Image {
             pos = 0;
         }
 
-        let img = ImageRgba8(buffer);
+        let img = ImageLuma8(buffer);
 
         match rotation {
             Rotation::Ninety => img.rotate90(),
@@ -302,6 +302,22 @@ mod tests {
             rotation: Rotation::Zero,
             foreground: Color{rgba: [0, 0, 0, 255]},
             background: Color{rgba: [255, 255, 255, 255]},
+        };
+        let generated = img.generate_buffer(&ean13.encode()[..]).unwrap();
+
+        assert_eq!(generated.height(), 99);
+        assert_eq!(generated.width(), 102);
+    }
+
+    #[test]
+    fn colored_ean_13_as_image_buffer() {
+        let ean13 = EAN13::new("7503995991130".to_owned()).unwrap();
+        let img = Image::ImageBuffer {
+            height: 99,
+            xdim: 1,
+            rotation: Rotation::Zero,
+            foreground: Color{rgba: [100, 80, 120, 255]},
+            background: Color{rgba: [20, 90, 200, 255]},
         };
         let generated = img.generate_buffer(&ean13.encode()[..]).unwrap();
 
