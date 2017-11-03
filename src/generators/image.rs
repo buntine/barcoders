@@ -27,7 +27,7 @@ use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use error::{Result, Error};
  
 macro_rules! image_variants {
-    ( $( #[$attr:meta] $v:tt ),* ) => {
+    ( $( #[$attr:meta] $v:ident ),* ) => {
         /// The image generator type.
         #[derive(Copy, Clone, Debug)]
         pub enum Image {
@@ -48,19 +48,29 @@ macro_rules! image_variants {
             },
         )*
         }
-    }
+    };
 }
 
 macro_rules! image_defaults {
-    ($e:tt::$v:tt, $h:expr) => {
-        $e::$v {
+    ($v:ident, $h:expr) => {
+        Image::$v {
             height: $h,
             xdim: 1,
             rotation: Rotation::Zero,
             foreground: Color{rgba: [0, 0, 0, 255]},
             background: Color{rgba: [255, 255, 255, 255]},
         }
-    }
+    };
+}
+
+macro_rules! expand_image_variants {
+    ($s:expr, $b:tt => $e:tt, $($v:ident),+) => (
+        match $s {
+            $(
+                Image::$v$b => $e
+            ),+
+        }
+    );
 }
 
 /// Represents a RGBA color for the barcode foreground and background.
@@ -118,22 +128,22 @@ image_variants![
 impl Image {
     /// Returns a new GIF with default values.
     pub fn gif(height: u32) -> Image {
-        image_defaults!(Image::GIF, height)
+        image_defaults!(GIF, height)
     }
 
     /// Returns a new PNG with default values.
     pub fn png(height: u32) -> Image {
-        image_defaults!(Image::PNG, height)
+        image_defaults!(PNG, height)
     }
 
     /// Returns a new JPEG with default values.
     pub fn jpeg(height: u32) -> Image {
-        image_defaults!(Image::JPEG, height)
+        image_defaults!(JPEG, height)
     }
 
     /// Returns a new ImageBuffer with default values.
     pub fn image_buffer(height: u32) -> Image {
-        image_defaults!(Image::ImageBuffer, height)
+        image_defaults!(ImageBuffer, height)
     }
 
     /// Generates the given barcode. Returns a `Result<Vec<u8>, Error>` of the encoded bytes or
@@ -164,12 +174,12 @@ impl Image {
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
         let barcode = barcode.as_ref();
-        let (xdim, height, rotation, bg, fg) = match *self {
-            Image::GIF{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            Image::PNG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            Image::JPEG{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            Image::ImageBuffer{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-        };
+
+        let (xdim, height, rotation, bg, fg) = expand_image_variants!(
+            *self,
+            {height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
+            GIF, PNG, JPEG, ImageBuffer
+        );
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
         let mut pos = 0;
