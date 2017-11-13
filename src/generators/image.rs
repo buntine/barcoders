@@ -174,7 +174,6 @@ impl Image {
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
         let barcode = barcode.as_ref();
-
         let (xdim, height, rotation, bg, fg) = expand_image_variants!(
             *self,
             {height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
@@ -182,20 +181,15 @@ impl Image {
         );
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
-        let mut pos = 0;
 
         for y in 0..height {
-            for &b in barcode {
+            for (i, &b) in barcode.iter().enumerate() {
                 let c = if b == 0 { bg } else { fg };
 
                 for p in 0..xdim {
-                    buffer.put_pixel(pos + p, y, c);
+                    buffer.put_pixel((i as u32 * xdim) + p, y, c);
                 }
-
-                pos += xdim;
             }
-
-            pos = 0;
         }
 
         let img = ImageRgba8(buffer);
