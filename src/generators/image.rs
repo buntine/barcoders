@@ -23,7 +23,7 @@
 
 extern crate image;
 
-use image::{ImageBuffer, Rgba, Luma, ImageLuma8, ImageRgba8, DynamicImage};
+use image::{ImageBuffer, Rgba, Luma, Pixel, ImageLuma8, ImageRgba8, DynamicImage};
 use error::{Result, Error};
  
 macro_rules! image_variants {
@@ -63,6 +63,39 @@ macro_rules! image_defaults {
     }
 }
 
+pub enum ColorType {
+    Rgba(u8, u8, u8, u8),
+    Luma(u8),
+}
+
+enum ImageType {
+    Rgba(DynamicImage),
+    Luma(DynamicImage),
+}
+
+impl ColorType {
+    fn is_luma(&self) -> bool {
+        true
+    }
+}
+
+impl ImageType {
+    fn from_color_types<P: Pixel<Subpixel=u8>>(buffer: ImageBuffer<P, Vec<u8>>, fg: &ColorType, bg: &ColorType) -> ImageType {
+        if bg.is_luma() && fg.is_luma() {
+            ImageType::Luma(ImageLuma8(buffer))
+        } else {
+            ImageType::Rgba(ImageRgba8(buffer))
+        }
+    }
+
+    fn to_bytes<P: Pixel<Subpixel=u8>>(&self) -> ImageBuffer<P, Vec<u8>> {
+        match *self {
+            Rgba => self.0.to_rgba(),
+            Luma => self.0.to_luma(),
+        }
+    }
+}
+
 /// Represents a RGBA color for the barcode foreground and background.
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
@@ -86,8 +119,8 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-    fn to_rgba(&self) -> Luma<u8> {
-        Luma([self.rgba[0]])
+    fn to_rgba(&self) -> ColorType {
+        ColorType::Luma(self.rgba[0])
     }
 }
 
@@ -159,10 +192,10 @@ impl Image {
     pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Luma<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
 
-        Ok(img.to_luma())
+        Ok(img.to_bytes())
     }
 
-    fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
+    fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> ImageType {
         let barcode = barcode.as_ref();
         let (xdim, height, rotation, bg, fg) = match *self {
             Image::GIF{height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
@@ -188,12 +221,12 @@ impl Image {
             pos = 0;
         }
 
-        let img = ImageLuma8(buffer);
+        let img = ImageType::from_color_types(buffer, &fg, &bg);
 
         match rotation {
-            Rotation::Ninety => img.rotate90(),
-            Rotation::OneEighty => img.rotate180(),
-            Rotation::TwoSeventy => img.rotate270(),
+            Rotation::Ninety => img.0.rotate90(),
+            Rotation::OneEighty => img.0.rotate180(),
+            Rotation::TwoSeventy => img.0.rotate270(),
             _ => img,
         }
     }
