@@ -5,6 +5,8 @@
 //!
 //! Code128 also offers double-density encoding of digits.
 //!
+//! ## Character sets
+//!
 //! Barcoders provides special Unicode syntax for specifying the character set(s) which should be
 //! used in the barcode:
 //!
@@ -32,6 +34,13 @@
 //! Or:
 //!
 //! <ul><li>ÀHE@$AĆ123456</li></ul>
+//!
+//! ## Unicode characters
+//!
+//! The invisible unicode characters that are available in character set A should be represented as
+//! their Unicode sequences. For example, to represent the 'ACK' character:
+//!
+//! <ul><li>À\u{0006}</li></ul>
 
 use sym::helpers;
 use error::*;
@@ -321,6 +330,13 @@ mod tests {
         assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110100101111001100011101011".to_owned());
     }
 
+    #[test]
+    fn code128_encode_special_chars() {
+        let code128_a = Code128::new("ÀB\u{0006}".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code128_a.encode()), "110100001001000101100010110000100100110100001100011101011".to_owned());
+    }
+ 
     #[test]
     fn code128_encode_longhand() {
         let code128_a = Code128::new("\u{00C0}HELLO".to_owned()).unwrap();
