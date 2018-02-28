@@ -11,6 +11,11 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v0.10.0 (2018-02-28)
+
+- [added] Support for FNC1, FNC2, FNC3, FNC4 and SHIFT meta-characters in Code128 symbology.
+- [changed] Updated image dependency from 0.16.0 to 0.18.0.
+
 ### v0.9.0 (2017-10-30)
 
 - [added] Code11 barcode encoder.

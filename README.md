@@ -16,14 +16,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "0.9.0"
+barcoders = "0.10.0"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate feature(s):
 
 ```toml
 [dependencies]
-barcoders = {version = "0.9.0", features = ["image", "ascii", "svg", "json"]}
+barcoders = {version = "0.10.0", features = ["image", "ascii", "svg", "json"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -51,7 +51,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
   * USD-8
 * Code39
 * Code93
-* Code128
+* Code128 (A, B, C)
 * Two-Of-Five
   * Interleaved (ITF)
   * Standard (STF)
