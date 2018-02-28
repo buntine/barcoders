@@ -348,6 +348,13 @@ mod tests {
     }
  
     #[test]
+    fn code128_encode_fnc_chars() {
+        let code128_a = Code128::new("ĆŹ4218402050À0".to_owned()).unwrap();
+
+        assert_eq!(collapse_vec(code128_a.encode()), "110100111001111010111010110111000110011100101100010100011001001110110001011101110101111010011101100111101101101100011101011".to_owned());
+    }
+ 
+    #[test]
     fn code128_encode_longhand() {
         let code128_a = Code128::new("\u{00C0}HELLO".to_owned()).unwrap();
         let code128_b = Code128::new("\u{00C0}XY\u{0106}2199".to_owned()).unwrap();
