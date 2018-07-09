@@ -79,7 +79,7 @@ use barcoders::sym::ean13::*;
 
 // Each encoder accepts a String to be encoded. Valid data is barcode-specific
 // and thus constructors return an Result<T, barcoders::error::Error>.
-let barcode = EAN13::new("593456661897".to_owned()).unwrap();
+let barcode = EAN13::new("593456661897").unwrap();
 
 // The `encode` method returns a Vec<u8> of the binary representation of the
 // generated barcode. This is useful if you want to add your own generator.
@@ -97,7 +97,7 @@ use std::io::BufWriter;
 use std::fs::File;
 use std::path::Path;
 
-let barcode = Code39::new("1ISTHELONELIESTNUMBER".to_owned()).unwrap();
+let barcode = Code39::new("1ISTHELONELIESTNUMBER").unwrap();
 let png = Image::png(80); // You must specify the height in pixels.
 let encoded = barcode.encode();
 
@@ -115,7 +115,7 @@ writer.write(&bytes[..]).unwrap();
 
 You can also request an [image::RgbaImage](http://www.piston.rs/image/image/type.RgbaImage.html), which you can manipulate yourself:
 ```rust
-let barcode = Code39::new("BEELZEBUB".to_owned()).unwrap();
+let barcode = Code39::new("BEELZEBUB").unwrap();
 let buffer = Image::image_buffer(100);
 let encoded = barcode.encode();
 let img = buffer.generate_buffer(&encoded[..]).unwrap();
@@ -147,7 +147,7 @@ use std::io::BufWriter;
 use std::fs::File;
 use std::path::Path;
 
-let barcode = Code39::new("56DFU4A777H".to_owned()).unwrap();
+let barcode = Code39::new("56DFU4A777H").unwrap();
 let svg = SVG::new(200); // You must specify the height in pixels.
 let encoded = barcode.encode();
 let data: String = svg.generate(&encoded).unwrap();
@@ -176,7 +176,7 @@ extern crate barcoders;
 use barcoders::sym::ean13::*;
 use barcoders::generators::ascii::*;
 
-let barcode = EAN13::new("750103131130".to_owned()).unwrap();
+let barcode = EAN13::new("750103131130").unwrap();
 let encoded = barcode.encode();
 
 let ascii = ASCII::new();
@@ -194,7 +194,7 @@ assert_eq!(ascii.unwrap(),
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
 # # ##   # #  ###  ##  # #  ### #### # ##  ## # # #    # ##  ## ##  ## #    # ###  # ### #  # #
-".trim().to_owned());
+".trim());
 ```
 
 
@@ -208,7 +208,7 @@ extern crate barcoders;
 use barcoders::sym::codabar::*;
 use barcoders::generators::json::*;
 
-let codabar = Codabar::new("A98B".to_owned()).unwrap();
+let codabar = Codabar::new("A98B").unwrap();
 let json = JSON::new();
 let generated = json.generate(&codabar.encode()[..]);
 

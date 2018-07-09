@@ -164,7 +164,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_svg() {
-        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let ean13 = EAN13::new("750103131130").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn colored_ean_13_as_svg() {
-        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let ean13 = EAN13::new("750103131130").unwrap();
         let svg = SVG{height: 80,
                       xdim: 1,
                       background: Color{rgba: [255, 0, 0, 255]},
@@ -189,7 +189,7 @@ mod tests {
 
     #[test]
     fn colored_semi_transparent_ean_13_as_svg() {
-        let ean13 = EAN13::new("750103131130".to_owned()).unwrap();
+        let ean13 = EAN13::new("750103131130").unwrap();
         let svg = SVG{height: 70,
                       xdim: 1,
                       background: Color{rgba: [255, 0, 0, 128]},
@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn ean_8_as_svg() {
-        let ean8 = EAN8::new("9998823".to_owned()).unwrap();
+        let ean8 = EAN8::new("9998823").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&ean8.encode()[..]).unwrap();
 
@@ -215,7 +215,7 @@ mod tests {
 
     #[test]
     fn code39_as_svg() {
-        let code39 = Code39::new("IGOT99PROBLEMS".to_owned()).unwrap();
+        let code39 = Code39::new("IGOT99PROBLEMS").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&code39.encode()[..]).unwrap();
 
@@ -226,7 +226,7 @@ mod tests {
 
     #[test]
     fn code93_as_svg() {
-        let code93 = Code93::new("IGOT99PROBLEMS".to_owned()).unwrap();
+        let code93 = Code93::new("IGOT99PROBLEMS").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&code93.encode()[..]).unwrap();
 
@@ -237,7 +237,7 @@ mod tests {
 
     #[test]
     fn codabar_as_svg() {
-        let codabar = Codabar::new("A12----34A".to_owned()).unwrap();
+        let codabar = Codabar::new("A12----34A").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&codabar.encode()[..]).unwrap();
 
@@ -248,7 +248,7 @@ mod tests {
 
     #[test]
     fn code128_as_svg() {
-        let code128 = Code128::new("ÀHIĆ345678".to_owned()).unwrap();
+        let code128 = Code128::new("ÀHIĆ345678").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&code128.encode()[..]).unwrap();
 
@@ -259,7 +259,7 @@ mod tests {
 
     #[test]
     fn ean_2_as_svg() {
-        let ean2 = EANSUPP::new("78".to_owned()).unwrap();
+        let ean2 = EANSUPP::new("78").unwrap();
         let svg = SVG::new(80);
         let generated = svg.generate(&ean2.encode()[..]).unwrap();
 
@@ -270,7 +270,7 @@ mod tests {
 
     #[test]
     fn itf_as_svg() {
-        let itf = TF::interleaved("1234123488993344556677118".to_owned()).unwrap();
+        let itf = TF::interleaved("1234123488993344556677118").unwrap();
         let svg = SVG{height: 80,
                       xdim: 1,
                       background: Color::black(),
@@ -284,7 +284,7 @@ mod tests {
 
     #[test]
     fn code11_as_svg() {
-        let code11 = Code11::new("9988-45643201".to_owned()).unwrap();
+        let code11 = Code11::new("9988-45643201").unwrap();
         let svg = SVG{height: 80,
                       xdim: 1,
                       background: Color::black(),

@@ -137,24 +137,24 @@ mod tests {
 
     #[test]
     fn invalid_length_codabar() {
-        let codabar = Codabar::new("".to_owned());
+        let codabar = Codabar::new("");
 
         assert_eq!(codabar.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_codabar() {
-        let codabar = Codabar::new("A12345G".to_owned());
+        let codabar = Codabar::new("A12345G");
 
         assert_eq!(codabar.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn codabar_encode() {
-        let codabar_a = Codabar::new("A1234B".to_owned()).unwrap();
-        let codabar_b = Codabar::new("A40156B".to_owned()).unwrap();
+        let codabar_a = Codabar::new("A1234B").unwrap();
+        let codabar_b = Codabar::new("A40156B").unwrap();
  
-        assert_eq!(collapse_vec(codabar_a.encode()), "1011001001010101100101010010110110010101010110100101010010011".to_owned());
-        assert_eq!(collapse_vec(codabar_b.encode()), "10110010010101101001010101001101010110010110101001010010101101010010011".to_owned());
+        assert_eq!(collapse_vec(codabar_a.encode()), "1011001001010101100101010010110110010101010110100101010010011");
+        assert_eq!(collapse_vec(codabar_b.encode()), "10110010010101101001010101001101010110010110101001010010101101010010011");
     }
 }

@@ -7,7 +7,7 @@
 //! ```rust
 //! use barcoders::sym::ean13::*;
 //!
-//! let barcode = EAN13::new("750103131130".to_owned()).unwrap();
+//! let barcode = EAN13::new("750103131130").unwrap();
 //! let encoded = barcode.encode();
 //! ```
 //! Each encoder accepts a `String` to be encoded. Valid data is barcode-specific and thus

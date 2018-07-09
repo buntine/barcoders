@@ -148,33 +148,33 @@ mod tests {
 
     #[test]
     fn invalid_length_code11() {
-        let code11 = Code11::new("".to_owned());
+        let code11 = Code11::new("");
 
         assert_eq!(code11.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code11() {
-        let code11 = Code11::new("NOTDIGITS".to_owned());
+        let code11 = Code11::new("NOTDIGITS");
 
         assert_eq!(code11.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn code11_encode_less_than_10_chars() {
-        let code111 = Code11::new("123-45".to_owned()).unwrap();
-        let code112 = Code11::new("666".to_owned()).unwrap();
-        let code113 = Code11::new("12-9".to_owned()).unwrap();
+        let code111 = Code11::new("123-45").unwrap();
+        let code112 = Code11::new("666").unwrap();
+        let code113 = Code11::new("12-9").unwrap();
 
-        assert_eq!(collapse_vec(code111.encode()), "1011001011010110100101101100101010110101011011011011010110110101011001".to_owned());
-        assert_eq!(collapse_vec(code112.encode()), "10110010100110101001101010011010110010101011001".to_owned());
-        assert_eq!(collapse_vec(code113.encode()), "10110010110101101001011010110101101010100110101011001".to_owned());
+        assert_eq!(collapse_vec(code111.encode()), "1011001011010110100101101100101010110101011011011011010110110101011001");
+        assert_eq!(collapse_vec(code112.encode()), "10110010100110101001101010011010110010101011001");
+        assert_eq!(collapse_vec(code113.encode()), "10110010110101101001011010110101101010100110101011001");
     }
 
     #[test]
     fn code11_encode_more_than_10_chars() {
-        let code111 = Code11::new("1234-5678-4321".to_owned()).unwrap();
+        let code111 = Code11::new("1234-5678-4321").unwrap();
 
-        assert_eq!(collapse_vec(code111.encode()), "101100101101011010010110110010101011011010110101101101010011010101001101101001010110101011011011001010100101101101011011011010100110101011001".to_owned());
+        assert_eq!(collapse_vec(code111.encode()), "101100101101011010010110110010101011011010110101101101010011010101001101101001010110101011011011001010100101101101011011011010100110101011001");
     }
 }

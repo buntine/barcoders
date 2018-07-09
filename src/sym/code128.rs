@@ -304,8 +304,8 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128_a = Code128::new("À !! Ć0201".to_owned());
-        let code128_b = Code128::new("À!!  \" ".to_owned());
+        let code128_a = Code128::new("À !! Ć0201");
+        let code128_b = Code128::new("À!!  \" ");
 
         assert!(code128_a.is_ok());
         assert!(code128_b.is_ok());
@@ -313,16 +313,16 @@ mod tests {
 
     #[test]
     fn invalid_length_code128() {
-        let code128_a = Code128::new("".to_owned());
+        let code128_a = Code128::new("");
 
         assert_eq!(code128_a.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code128() {
-        let code128_a = Code128::new("À☺ ".to_owned()); // Unknown character.
-        let code128_b = Code128::new("ÀHELLOĆ12352".to_owned()); // Trailing carry at the end.
-        let code128_c = Code128::new("HELLO".to_owned()); // No Character-Set specified.
+        let code128_a = Code128::new("À☺ "); // Unknown character.
+        let code128_b = Code128::new("ÀHELLOĆ12352"); // Trailing carry at the end.
+        let code128_c = Code128::new("HELLO"); // No Character-Set specified.
 
         assert_eq!(code128_a.err().unwrap(), Error::Character);
         assert_eq!(code128_b.err().unwrap(), Error::Character);
@@ -331,37 +331,37 @@ mod tests {
 
     #[test]
     fn code128_encode() {
-        let code128_a = Code128::new("ÀHELLO".to_owned()).unwrap();
-        let code128_b = Code128::new("ÀXYĆ2199".to_owned()).unwrap();
-        let code128_c = Code128::new("ƁxyZÀ199!*1".to_owned()).unwrap();
+        let code128_a = Code128::new("ÀHELLO").unwrap();
+        let code128_b = Code128::new("ÀXYĆ2199").unwrap();
+        let code128_c = Code128::new("ƁxyZÀ199!*1").unwrap();
 
-        assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011".to_owned());
-        assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011".to_owned());
-        assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110100101111001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011");
+        assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011");
+        assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110100101111001100011101011");
     }
 
     #[test]
     fn code128_encode_special_chars() {
-        let code128_a = Code128::new("ÀB\u{0006}".to_owned()).unwrap();
+        let code128_a = Code128::new("ÀB\u{0006}").unwrap();
 
-        assert_eq!(collapse_vec(code128_a.encode()), "110100001001000101100010110000100100110100001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_a.encode()), "110100001001000101100010110000100100110100001100011101011");
     }
  
     #[test]
     fn code128_encode_fnc_chars() {
-        let code128_a = Code128::new("ĆŹ4218402050À0".to_owned()).unwrap();
+        let code128_a = Code128::new("ĆŹ4218402050À0").unwrap();
 
-        assert_eq!(collapse_vec(code128_a.encode()), "110100111001111010111010110111000110011100101100010100011001001110110001011101110101111010011101100111101101101100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_a.encode()), "110100111001111010111010110111000110011100101100010100011001001110110001011101110101111010011101100111101101101100011101011");
     }
  
     #[test]
     fn code128_encode_longhand() {
-        let code128_a = Code128::new("\u{00C0}HELLO".to_owned()).unwrap();
-        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199".to_owned()).unwrap();
-        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1".to_owned()).unwrap();
+        let code128_a = Code128::new("\u{00C0}HELLO").unwrap();
+        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199").unwrap();
+        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1").unwrap();
 
-        assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011".to_owned());
-        assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011".to_owned());
-        assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110100101111001100011101011".to_owned());
+        assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011");
+        assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011");
+        assert_eq!(collapse_vec(code128_c.encode()), "1101001000011110010010110110111101110110001011101011110100111001101110010110011100101100110011011001100100010010011100110100101111001100011101011");
     }
 }
