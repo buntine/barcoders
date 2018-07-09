@@ -149,14 +149,14 @@ mod tests {
 
     #[test]
     fn invalid_length_code93() {
-        let code93 = Code93::new("".to_owned());
+        let code93 = Code93::new("");
 
         assert_eq!(code93.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code93() {
-        let code93 = Code93::new("lowerCASE".to_owned());
+        let code93 = Code93::new("lowerCASE");
 
         assert_eq!(code93.err().unwrap(), Error::Character);
     }
@@ -164,14 +164,14 @@ mod tests {
     #[test]
     fn code93_encode() {
         // Tests for data longer than 15, data longer than 20
-        let code931 = Code93::new("TEST93".to_owned()).unwrap();
-        let code932 = Code93::new("FLAM".to_owned()).unwrap();
-        let code933 = Code93::new("99".to_owned()).unwrap();
-        let code934 = Code93::new("1111111111111111111111".to_owned()).unwrap();
+        let code931 = Code93::new("TEST93").unwrap();
+        let code932 = Code93::new("FLAM").unwrap();
+        let code933 = Code93::new("99").unwrap();
+        let code934 = Code93::new("1111111111111111111111").unwrap();
 
-        assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101".to_owned());
-        assert_eq!(collapse_vec(code932.encode()), "1010111101100010101010110001101010001010011001001011001010011001010111101".to_owned());
-        assert_eq!(collapse_vec(code933.encode()), "1010111101000010101000010101101100101000101101010111101".to_owned());
-        assert_eq!(collapse_vec(code934.encode()), "1010111101010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001000101101110010101010111101".to_owned());
+        assert_eq!(collapse_vec(code931.encode()), "1010111101101001101100100101101011001101001101000010101010000101011101101001000101010111101");
+        assert_eq!(collapse_vec(code932.encode()), "1010111101100010101010110001101010001010011001001011001010011001010111101");
+        assert_eq!(collapse_vec(code933.encode()), "1010111101000010101000010101101100101000101101010111101");
+        assert_eq!(collapse_vec(code934.encode()), "1010111101010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001010010001000101101110010101010111101");
     }
 }

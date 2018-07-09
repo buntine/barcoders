@@ -164,56 +164,56 @@ mod tests {
 
     #[test]
     fn new_ean13() {
-        let ean13 = EAN13::new("123456123456".to_owned());
+        let ean13 = EAN13::new("123456123456");
 
         assert!(ean13.is_ok());
     }
 
     #[test]
     fn new_bookland() {
-        let bookland = Bookland::new("978456123456".to_owned());
+        let bookland = Bookland::new("978456123456");
 
         assert!(bookland.is_ok());
     }
 
     #[test]
     fn invalid_data_ean13() {
-        let ean13 = EAN13::new("1234er123412".to_owned());
+        let ean13 = EAN13::new("1234er123412");
 
         assert_eq!(ean13.err().unwrap(), Error::Character)
     }
 
     #[test]
     fn invalid_len_ean13() {
-        let ean13 = EAN13::new("1111112222222333333".to_owned());
+        let ean13 = EAN13::new("1111112222222333333");
 
         assert_eq!(ean13.err().unwrap(), Error::Length)
     }
 
     #[test]
     fn ean13_encode_as_upca() {
-        let ean131 = UPCA::new("012345612345".to_owned()).unwrap(); // Check digit: 8
-        let ean132 = UPCA::new("000118999561".to_owned()).unwrap(); // Check digit: 3
+        let ean131 = UPCA::new("012345612345").unwrap(); // Check digit: 8
+        let ean132 = UPCA::new("000118999561").unwrap(); // Check digit: 3
 
-        assert_eq!(collapse_vec(ean131.encode()), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101".to_owned());
-        assert_eq!(collapse_vec(ean132.encode()), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101".to_owned());
+        assert_eq!(collapse_vec(ean131.encode()), "10100110010010011011110101000110110001010111101010110011011011001000010101110010011101001000101");
+        assert_eq!(collapse_vec(ean132.encode()), "10100011010001101001100100110010110111000101101010111010011101001001110101000011001101000010101");
     }
 
     #[test]
     fn ean13_encode_as_bookland() {
-        let bookland1 = Bookland::new("978345612345".to_owned()).unwrap(); // Check digit: 5
-        let bookland2 = Bookland::new("978118999561".to_owned()).unwrap(); // Check digit: 5
+        let bookland1 = Bookland::new("978345612345").unwrap(); // Check digit: 5
+        let bookland2 = Bookland::new("978118999561").unwrap(); // Check digit: 5
 
-        assert_eq!(collapse_vec(bookland1.encode()), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101".to_owned());
-        assert_eq!(collapse_vec(bookland2.encode()), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101".to_owned());
+        assert_eq!(collapse_vec(bookland1.encode()), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101");
+        assert_eq!(collapse_vec(bookland2.encode()), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101");
     }
 
     #[test]
     fn ean13_encode() {
-        let ean131 = EAN13::new("750103131130".to_owned()).unwrap(); // Check digit: 5
-        let ean132 = EAN13::new("983465123499".to_owned()).unwrap(); // Check digit: 5
+        let ean131 = EAN13::new("750103131130").unwrap(); // Check digit: 5
+        let ean132 = EAN13::new("983465123499").unwrap(); // Check digit: 5
 
-        assert_eq!(collapse_vec(ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101".to_owned());
-        assert_eq!(collapse_vec(ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101".to_owned());
+        assert_eq!(collapse_vec(ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101");
+        assert_eq!(collapse_vec(ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101");
     }
 }

@@ -119,31 +119,31 @@ mod tests {
 
     #[test]
     fn new_ean8() {
-        let ean8 = EAN8::new("1234567".to_owned());
+        let ean8 = EAN8::new("1234567");
 
         assert!(ean8.is_ok());
     }
 
     #[test]
     fn invalid_data_ean8() {
-        let ean8 = EAN8::new("1234er1".to_owned());
+        let ean8 = EAN8::new("1234er1");
 
         assert_eq!(ean8.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_ean8() {
-        let ean8 = EAN8::new("1111112222222333333".to_owned());
+        let ean8 = EAN8::new("1111112222222333333");
 
         assert_eq!(ean8.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn ean8_encode() {
-        let ean81 = EAN8::new("5512345".to_owned()).unwrap(); // Check digit: 7
-        let ean82 = EAN8::new("9834651".to_owned()).unwrap(); // Check digit: 3
+        let ean81 = EAN8::new("5512345").unwrap(); // Check digit: 7
+        let ean82 = EAN8::new("9834651").unwrap(); // Check digit: 3
 
-        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101".to_owned());
-        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101".to_owned());
+        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101");
+        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101");
     }
 }

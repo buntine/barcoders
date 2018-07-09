@@ -142,42 +142,42 @@ mod tests {
 
     #[test]
     fn new_code39() {
-        let code39 = Code39::new("12345".to_owned());
+        let code39 = Code39::new("12345");
 
         assert!(code39.is_ok());
     }
 
     #[test]
     fn invalid_data_code39() {
-        let code39 = Code39::new("1212s".to_owned());
+        let code39 = Code39::new("1212s");
 
         assert_eq!(code39.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_code39() {
-        let code39 = Code39::new("".to_owned());
+        let code39 = Code39::new("");
 
         assert_eq!(code39.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn code39_encode() {
-        let code391 = Code39::new("1234".to_owned()).unwrap();
-        let code392 = Code39::new("983RD512".to_owned()).unwrap();
-        let code393 = Code39::new("TEST8052".to_owned()).unwrap();
+        let code391 = Code39::new("1234").unwrap();
+        let code392 = Code39::new("983RD512").unwrap();
+        let code393 = Code39::new("TEST8052").unwrap();
 
-        assert_eq!(collapse_vec(code391.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101".to_owned());
-        assert_eq!(collapse_vec(code392.encode()), "100101101101010110010110101101001011010110110010101011010101100101010110010110110100110101011010010101101011001010110100101101101".to_owned());
-        assert_eq!(collapse_vec(code393.encode()), "100101101101010101101100101101011001010101101011001010101101100101101001011010101001101101011010011010101011001010110100101101101".to_owned());
+        assert_eq!(collapse_vec(code391.encode()), "10010110110101101001010110101100101011011011001010101010011010110100101101101");
+        assert_eq!(collapse_vec(code392.encode()), "100101101101010110010110101101001011010110110010101011010101100101010110010110110100110101011010010101101011001010110100101101101");
+        assert_eq!(collapse_vec(code393.encode()), "100101101101010101101100101101011001010101101011001010101101100101101001011010101001101101011010011010101011001010110100101101101");
     }
 
     #[test]
     fn code39_encode_with_checksum() {
-        let code391 = Code39::with_checksum("1234".to_owned()).unwrap();
-        let code392 = Code39::with_checksum("983RD512".to_owned()).unwrap();
+        let code391 = Code39::with_checksum("1234").unwrap();
+        let code392 = Code39::with_checksum("983RD512").unwrap();
 
-        assert_eq!(collapse_vec(code391.encode()), "100101101101011010010101101011001010110110110010101010100110101101101010010110100101101101".to_owned());
-        assert_eq!(collapse_vec(code392.encode()), "1001011011010101100101101011010010110101101100101010110101011001010101100101101101001101010110100101011010110010101101011011010010100101101101".to_owned());
+        assert_eq!(collapse_vec(code391.encode()), "100101101101011010010101101011001010110110110010101010100110101101101010010110100101101101");
+        assert_eq!(collapse_vec(code392.encode()), "1001011011010101100101101011010010110101101100101010110101011001010101100101101101001101010110100101011010110010101101011011010010100101101101");
     }
 }
