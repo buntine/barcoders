@@ -94,7 +94,7 @@ impl TF {
         encoding
     }
 
-    fn char_encoding(&self, d: &u8) -> Vec<u8> {
+    fn char_encoding(&self, d: u8) -> Vec<u8> {
         let bars: Vec<Vec<u8>> = self.char_widths(d)
                                      .chars()
                                      .map(|c| {
@@ -108,15 +108,15 @@ impl TF {
         helpers::join_iters(bars.iter())
     }
 
-    fn char_widths(&self, d: &u8) -> &'static str {
-        WIDTHS[*d as usize]
+    fn char_widths(&self, d: u8) -> &'static str {
+        WIDTHS[d as usize]
     }
 
     fn stf_payload(&self) -> Vec<u8> {
         let mut encodings = vec![];
 
         for d in self.raw_data() {
-            encodings.extend(self.char_encoding(d).iter().cloned());
+            encodings.extend(self.char_encoding(*d).iter().cloned());
         }
 
         encodings
@@ -154,7 +154,7 @@ impl Parse for TF {
 
     /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
-        (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
+        (0..10).map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 

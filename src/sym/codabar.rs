@@ -23,8 +23,8 @@ enum Unit {
 }
 
 impl Unit {
-    fn lookup(&self) -> Vec<u8> {
-        match *self {
+    fn lookup(self) -> Vec<u8> {
+        match self {
             Unit::Zero => vec![1,0,1,0,1,0,0,1,1],
             Unit::One => vec![1,0,1,0,1,1,0,0,1],
             Unit::Two => vec![1,0,1,0,0,1,0,1,1],

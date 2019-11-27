@@ -41,18 +41,18 @@ impl EAN8 {
         let mut ns = vec![];
 
         for d in self.number_system_digits() {
-            ns.extend(self.char_encoding(0, &d).iter().cloned());
+            ns.extend(self.char_encoding(0, *d).iter().cloned());
         }
 
         ns
     }
 
     fn checksum_encoding(&self) -> [u8; 7] {
-        self.char_encoding(2, &self.checksum_digit())
+        self.char_encoding(2, self.checksum_digit())
     }
 
-    fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
-        ENCODINGS[side][*d as usize]
+    fn char_encoding(&self, side: usize, d: u8) -> [u8; 7] {
+        ENCODINGS[side][d as usize]
     }
 
     fn left_digits(&self) -> &[u8] {
@@ -66,7 +66,7 @@ impl EAN8 {
     fn left_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.left_digits()
                                        .iter()
-                                       .map(|d| self.char_encoding(0, &d))
+                                       .map(|d| self.char_encoding(0, *d))
                                        .collect();
 
         helpers::join_iters(slices.iter())
@@ -75,7 +75,7 @@ impl EAN8 {
     fn right_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self.right_digits()
                                        .iter()
-                                       .map(|d| self.char_encoding(2, &d))
+                                       .map(|d| self.char_encoding(2, *d))
                                        .collect();
 
         helpers::join_iters(slices.iter())
@@ -102,7 +102,7 @@ impl Parse for EAN8 {
 
     /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
-        (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
+        (0..10).map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 
