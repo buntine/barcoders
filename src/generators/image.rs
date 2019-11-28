@@ -158,7 +158,7 @@ impl Image {
         let mut bytes: Vec<u8> = vec![];
         let img = self.place_pixels(&barcode);
 
-        match img.save(&mut bytes, format) {
+        match img.write_to(&mut bytes, format) {
             Ok(_) => Ok(bytes),
             _ => Err(Error::Generate),
         }
