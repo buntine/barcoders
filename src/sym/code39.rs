@@ -45,7 +45,7 @@ impl Code39 {
         Code39::parse(data).and_then(|d| {
             Ok(Code39 {
                 data: d.chars().collect(),
-                checksum: checksum,
+                checksum,
             })
         })
     }
@@ -66,7 +66,7 @@ impl Code39 {
     fn checksum_char(&self) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let indices = self.data.iter().map(&get_char_pos);
-        let index = indices.fold(0, |acc, i| acc + i) % CHARS.len();
+        let index = indices.sum::<usize>() % CHARS.len();
 
         match CHARS.get(index) {
             Some(&(c, _)) => Some(c),
@@ -76,13 +76,13 @@ impl Code39 {
 
     fn checksum_encoding(&self) -> [u8; 12] {
         match self.checksum_char() {
-            Some(c) => self.char_encoding(&c),
+            Some(c) => self.char_encoding(c),
             None => panic!("Cannot compute checksum"),
         }
     }
 
-    fn char_encoding(&self, c: &char) -> [u8; 12] {
-        match CHARS.iter().find(|&ch| ch.0 == *c) {
+    fn char_encoding(&self, c: char) -> [u8; 12] {
+        match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
             None => panic!(format!("Unknown char: {}", c)),
         }
@@ -99,7 +99,7 @@ impl Code39 {
         let mut enc = vec![0];
 
         for c in &self.data {
-            self.push_encoding(&mut enc, self.char_encoding(&c));
+            self.push_encoding(&mut enc, self.char_encoding(*c));
         }
 
         if self.checksum {

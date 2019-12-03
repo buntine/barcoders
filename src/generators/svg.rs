@@ -124,7 +124,7 @@ impl SVG {
         let rects: String = barcode.iter()
             .enumerate()
             .filter(|&(_, &n)| n == 1)
-            .map(|(i, &n)| self.rect(n, (i as u32 * self.xdim), self.xdim))
+            .map(|(i, &n)| self.rect(n, i as u32 * self.xdim, self.xdim))
             .collect();
 
         Ok(format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">{s}{r}</svg>",

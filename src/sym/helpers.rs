@@ -2,7 +2,7 @@
 /// TODO: Work out how to use join_iters with slices and then remove this function.
 pub fn join_slices(slices: &[&[u8]]) -> Vec<u8> {
     slices.iter()
-          .flat_map(|b| b.into_iter())
+          .flat_map(|b| b.iter())
           .cloned()
           .collect()
 }

@@ -59,7 +59,7 @@ impl Code93 {
     }
 
     /// Calculates a checksum character using a weighted modulo-47 algorithm.
-    fn checksum_char(&self, data: &Vec<char>, weight_threshold: usize) -> Option<char> {
+    fn checksum_char(&self, data: &[char], weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
         let weight = |i| {
             match (data.len() - i) % weight_threshold {

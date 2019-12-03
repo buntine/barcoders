@@ -63,8 +63,8 @@ impl EANSUPP {
         }
     }
 
-    fn char_encoding(&self, side: usize, d: &u8) -> [u8; 7] {
-        ENCODINGS[side][*d as usize]
+    fn char_encoding(&self, side: usize, d: u8) -> [u8; 7] {
+        ENCODINGS[side][d as usize]
     }
 
     /// Calculates the checksum digit using a modified modulo-10 weighting
@@ -105,7 +105,7 @@ impl EANSUPP {
         let slices: Vec<[u8; 7]> = self.raw_data()
                                        .iter()
                                        .zip(self.parity().iter())
-                                       .map(|(d, s)| self.char_encoding(*s, &d))
+                                       .map(|(d, s)| self.char_encoding(*s, *d))
                                        .collect();
 
         for (i, d) in slices.iter().enumerate() {
@@ -135,7 +135,7 @@ impl Parse for EANSUPP {
 
     /// Returns the set of valid characters allowed in this type of barcode.
     fn valid_chars() -> Vec<char> {
-        (0..10).into_iter().map(|i| char::from_digit(i, 10).unwrap()).collect()
+        (0..10).map(|i| char::from_digit(i, 10).unwrap()).collect()
     }
 }
 

@@ -162,8 +162,8 @@ impl CharacterSet {
         }
     }
 
-    fn unit(&self, n: usize) -> Result<Unit> {
-        match *self {
+    fn unit(self, n: usize) -> Result<Unit> {
+        match self {
             CharacterSet::A => Ok(Unit::A(n)),
             CharacterSet::B => Ok(Unit::B(n)),
             CharacterSet::C => Ok(Unit::C(n)),
@@ -171,8 +171,8 @@ impl CharacterSet {
         }
     }
 
-    fn index(&self) -> Result<usize> {
-        match *self {
+    fn index(self) -> Result<usize> {
+        match self {
             CharacterSet::A => Ok(0),
             CharacterSet::B => Ok(1),
             CharacterSet::C => Ok(2),
@@ -180,7 +180,7 @@ impl CharacterSet {
         }
     }
 
-    fn lookup(&self, s: &str) -> Result<Unit> {
+    fn lookup(self, s: &str) -> Result<Unit> {
         let p = self.index()?;
 
         match CHARS.iter().position(|&c| c.0[p] == s) {
