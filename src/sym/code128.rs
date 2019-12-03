@@ -257,7 +257,7 @@ impl Code128 {
     fn checksum_value(&self) -> u8 {
         let sum: i32 = self.0
                            .iter()
-                           .zip((0..self.0.len() as i32))
+                           .zip(0..self.0.len() as i32)
                            .fold(0, |t, (u, i)| t + (u.index() as i32 * cmp::max(1, i)));
 
         (sum % 103) as u8
