@@ -11,6 +11,14 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v1.0.1 (2019-12-03)
+
+- [fixed] Several linting issues.
+
+### v1.0.0 (2019-12-03)
+
+- [changed] Updated image dependency from 0.18.0 to 0.22.0.
+
 ### v0.10.0 (2018-02-28)
 
 - [added] Support for FNC1, FNC2, FNC3, FNC4 and SHIFT meta-characters in Code128 symbology.
