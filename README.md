@@ -159,7 +159,7 @@ writer.write(data.as_bytes()).unwrap();
 
 You may also specify the barcode x-dimension, background/foreground colors and opacity by specifying the struct fields:
 ```rust
-let gif = SVG{height: 80,
+let svg = SVG{height: 80,
               xdim: 1,
               // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
               foreground: Color::black(),
