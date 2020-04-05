@@ -1,6 +1,7 @@
 [package]
 name = "barcoders"
 version = "1.0.1"
+edition = "2018"
 authors = ["Andrew Buntine <info@bunts.io>"]
 description = "A barcode-encoding library"
 homepage = "https://github.com/buntine/barcoders"
