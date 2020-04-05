@@ -19,8 +19,6 @@ exclude = [
 ascii = []
 json = []
 svg = []
-dev = ["clippy"]
 
 [dependencies]
 image = {version = "0.22", optional = true}
-clippy = {version = "0.0.166", optional = true}
