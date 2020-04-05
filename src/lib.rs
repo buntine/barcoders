@@ -53,8 +53,7 @@
 #![cfg_attr(feature = "dev", feature(plugin))]
 #![cfg_attr(feature = "dev", plugin(clippy))]
 
-#[cfg(feature = "image")]
-extern crate image;
+
 
 pub mod error;
 pub mod sym;

@@ -21,7 +21,7 @@
 //!
 //! See the README for more examples.
 
-extern crate image;
+use image;
 
 use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
 use crate::error::{Result, Error};
@@ -205,7 +205,7 @@ impl Image {
 
 #[cfg(test)]
 mod tests {
-    extern crate image;
+    
 
     use crate::sym::ean13::*;
     use crate::sym::ean8::*;
