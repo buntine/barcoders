@@ -6,9 +6,9 @@
 //!
 //! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
-use sym::{Parse, helpers};
-use error::{Error, Result};
-use sym::ean13::ENCODINGS;
+use crate::sym::{Parse, helpers};
+use crate::error::{Error, Result};
+use crate::sym::ean13::ENCODINGS;
 use std::ops::Range;
 use std::char;
 
@@ -141,8 +141,8 @@ impl Parse for EANSUPP {
 
 #[cfg(test)]
 mod tests {
-    use sym::ean_supp::*;
-    use error::Error;
+    use crate::sym::ean_supp::*;
+    use crate::error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

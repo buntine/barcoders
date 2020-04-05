@@ -7,9 +7,9 @@
 //!
 //! Most of the time you will want to use the interleaved barcode over the standard option.
 
-use sym::Parse;
-use sym::helpers;
-use error::Result;
+use crate::sym::Parse;
+use crate::sym::helpers;
+use crate::error::Result;
 use std::ops::Range;
 use std::char;
 
@@ -160,8 +160,8 @@ impl Parse for TF {
 
 #[cfg(test)]
 mod tests {
-    use sym::tf::*;
-    use error::Error;
+    use crate::sym::tf::*;
+    use crate::error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

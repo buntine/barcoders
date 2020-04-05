@@ -52,8 +52,8 @@
 //! - FNC4: ```ż``` (```\u{017C}```)
 //! - SHIFT: ```Ž``` (```\u{017D}```)
 
-use sym::helpers;
-use error::*;
+use crate::sym::helpers;
+use crate::error::*;
 
 use std::cmp;
 
@@ -293,8 +293,8 @@ impl Code128 {
 
 #[cfg(test)]
 mod tests {
-    use sym::code128::*;
-    use error::Error;
+    use crate::sym::code128::*;
+    use crate::error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

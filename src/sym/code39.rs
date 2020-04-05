@@ -6,8 +6,8 @@
 //! popular in non-retail environments. It was one of the first symbologies to support encoding
 //! of the ASCII alphabet.
 
-use sym::{Parse, helpers};
-use error::Result;
+use crate::sym::{Parse, helpers};
+use crate::error::Result;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 43 allowable character.
@@ -131,8 +131,8 @@ impl Parse for Code39 {
 
 #[cfg(test)]
 mod tests {
-    use sym::code39::*;
-    use error::Error;
+    use crate::sym::code39::*;
+    use crate::error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
