@@ -6,7 +6,7 @@
 //! or running the test suite.
 
 use std::iter::repeat;
-use error::Result;
+use crate::error::Result;
 
 /// The ASCII barcode generator type.
 #[derive(Copy, Clone, Debug)]
@@ -55,16 +55,16 @@ impl ASCII {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean13::*;
-    use ::sym::ean8::*;
-    use ::sym::ean_supp::*;
-    use ::sym::code39::*;
-    use ::sym::code93::*;
-    use ::sym::code11::*;
-    use ::sym::code128::*;
-    use ::sym::tf::*;
-    use ::sym::codabar::*;
-    use ::generators::ascii::*;
+    use crate::sym::ean13::*;
+    use crate::sym::ean8::*;
+    use crate::sym::ean_supp::*;
+    use crate::sym::code39::*;
+    use crate::sym::code93::*;
+    use crate::sym::code11::*;
+    use crate::sym::code128::*;
+    use crate::sym::tf::*;
+    use crate::sym::codabar::*;
+    use crate::generators::ascii::*;
 
     #[test]
     fn ean_13_as_ascii() {

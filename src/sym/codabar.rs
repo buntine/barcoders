@@ -7,8 +7,8 @@
 //! Barcodes of this variant should start and end with either A, B, C, or D depending on
 //! the industry.
 
-use sym::Parse;
-use error::Result;
+use crate::sym::Parse;
+use crate::error::Result;
 use std::ops::Range;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -126,8 +126,8 @@ impl Parse for Codabar {
 
 #[cfg(test)]
 mod tests {
-    use sym::codabar::*;
-    use error::Error;
+    use crate::sym::codabar::*;
+    use crate::error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

@@ -9,8 +9,8 @@
 //!   * Bookland
 //!   * JAN
 
-use sym::{Parse, helpers};
-use error::Result;
+use crate::sym::{Parse, helpers};
+use crate::error::Result;
 use std::ops::Range;
 use std::char;
 
@@ -153,9 +153,9 @@ impl Parse for EAN13 {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean13::*;
+    use crate::sym::ean13::*;
     use std::char;
-    use error::Error;
+    use crate::error::Error;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

@@ -8,8 +8,8 @@
 //! NOTE: This encoder currently only supports the basic Code93 implementation and not full-ASCII
 //! mode.
 
-use sym::{Parse, helpers};
-use error::Result;
+use crate::sym::{Parse, helpers};
+use crate::error::Result;
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the 47 allowable character.
@@ -138,8 +138,8 @@ impl Parse for Code93 {
 
 #[cfg(test)]
 mod tests {
-    use sym::code93::*;
-    use error::Error;
+    use crate::sym::code93::*;
+    use crate::error::Error;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {

@@ -26,7 +26,7 @@ mod helpers;
 
 use std::ops::Range;
 use std::iter::Iterator;
-use error::Error;
+use crate::error::Error;
 
 trait Parse {
     fn valid_chars() -> Vec<char>;
