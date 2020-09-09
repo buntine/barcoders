@@ -11,6 +11,11 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v1.0.2 (2020-09-09)
+
+- [fixed] Typo in Code128 binary mappings for char: FS, |, 92
+
+
 ### v1.0.1 (2019-12-03)
 
 - [fixed] Several linting issues.
