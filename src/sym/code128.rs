@@ -58,10 +58,16 @@ use error::*;
 use std::cmp;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum Unit {
-    A(usize),
-    B(usize),
-    C(usize),
+struct Unit {
+    kind: UnitKind,
+    index: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum UnitKind {
+    A,
+    B,
+    C,
 }
 
 type Encoding = [u8; 11];
@@ -76,7 +82,7 @@ enum CharacterSet {
 
 // Character -> Binary mappings for each of the allowable characters in each character-set.
 const CHARS: [([&str; 3], Encoding); 106] = [
-    ([" ", " ", "00"], [1,1,0,1,1,0,0,1,1,0,0]), (["!", "!", "01"], [1,1,0,0,1,1,0,1,1,0,0]), 
+    ([" ", " ", "00"], [1,1,0,1,1,0,0,1,1,0,0]), (["!", "!", "01"], [1,1,0,0,1,1,0,1,1,0,0]),
     (["\"", "\"", "02"], [1,1,0,0,1,1,0,0,1,1,0]), (["#", "#", "03"], [1,0,0,1,0,0,1,1,0,0,0]),
     (["$", "$", "04"], [1,0,0,1,0,0,0,1,1,0,0]), (["%", "%", "05"], [1,0,0,0,1,0,0,1,1,0,0]),
     (["&", "&", "06"], [1,0,0,1,1,0,0,1,0,0,0]), (["'", "'", "07"], [1,0,0,1,1,0,0,0,1,0,0]),
@@ -128,7 +134,7 @@ const CHARS: [([&str; 3], Encoding); 106] = [
     (["\u{017D}", "\u{017D}", "98"], [1,1,1,1,0,1,0,0,0,1,0]), (["Ć", "Ć", "99"], [1,0,1,1,1,0,1,1,1,1,0]),
     (["Ɓ", "\u{017C}", "Ɓ"], [1,0,1,1,1,1,0,1,1,1,0]), (["\u{017C}", "À", "À"], [1,1,1,0,1,0,1,1,1,1,0]),
     (["\u{0179}", "\u{0179}", "\u{0179}"], [1,1,1,1,0,1,0,1,1,1,0]), (["START-À", "START-À", "START-À"], [1,1,0,1,0,0,0,0,1,0,0]),
-    (["START-Ɓ", "START-Ɓ", "START-Ɓ"], [1,1,0,1,0,0,1,0,0,0,0]), (["START-Ć", "START-Ć", "START-Ć"], [1,1,0,1,0,0,1,1,1,0,0]), 
+    (["START-Ɓ", "START-Ɓ", "START-Ɓ"], [1,1,0,1,0,0,1,0,0,0,0]), (["START-Ć", "START-Ć", "START-Ć"], [1,1,0,1,0,0,1,1,1,0,0]),
 ];
 
 // Stop sequence.
@@ -142,13 +148,8 @@ const TERM: [u8; 2] = [1,1];
 pub struct Code128(Vec<Unit>);
 
 impl Unit {
-    // This seems silly. A better way?
     fn index(&self) -> usize {
-        match *self {
-            Unit::A(n) |
-            Unit::B(n) |
-            Unit::C(n) => n,
-        }
+        self.index
     }
 }
 
@@ -163,12 +164,13 @@ impl CharacterSet {
     }
 
     fn unit(self, n: usize) -> Result<Unit> {
-        match self {
-            CharacterSet::A => Ok(Unit::A(n)),
-            CharacterSet::B => Ok(Unit::B(n)),
-            CharacterSet::C => Ok(Unit::C(n)),
-            CharacterSet::None => Err(Error::Character),
-        }
+        let kind = match self {
+            CharacterSet::A => UnitKind::A,
+            CharacterSet::B => UnitKind::B,
+            CharacterSet::C => UnitKind::C,
+            CharacterSet::None => return Err(Error::Character),
+        };
+        Ok(Unit { kind, index: n })
     }
 
     fn index(self) -> Result<usize> {
@@ -195,7 +197,7 @@ impl Code128 {
     /// Returns Result<Code128, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Code128> {
         let data = data.as_ref();
-        if data.len() < 2 { 
+        if data.len() < 2 {
             return Err(Error::Length);
         }
 
@@ -212,14 +214,14 @@ impl Code128 {
 
         for ch in chars {
             match ch {
-                'À' | 'Ɓ' | 'Ć' if units.is_empty() => { 
+                'À' | 'Ɓ' | 'Ć' if units.is_empty() => {
                     char_set = CharacterSet::from_char(ch)?;
 
                     let c = format!("START-{}", ch);
                     let u = char_set.lookup(&c)?;
                     units.push(u);
                 },
-                'À' | 'Ɓ' | 'Ć' => { 
+                'À' | 'Ɓ' | 'Ć' => {
                     if char_set == CharacterSet::C && carry.is_some() {
                         return Err(Error::Character);
                     } else {
@@ -265,7 +267,7 @@ impl Code128 {
 
     fn checksum_encoding(&self) -> Encoding {
         let v = self.checksum_value();
-        self.unit_encoding(&Unit::A(v as usize))
+        self.unit_encoding(&Unit { kind: UnitKind::A, index: v as usize})
     }
 
     fn unit_encoding(&self, c: &Unit) -> Encoding {
@@ -346,14 +348,14 @@ mod tests {
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001000101100010110000100100110100001100011101011");
     }
- 
+
     #[test]
     fn code128_encode_fnc_chars() {
         let code128_a = Code128::new("ĆŹ4218402050À0").unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100111001111010111010110111000110011100101100010100011001001110110001011101110101111010011101100101011110001100011101011");
     }
- 
+
     #[test]
     fn code128_encode_longhand() {
         let code128_a = Code128::new("\u{00C0}HELLO").unwrap();
