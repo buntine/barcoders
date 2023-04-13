@@ -3,14 +3,11 @@
 //! EAN-8 barcodes are EAN style barcodes for smaller packages on products like
 //! cigaretts, chewing gum, etc where package space is limited.
 
-use sym::{Parse, helpers};
 use error::Result;
-use sym::ean13::{ENCODINGS,
-                 LEFT_GUARD,
-                 MIDDLE_GUARD,
-                 RIGHT_GUARD};
-use std::ops::Range;
 use std::char;
+use std::ops::Range;
+use sym::ean13::{ENCODINGS, LEFT_GUARD, MIDDLE_GUARD, RIGHT_GUARD};
+use sym::{helpers, Parse};
 
 /// The EAN-8 barcode type.
 #[derive(Debug)]
@@ -21,9 +18,10 @@ impl EAN8 {
     /// Returns Result<EAN8, String> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN8> {
         EAN8::parse(data.as_ref()).and_then(|d| {
-            let digits = d.chars()
-                          .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                          .collect();
+            let digits = d
+                .chars()
+                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                .collect();
             Ok(EAN8(digits))
         })
     }
@@ -64,19 +62,21 @@ impl EAN8 {
     }
 
     fn left_payload(&self) -> Vec<u8> {
-        let slices: Vec<[u8; 7]> = self.left_digits()
-                                       .iter()
-                                       .map(|d| self.char_encoding(0, *d))
-                                       .collect();
+        let slices: Vec<[u8; 7]> = self
+            .left_digits()
+            .iter()
+            .map(|d| self.char_encoding(0, *d))
+            .collect();
 
         helpers::join_iters(slices.iter())
     }
 
     fn right_payload(&self) -> Vec<u8> {
-        let slices: Vec<[u8; 7]> = self.right_digits()
-                                       .iter()
-                                       .map(|d| self.char_encoding(2, *d))
-                                       .collect();
+        let slices: Vec<[u8; 7]> = self
+            .right_digits()
+            .iter()
+            .map(|d| self.char_encoding(2, *d))
+            .collect();
 
         helpers::join_iters(slices.iter())
     }
@@ -84,13 +84,17 @@ impl EAN8 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(&[&LEFT_GUARD[..],
-                               &self.number_system_encoding()[..],
-                               &self.left_payload()[..],
-                               &MIDDLE_GUARD[..],
-                               &self.right_payload()[..],
-                               &self.checksum_encoding()[..],
-                               &RIGHT_GUARD[..]][..])
+        helpers::join_slices(
+            &[
+                &LEFT_GUARD[..],
+                &self.number_system_encoding()[..],
+                &self.left_payload()[..],
+                &MIDDLE_GUARD[..],
+                &self.right_payload()[..],
+                &self.checksum_encoding()[..],
+                &RIGHT_GUARD[..],
+            ][..],
+        )
     }
 }
 
@@ -108,9 +112,9 @@ impl Parse for EAN8 {
 
 #[cfg(test)]
 mod tests {
-    use sym::ean8::*;
     use error::Error;
     use std::char;
+    use sym::ean8::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -143,7 +147,13 @@ mod tests {
         let ean81 = EAN8::new("5512345").unwrap(); // Check digit: 7
         let ean82 = EAN8::new("9834651").unwrap(); // Check digit: 3
 
-        assert_eq!(collapse_vec(ean81.encode()), "1010110001011000100110010010011010101000010101110010011101000100101");
-        assert_eq!(collapse_vec(ean82.encode()), "1010001011011011101111010100011010101010000100111011001101010000101");
+        assert_eq!(
+            collapse_vec(ean81.encode()),
+            "1010110001011000100110010010011010101000010101110010011101000100101"
+        );
+        assert_eq!(
+            collapse_vec(ean82.encode()),
+            "1010001011011011101111010100011010101010000100111011001101010000101"
+        );
     }
 }

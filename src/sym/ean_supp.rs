@@ -6,26 +6,34 @@
 //!
 //! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
-use sym::{Parse, helpers};
 use error::{Error, Result};
-use sym::ean13::ENCODINGS;
-use std::ops::Range;
 use std::char;
+use std::ops::Range;
+use sym::ean13::ENCODINGS;
+use sym::{helpers, Parse};
 
 const LEFT_GUARD: [u8; 4] = [1, 0, 1, 1];
 
 /// Maps parity (odd/even) for the EAN-5 barcodes based on the check digit.
 const EAN5_PARITY: [[usize; 5]; 10] = [
-    [0,0,1,1,1], [1,0,1,0,0], [1,0,0,1,0],
-    [1,0,0,0,1], [0,1,1,0,0], [0,0,1,1,0],
-    [0,0,0,1,1], [0,1,0,1,0], [0,1,0,0,1],
-    [0,0,1,0,1],
+    [0, 0, 1, 1, 1],
+    [1, 0, 1, 0, 0],
+    [1, 0, 0, 1, 0],
+    [1, 0, 0, 0, 1],
+    [0, 1, 1, 0, 0],
+    [0, 0, 1, 1, 0],
+    [0, 0, 0, 1, 1],
+    [0, 1, 0, 1, 0],
+    [0, 1, 0, 0, 1],
+    [0, 0, 1, 0, 1],
 ];
 
 /// Maps parity (odd/even) for the EAN-2 barcodes based on the check digit.
 const EAN2_PARITY: [[usize; 5]; 4] = [
-    [0,0,0,0,0], [0,1,0,0,0], [1,0,0,0,0],
-    [1,1,0,0,0],
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0],
+    [1, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0],
 ];
 
 /// The Supplemental EAN barcode type.
@@ -44,9 +52,10 @@ impl EANSUPP {
     /// the length of `data`.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EANSUPP> {
         EANSUPP::parse(data.as_ref()).and_then(|d| {
-            let digits: Vec<u8> = d.chars()
-                                   .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                                   .collect();
+            let digits: Vec<u8> = d
+                .chars()
+                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                .collect();
 
             match digits.len() {
                 2 => Ok(EANSUPP::EAN2(digits)),
@@ -58,8 +67,7 @@ impl EANSUPP {
 
     fn raw_data(&self) -> &[u8] {
         match *self {
-            EANSUPP::EAN2(ref d) |
-            EANSUPP::EAN5(ref d) => &d[..],
+            EANSUPP::EAN2(ref d) | EANSUPP::EAN5(ref d) => &d[..],
         }
     }
 
@@ -102,11 +110,12 @@ impl EANSUPP {
 
     fn payload(&self) -> Vec<u8> {
         let mut p = vec![];
-        let slices: Vec<[u8; 7]> = self.raw_data()
-                                       .iter()
-                                       .zip(self.parity().iter())
-                                       .map(|(d, s)| self.char_encoding(*s, *d))
-                                       .collect();
+        let slices: Vec<[u8; 7]> = self
+            .raw_data()
+            .iter()
+            .zip(self.parity().iter())
+            .map(|(d, s)| self.char_encoding(*s, *d))
+            .collect();
 
         for (i, d) in slices.iter().enumerate() {
             if i > 0 {
@@ -141,9 +150,9 @@ impl Parse for EANSUPP {
 
 #[cfg(test)]
 mod tests {
-    use sym::ean_supp::*;
     use error::Error;
     use std::char;
+    use sym::ean_supp::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -182,16 +191,16 @@ mod tests {
     fn ean2_encode() {
         let ean21 = EANSUPP::new("34").unwrap();
 
-        assert_eq!(collapse_vec(ean21.encode()),
-                   "10110100001010100011");
+        assert_eq!(collapse_vec(ean21.encode()), "10110100001010100011");
     }
 
     #[test]
     fn ean5_encode() {
         let ean51 = EANSUPP::new("51234").unwrap();
 
-        assert_eq!(collapse_vec(ean51.encode()),
-                   "10110110001010011001010011011010111101010011101");
+        assert_eq!(
+            collapse_vec(ean51.encode()),
+            "10110110001010011001010011011010111101010011101"
+        );
     }
-
 }

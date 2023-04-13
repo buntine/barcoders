@@ -23,9 +23,9 @@
 
 extern crate image;
 
-use image::{ImageBuffer, Rgba, ImageRgba8, DynamicImage};
-use error::{Result, Error};
- 
+use error::{Error, Result};
+use image::{DynamicImage, ImageBuffer, ImageRgba8, Rgba};
+
 macro_rules! image_variants {
     ( $( #[$attr:meta] $v:ident ),* ) => {
         /// The image generator type.
@@ -57,8 +57,12 @@ macro_rules! image_defaults {
             height: $h,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         }
     };
 }
@@ -83,7 +87,7 @@ pub struct Color {
 impl Color {
     /// Constructor.
     pub fn new(rgba: [u8; 4]) -> Color {
-        Color{rgba: rgba}
+        Color { rgba: rgba }
     }
 
     /// Constructor for black (#000000).
@@ -150,10 +154,10 @@ impl Image {
     /// an error message.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<Vec<u8>> {
         let format = match *self {
-            Image::GIF{..} => image::GIF,
-            Image::PNG{..} => image::PNG,
-            Image::JPEG{..} => image::JPEG,
-            _ => return Err(Error::Generate)
+            Image::GIF { .. } => image::GIF,
+            Image::PNG { .. } => image::PNG,
+            Image::JPEG { .. } => image::JPEG,
+            _ => return Err(Error::Generate),
         };
         let mut bytes: Vec<u8> = vec![];
         let img = self.place_pixels(&barcode);
@@ -166,7 +170,10 @@ impl Image {
 
     /// Generates the given barcode to an image::ImageBuffer. Returns a `Result<ImageBuffer<Rgba<u8>, Vec<u8>>, Error>`
     /// of the encoded bytes or an error message.
-    pub fn generate_buffer<T: AsRef<[u8]>>(&self, barcode: T) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
+    pub fn generate_buffer<T: AsRef<[u8]>>(
+        &self,
+        barcode: T,
+    ) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
 
         Ok(img.to_rgba())
@@ -207,20 +214,20 @@ impl Image {
 mod tests {
     extern crate image;
 
-    use sym::ean13::*;
-    use sym::ean8::*;
-    use sym::code39::*;
-    use sym::code93::*;
-    use sym::code11::*;
-    use sym::code128::*;
-    use sym::ean_supp::*;
-    use sym::tf::*;
-    use sym::codabar::*;
     use generators::image::*;
+    use std::fs::File;
     use std::io::prelude::*;
     use std::io::BufWriter;
-    use std::fs::File;
     use std::path::Path;
+    use sym::codabar::*;
+    use sym::code11::*;
+    use sym::code128::*;
+    use sym::code39::*;
+    use sym::code93::*;
+    use sym::ean13::*;
+    use sym::ean8::*;
+    use sym::ean_supp::*;
+    use sym::tf::*;
 
     const TEST_DATA_BASE: &str = "./target/debug";
     const WRITE_TO_FILE: bool = true;
@@ -241,7 +248,9 @@ mod tests {
         let gif = Image::gif(80);
         let generated = gif.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13.gif");
+        }
 
         assert_eq!(generated.len(), 1775);
     }
@@ -253,12 +262,18 @@ mod tests {
             height: 100,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13.png");
+        }
 
         assert_eq!(generated.len(), 4282);
     }
@@ -270,12 +285,18 @@ mod tests {
             height: 100,
             xdim: 1,
             rotation: Rotation::Ninety,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13_90.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13_90.png");
+        }
 
         assert_eq!(generated.len(), 326);
     }
@@ -287,12 +308,18 @@ mod tests {
             height: 100,
             xdim: 3,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = jpeg.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13.jpg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13.jpg");
+        }
 
         assert_eq!(generated.len(), 8285);
     }
@@ -304,8 +331,12 @@ mod tests {
             height: 99,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = img.generate_buffer(&ean13.encode()[..]).unwrap();
 
@@ -320,13 +351,19 @@ mod tests {
             height: 99,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [255, 38, 42, 255]},
-            background: Color{rgba: [34, 52, 255, 255]},
+            foreground: Color {
+                rgba: [255, 38, 42, 255],
+            },
+            background: Color {
+                rgba: [34, 52, 255, 255],
+            },
         };
 
         let generated = gif.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "colored_ean13.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "colored_ean13.gif");
+        }
 
         assert_eq!(generated.len(), 1882);
     }
@@ -338,13 +375,19 @@ mod tests {
             height: 99,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [255, 38, 42, 120]},
-            background: Color{rgba: [34, 52, 255, 120]},
+            foreground: Color {
+                rgba: [255, 38, 42, 120],
+            },
+            background: Color {
+                rgba: [34, 52, 255, 120],
+            },
         };
 
         let generated = png.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "colored_opaque_ean13.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "colored_opaque_ean13.png");
+        }
 
         assert_eq!(generated.len(), 1766);
     }
@@ -356,12 +399,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&code39.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code39.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code39.png");
+        }
 
         assert_eq!(generated.len(), 2972);
     }
@@ -373,12 +422,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code39.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code39.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code39.gif");
+        }
 
         assert_eq!(generated.len(), 1767);
     }
@@ -390,12 +445,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::OneEighty,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code39.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code39_180.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code39_180.gif");
+        }
 
         assert_eq!(generated.len(), 1831);
     }
@@ -407,12 +468,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&code93.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code93.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code93.png");
+        }
 
         assert_eq!(generated.len(), 2803);
     }
@@ -424,12 +491,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code93.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code93.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code93.gif");
+        }
 
         assert_eq!(generated.len(), 1846);
     }
@@ -441,12 +514,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::OneEighty,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code93.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code93_180.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code93_180.gif");
+        }
 
         assert_eq!(generated.len(), 1933);
     }
@@ -458,12 +537,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&code11.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code11.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code11.png");
+        }
 
         assert_eq!(generated.len(), 1979);
     }
@@ -475,12 +560,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code11.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code11.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code11.gif");
+        }
 
         assert_eq!(generated.len(), 1845);
     }
@@ -492,12 +583,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&codabar.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "codabar.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "codabar.png");
+        }
 
         assert_eq!(generated.len(), 2527);
     }
@@ -509,12 +606,18 @@ mod tests {
             height: 80,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&codabar.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "codabar.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "codabar.gif");
+        }
 
         assert_eq!(generated.len(), 2538);
     }
@@ -526,12 +629,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Ninety,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&codabar.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "codabar_180.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "codabar_180.gif");
+        }
 
         assert_eq!(generated.len(), 984);
     }
@@ -543,12 +652,18 @@ mod tests {
             height: 60,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&code128.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code128.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code128.png");
+        }
 
         assert_eq!(generated.len(), 2618);
     }
@@ -560,12 +675,18 @@ mod tests {
             height: 90,
             xdim: 3,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code128.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code128.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code128.gif");
+        }
 
         assert_eq!(generated.len(), 3659);
     }
@@ -577,12 +698,18 @@ mod tests {
             height: 90,
             xdim: 3,
             rotation: Rotation::OneEighty,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&code128.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code128_180.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code128_180.gif");
+        }
 
         assert_eq!(generated.len(), 3670);
     }
@@ -594,8 +721,12 @@ mod tests {
             height: 93,
             xdim: 2,
             rotation: Rotation::OneEighty,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = img.generate_buffer(&code128.encode()[..]).unwrap();
 
@@ -610,12 +741,18 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&ean8.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean8.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean8.png");
+        }
 
         assert_eq!(generated.len(), 2552);
     }
@@ -627,12 +764,18 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::TwoSeventy,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&ean8.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean8_270.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean8_270.png");
+        }
 
         assert_eq!(generated.len(), 360);
     }
@@ -644,12 +787,18 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&ean8.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean8.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean8.gif");
+        }
 
         assert_eq!(generated.len(), 1752);
     }
@@ -661,12 +810,18 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = jpeg.generate(&ean8.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean8.jpg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean8.jpg");
+        }
 
         assert_eq!(generated.len(), 3139);
     }
@@ -678,12 +833,18 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&ean2.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean2.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean2.png");
+        }
 
         assert_eq!(generated.len(), 1023);
     }
@@ -695,12 +856,18 @@ mod tests {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&ean5.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean5.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean5.gif");
+        }
 
         assert_eq!(generated.len(), 1508);
     }
@@ -712,12 +879,18 @@ mod tests {
             height: 140,
             xdim: 5,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = jpeg.generate(&ean5.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean5.jpg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean5.jpg");
+        }
 
         assert_eq!(generated.len(), 8167);
     }
@@ -729,8 +902,12 @@ mod tests {
             height: 140,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = img.generate_buffer(&ean5.encode()[..]).unwrap();
 
@@ -745,12 +922,18 @@ mod tests {
             height: 100,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&itf.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ift.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ift.png");
+        }
 
         assert_eq!(generated.len(), 3478);
     }
@@ -762,12 +945,18 @@ mod tests {
             height: 100,
             xdim: 2,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = png.generate(&stf.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "sft.png"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "sft.png");
+        }
 
         assert_eq!(generated.len(), 3748);
     }
@@ -779,12 +968,18 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = gif.generate(&itf.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ift.gif"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ift.gif");
+        }
 
         assert_eq!(generated.len(), 2295);
     }
@@ -796,12 +991,18 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = jpeg.generate(&itf.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ift.jpg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ift.jpg");
+        }
 
         assert_eq!(generated.len(), 4845);
     }
@@ -813,8 +1014,12 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
         let generated = img.generate_buffer(&itf.encode()[..]).unwrap();
 
@@ -829,8 +1034,12 @@ mod tests {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         };
 
         assert!(img.generate(&itf.encode()[..]).is_err());

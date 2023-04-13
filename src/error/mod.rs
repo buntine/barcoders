@@ -1,17 +1,17 @@
 //! Custom error types.
 
-use std::fmt;
 use std::error::Error as StdError;
+use std::fmt;
 
 /// The possible errors that can occur during barcode encoding and generation.
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Error {
-  /// An invalid character found during encoding.
-  Character,
-  /// An invalid data length during encoding.
-  Length,
-  /// An error during barcode generation.
-  Generate,
+    /// An invalid character found during encoding.
+    Character,
+    /// An invalid data length during encoding.
+    Length,
+    /// An error during barcode generation.
+    Generate,
 }
 
 /// Alias-type for Result<T, barcoders::error::Error>.

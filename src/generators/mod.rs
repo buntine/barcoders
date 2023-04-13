@@ -1,5 +1,5 @@
 //! Supported methods of barcode generation.
-//! 
+//!
 //! Each generation option is an optionally-compiled feature, which you must opt-into when
 //! compiling.
 //!

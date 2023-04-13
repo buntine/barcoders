@@ -7,12 +7,13 @@
 //!
 //! Most of the time you will want to use the interleaved barcode over the standard option.
 
-use sym::Parse;
-use sym::helpers;
 use error::Result;
-use std::ops::Range;
 use std::char;
+use std::ops::Range;
+use sym::helpers;
+use sym::Parse;
 
+#[rustfmt::skip]
 const WIDTHS: [&str; 10] = [
     "NNWWN", "WNNNW", "NWNNW",
     "WWNNN", "NNWNW", "WNWNN",
@@ -42,11 +43,10 @@ impl TF {
     /// Returns Result<TF::Interleaved, Error> indicating parse success.
     pub fn interleaved<T: AsRef<str>>(data: T) -> Result<TF> {
         TF::parse(data.as_ref()).and_then(|d| {
-            let mut digits: Vec<u8> = d.chars()
-                                       .map(|c| {
-                                           c.to_digit(10).expect("Unknown character") as u8
-                                       })
-                                       .collect();
+            let mut digits: Vec<u8> = d
+                .chars()
+                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                .collect();
             let checksum_required = digits.len() % 2 == 1;
 
             if checksum_required {
@@ -63,17 +63,17 @@ impl TF {
     /// Returns Result<TF::Standard, Error> indicating parse success.
     pub fn standard<T: AsRef<str>>(data: T) -> Result<TF> {
         TF::parse(data.as_ref()).and_then(|d| {
-            let digits: Vec<u8> = d.chars()
-                                   .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                                   .collect();
+            let digits: Vec<u8> = d
+                .chars()
+                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                .collect();
             Ok(TF::Standard(digits))
         })
     }
 
     fn raw_data(&self) -> &[u8] {
         match *self {
-            TF::Standard(ref d) |
-            TF::Interleaved(ref d) => &d[..],
+            TF::Standard(ref d) | TF::Interleaved(ref d) => &d[..],
         }
     }
 
@@ -95,15 +95,14 @@ impl TF {
     }
 
     fn char_encoding(&self, d: u8) -> Vec<u8> {
-        let bars: Vec<Vec<u8>> = self.char_widths(d)
-                                     .chars()
-                                     .map(|c| {
-                                         match c {
-                                             'W' => vec![1, 1, 1, 0],
-                                             _ => vec![1, 0],
-                                         }
-                                     })
-                                     .collect();
+        let bars: Vec<Vec<u8>> = self
+            .char_widths(d)
+            .chars()
+            .map(|c| match c {
+                'W' => vec![1, 1, 1, 0],
+                _ => vec![1, 0],
+            })
+            .collect();
 
         helpers::join_iters(bars.iter())
     }
@@ -123,10 +122,11 @@ impl TF {
     }
 
     fn itf_payload(&self) -> Vec<u8> {
-        let weaves: Vec<Vec<u8>> = self.raw_data()
-                                       .chunks(2)
-                                       .map(|c| self.interleave(c[0], c[1]))
-                                       .collect();
+        let weaves: Vec<Vec<u8>> = self
+            .raw_data()
+            .chunks(2)
+            .map(|c| self.interleave(c[0], c[1]))
+            .collect();
 
         helpers::join_iters(weaves.iter())
     }
@@ -160,9 +160,9 @@ impl Parse for TF {
 
 #[cfg(test)]
 mod tests {
-    use sym::tf::*;
     use error::Error;
     use std::char;
+    use sym::tf::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -208,7 +208,11 @@ mod tests {
     fn itf_encode() {
         let itf = TF::interleaved("1234567".to_owned()).unwrap(); // Check digit: 0
 
-        assert_eq!(collapse_vec(itf.encode()), "10101110100010101110001110111010001010001110100011100010101010100011100011101101".to_owned());
+        assert_eq!(
+            collapse_vec(itf.encode()),
+            "10101110100010101110001110111010001010001110100011100010101010100011100011101101"
+                .to_owned()
+        );
     }
 
     #[test]

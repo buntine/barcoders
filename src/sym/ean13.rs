@@ -9,10 +9,10 @@
 //!   * Bookland
 //!   * JAN
 
-use sym::{Parse, helpers};
 use error::Result;
-use std::ops::Range;
 use std::char;
+use std::ops::Range;
+use sym::{helpers, Parse};
 
 /// Encoding mappings for EAN barcodes.
 /// 1 = bar, 0 = no bar.
@@ -22,21 +22,57 @@ use std::char;
 /// * Left side B (even parity).
 /// * Right side encodings.
 pub const ENCODINGS: [[[u8; 7]; 10]; 3] = [
-    [[0,0,0,1,1,0,1], [0,0,1,1,0,0,1], [0,0,1,0,0,1,1], [0,1,1,1,1,0,1], [0,1,0,0,0,1,1],
-     [0,1,1,0,0,0,1], [0,1,0,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,0,1,1,1], [0,0,0,1,0,1,1],],
-    [[0,1,0,0,1,1,1], [0,1,1,0,0,1,1], [0,0,1,1,0,1,1], [0,1,0,0,0,0,1], [0,0,1,1,1,0,1],
-     [0,1,1,1,0,0,1], [0,0,0,0,1,0,1], [0,0,1,0,0,0,1], [0,0,0,1,0,0,1], [0,0,1,0,1,1,1],],
-    [[1,1,1,0,0,1,0], [1,1,0,0,1,1,0], [1,1,0,1,1,0,0], [1,0,0,0,0,1,0], [1,0,1,1,1,0,0],
-     [1,0,0,1,1,1,0], [1,0,1,0,0,0,0], [1,0,0,0,1,0,0], [1,0,0,1,0,0,0], [1,1,1,0,1,0,0],],
+    [
+        [0, 0, 0, 1, 1, 0, 1],
+        [0, 0, 1, 1, 0, 0, 1],
+        [0, 0, 1, 0, 0, 1, 1],
+        [0, 1, 1, 1, 1, 0, 1],
+        [0, 1, 0, 0, 0, 1, 1],
+        [0, 1, 1, 0, 0, 0, 1],
+        [0, 1, 0, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0, 1, 1],
+        [0, 1, 1, 0, 1, 1, 1],
+        [0, 0, 0, 1, 0, 1, 1],
+    ],
+    [
+        [0, 1, 0, 0, 1, 1, 1],
+        [0, 1, 1, 0, 0, 1, 1],
+        [0, 0, 1, 1, 0, 1, 1],
+        [0, 1, 0, 0, 0, 0, 1],
+        [0, 0, 1, 1, 1, 0, 1],
+        [0, 1, 1, 1, 0, 0, 1],
+        [0, 0, 0, 0, 1, 0, 1],
+        [0, 0, 1, 0, 0, 0, 1],
+        [0, 0, 0, 1, 0, 0, 1],
+        [0, 0, 1, 0, 1, 1, 1],
+    ],
+    [
+        [1, 1, 1, 0, 0, 1, 0],
+        [1, 1, 0, 0, 1, 1, 0],
+        [1, 1, 0, 1, 1, 0, 0],
+        [1, 0, 0, 0, 0, 1, 0],
+        [1, 0, 1, 1, 1, 0, 0],
+        [1, 0, 0, 1, 1, 1, 0],
+        [1, 0, 1, 0, 0, 0, 0],
+        [1, 0, 0, 0, 1, 0, 0],
+        [1, 0, 0, 1, 0, 0, 0],
+        [1, 1, 1, 0, 1, 0, 0],
+    ],
 ];
 
 /// Maps parity (odd/even) for the left-side digits based on the first digit in
 /// the number system portion of the barcode data.
 const PARITY: [[usize; 5]; 10] = [
-    [0,0,0,0,0], [0,1,0,1,1], [0,1,1,0,1],
-    [0,1,1,1,0], [1,0,0,1,1], [1,1,0,0,1],
-    [1,1,1,0,0], [1,0,1,0,1], [1,0,1,1,0],
-    [1,1,0,1,0],
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 1],
+    [0, 1, 1, 0, 1],
+    [0, 1, 1, 1, 0],
+    [1, 0, 0, 1, 1],
+    [1, 1, 0, 0, 1],
+    [1, 1, 1, 0, 0],
+    [1, 0, 1, 0, 1],
+    [1, 0, 1, 1, 0],
+    [1, 1, 0, 1, 0],
 ];
 
 /// The left-hand guard pattern.
@@ -67,9 +103,10 @@ impl EAN13 {
     /// Returns Result<EAN13, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN13> {
         EAN13::parse(data.as_ref()).and_then(|d| {
-            let digits = d.chars()
-                          .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                          .collect();
+            let digits = d
+                .chars()
+                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+                .collect();
             Ok(EAN13(digits))
         })
     }
@@ -108,20 +145,22 @@ impl EAN13 {
     }
 
     fn left_payload(&self) -> Vec<u8> {
-        let slices: Vec<[u8; 7]> = self.left_digits()
-                                       .iter()
-                                       .zip(self.parity_mapping().iter())
-                                       .map(|(d, s)| self.char_encoding(*s, *d))
-                                       .collect();
+        let slices: Vec<[u8; 7]> = self
+            .left_digits()
+            .iter()
+            .zip(self.parity_mapping().iter())
+            .map(|(d, s)| self.char_encoding(*s, *d))
+            .collect();
 
         helpers::join_iters(slices.iter())
     }
 
     fn right_payload(&self) -> Vec<u8> {
-        let slices: Vec<[u8; 7]> = self.right_digits()
-                                       .iter()
-                                       .map(|d| self.char_encoding(2, *d))
-                                       .collect();
+        let slices: Vec<[u8; 7]> = self
+            .right_digits()
+            .iter()
+            .map(|d| self.char_encoding(2, *d))
+            .collect();
 
         helpers::join_iters(slices.iter())
     }
@@ -129,13 +168,17 @@ impl EAN13 {
     /// Encodes the barcode.
     /// Returns a Vec<u8> of binary digits.
     pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(&[&LEFT_GUARD[..],
-                               &self.number_system_encoding()[..],
-                               &self.left_payload()[..],
-                               &MIDDLE_GUARD[..],
-                               &self.right_payload()[..],
-                               &self.checksum_encoding()[..],
-                               &RIGHT_GUARD[..]][..])
+        helpers::join_slices(
+            &[
+                &LEFT_GUARD[..],
+                &self.number_system_encoding()[..],
+                &self.left_payload()[..],
+                &MIDDLE_GUARD[..],
+                &self.right_payload()[..],
+                &self.checksum_encoding()[..],
+                &RIGHT_GUARD[..],
+            ][..],
+        )
     }
 }
 
@@ -153,9 +196,9 @@ impl Parse for EAN13 {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean13::*;
-    use std::char;
     use error::Error;
+    use std::char;
+    use sym::ean13::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
