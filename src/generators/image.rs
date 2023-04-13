@@ -259,7 +259,7 @@ mod tests {
             write_file(&generated[..], "ean13.gif");
         }
 
-        assert_eq!(generated.len(), 1775);
+        assert_eq!(generated.len(), 918);
     }
 
     #[test]
@@ -282,7 +282,7 @@ mod tests {
             write_file(&generated[..], "ean13.png");
         }
 
-        assert_eq!(generated.len(), 4282);
+        assert_eq!(generated.len(), 872);
     }
 
     #[test]
@@ -305,7 +305,7 @@ mod tests {
             write_file(&generated[..], "ean13_90.png");
         }
 
-        assert_eq!(generated.len(), 326);
+        assert_eq!(generated.len(), 716);
     }
 
     #[test]
@@ -328,7 +328,7 @@ mod tests {
             write_file(&generated[..], "ean13.jpg");
         }
 
-        assert_eq!(generated.len(), 8285);
+        assert_eq!(generated.len(), 10267);
     }
 
     #[test]
@@ -372,7 +372,7 @@ mod tests {
             write_file(&generated[..], "colored_ean13.gif");
         }
 
-        assert_eq!(generated.len(), 1882);
+        assert_eq!(generated.len(), 1084);
     }
 
     #[test]
@@ -396,7 +396,7 @@ mod tests {
             write_file(&generated[..], "colored_opaque_ean13.png");
         }
 
-        assert_eq!(generated.len(), 1766);
+        assert_eq!(generated.len(), 1027);
     }
 
     #[test]
@@ -419,7 +419,7 @@ mod tests {
             write_file(&generated[..], "code39.png");
         }
 
-        assert_eq!(generated.len(), 2972);
+        assert_eq!(generated.len(), 716);
     }
 
     #[test]
@@ -442,7 +442,7 @@ mod tests {
             write_file(&generated[..], "code39.gif");
         }
 
-        assert_eq!(generated.len(), 1767);
+        assert_eq!(generated.len(), 911);
     }
 
     #[test]
@@ -465,7 +465,7 @@ mod tests {
             write_file(&generated[..], "code39_180.gif");
         }
 
-        assert_eq!(generated.len(), 1831);
+        assert_eq!(generated.len(), 969);
     }
 
     #[test]
@@ -488,7 +488,7 @@ mod tests {
             write_file(&generated[..], "code93.png");
         }
 
-        assert_eq!(generated.len(), 2803);
+        assert_eq!(generated.len(), 681);
     }
 
     #[test]
@@ -511,7 +511,7 @@ mod tests {
             write_file(&generated[..], "code93.gif");
         }
 
-        assert_eq!(generated.len(), 1846);
+        assert_eq!(generated.len(), 982);
     }
 
     #[test]
@@ -534,7 +534,7 @@ mod tests {
             write_file(&generated[..], "code93_180.gif");
         }
 
-        assert_eq!(generated.len(), 1933);
+        assert_eq!(generated.len(), 1061);
     }
 
     #[test]
@@ -557,7 +557,7 @@ mod tests {
             write_file(&generated[..], "code11.png");
         }
 
-        assert_eq!(generated.len(), 1979);
+        assert_eq!(generated.len(), 602);
     }
 
     #[test]
@@ -580,7 +580,7 @@ mod tests {
             write_file(&generated[..], "code11.gif");
         }
 
-        assert_eq!(generated.len(), 1845);
+        assert_eq!(generated.len(), 981);
     }
 
     #[test]
@@ -603,7 +603,7 @@ mod tests {
             write_file(&generated[..], "codabar.png");
         }
 
-        assert_eq!(generated.len(), 2527);
+        assert_eq!(generated.len(), 681);
     }
 
     #[test]
@@ -626,7 +626,7 @@ mod tests {
             write_file(&generated[..], "codabar.gif");
         }
 
-        assert_eq!(generated.len(), 2538);
+        assert_eq!(generated.len(), 1653);
     }
 
     #[test]
@@ -649,7 +649,7 @@ mod tests {
             write_file(&generated[..], "codabar_180.gif");
         }
 
-        assert_eq!(generated.len(), 984);
+        assert_eq!(generated.len(), 174);
     }
 
     #[test]
@@ -672,7 +672,7 @@ mod tests {
             write_file(&generated[..], "code128.png");
         }
 
-        assert_eq!(generated.len(), 2618);
+        assert_eq!(generated.len(), 659);
     }
 
     #[test]
@@ -695,7 +695,7 @@ mod tests {
             write_file(&generated[..], "code128.gif");
         }
 
-        assert_eq!(generated.len(), 3659);
+        assert_eq!(generated.len(), 2741);
     }
 
     #[test]
@@ -718,7 +718,7 @@ mod tests {
             write_file(&generated[..], "code128_180.gif");
         }
 
-        assert_eq!(generated.len(), 3670);
+        assert_eq!(generated.len(), 2752);
     }
 
     #[test]
@@ -761,7 +761,7 @@ mod tests {
             write_file(&generated[..], "ean8.png");
         }
 
-        assert_eq!(generated.len(), 2552);
+        assert_eq!(generated.len(), 692);
     }
 
     #[test]
@@ -784,7 +784,7 @@ mod tests {
             write_file(&generated[..], "ean8_270.png");
         }
 
-        assert_eq!(generated.len(), 360);
+        assert_eq!(generated.len(), 808);
     }
 
     #[test]
@@ -807,7 +807,7 @@ mod tests {
             write_file(&generated[..], "ean8.gif");
         }
 
-        assert_eq!(generated.len(), 1752);
+        assert_eq!(generated.len(), 897);
     }
 
     #[test]
@@ -830,7 +830,7 @@ mod tests {
             write_file(&generated[..], "ean8.jpg");
         }
 
-        assert_eq!(generated.len(), 3139);
+        assert_eq!(generated.len(), 3445);
     }
 
     #[test]
@@ -853,7 +853,7 @@ mod tests {
             write_file(&generated[..], "ean2.png");
         }
 
-        assert_eq!(generated.len(), 1023);
+        assert_eq!(generated.len(), 485);
     }
 
     #[test]
@@ -876,7 +876,7 @@ mod tests {
             write_file(&generated[..], "ean5.gif");
         }
 
-        assert_eq!(generated.len(), 1508);
+        assert_eq!(generated.len(), 655);
     }
 
     #[test]
@@ -899,7 +899,7 @@ mod tests {
             write_file(&generated[..], "ean5.jpg");
         }
 
-        assert_eq!(generated.len(), 8167);
+        assert_eq!(generated.len(), 10490);
     }
 
     #[test]
@@ -942,7 +942,7 @@ mod tests {
             write_file(&generated[..], "ift.png");
         }
 
-        assert_eq!(generated.len(), 3478);
+        assert_eq!(generated.len(), 911);
     }
 
     #[test]
@@ -965,7 +965,7 @@ mod tests {
             write_file(&generated[..], "sft.png");
         }
 
-        assert_eq!(generated.len(), 3748);
+        assert_eq!(generated.len(), 1131);
     }
 
     #[test]
@@ -988,7 +988,7 @@ mod tests {
             write_file(&generated[..], "ift.gif");
         }
 
-        assert_eq!(generated.len(), 2295);
+        assert_eq!(generated.len(), 1410);
     }
 
     #[test]
@@ -1011,7 +1011,7 @@ mod tests {
             write_file(&generated[..], "ift.jpg");
         }
 
-        assert_eq!(generated.len(), 4845);
+        assert_eq!(generated.len(), 6337);
     }
 
     #[test]
