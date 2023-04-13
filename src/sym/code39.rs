@@ -70,11 +70,9 @@ pub struct Code39 {
 
 impl Code39 {
     fn init(data: &str, checksum: bool) -> Result<Code39> {
-        Code39::parse(data).and_then(|d| {
-            Ok(Code39 {
-                data: d.chars().collect(),
-                checksum,
-            })
+        Code39::parse(data).map(|d| Code39 {
+            data: d.chars().collect(),
+            checksum,
         })
     }
 
@@ -96,10 +94,7 @@ impl Code39 {
         let indices = self.data.iter().map(&get_char_pos);
         let index = indices.sum::<usize>() % CHARS.len();
 
-        match CHARS.get(index) {
-            Some(&(c, _)) => Some(c),
-            None => None,
-        }
+        CHARS.get(index).map(|&(c, _)| c)
     }
 
     fn checksum_encoding(&self) -> [u8; 12] {
@@ -112,7 +107,7 @@ impl Code39 {
     fn char_encoding(&self, c: char) -> [u8; 12] {
         match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
-            None => panic!(format!("Unknown char: {}", c)),
+            None => panic!("Unknown char: {}", c),
         }
     }
 

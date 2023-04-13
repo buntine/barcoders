@@ -41,13 +41,13 @@ impl Code11 {
     /// Creates a new barcode.
     /// Returns Result<Code11, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Code11> {
-        Code11::parse(data.as_ref()).and_then(|d| Ok(Code11(d.chars().collect())))
+        Code11::parse(data.as_ref()).map(|d| Code11(d.chars().collect()))
     }
 
     fn char_encoding(&self, c: char) -> &[u8] {
         match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
-            None => panic!(format!("Unknown char: {}", c)),
+            None => panic!("Unknown char: {}", c),
         }
     }
 
@@ -68,10 +68,7 @@ impl Code11 {
         // checksum should use modulo-9. But most generators always use modulo-11.
         // This algorithm currently just uses 11 for both checksums, but can be easily
         // changed at a later date.
-        match CHARS.get(index % CHARS.len()) {
-            Some(&(c, _)) => Some(c),
-            None => None,
-        }
+        CHARS.get(index % CHARS.len()).map(|&(c, _)| c)
     }
 
     /// Calculates the C checksum character using a weighted modulo-11 algorithm.

@@ -102,12 +102,12 @@ impl EAN13 {
     /// Creates a new barcode.
     /// Returns Result<EAN13, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN13> {
-        EAN13::parse(data.as_ref()).and_then(|d| {
+        EAN13::parse(data.as_ref()).map(|d| {
             let digits = d
                 .chars()
                 .map(|c| c.to_digit(10).expect("Unknown character") as u8)
                 .collect();
-            Ok(EAN13(digits))
+            EAN13(digits)
         })
     }
 

@@ -76,13 +76,13 @@ impl Code93 {
     /// Creates a new barcode.
     /// Returns Result<Code93, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Code93> {
-        Code93::parse(data.as_ref()).and_then(|d| Ok(Code93(d.chars().collect())))
+        Code93::parse(data.as_ref()).map(|d| Code93(d.chars().collect()))
     }
 
     fn char_encoding(&self, c: char) -> [u8; 9] {
         match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
-            None => panic!(format!("Unknown char: {}", c)),
+            None => panic!("Unknown char: {}", c),
         }
     }
 
@@ -98,10 +98,7 @@ impl Code93 {
             .enumerate()
             .fold(0, |acc, (i, pos)| acc + (weight(i) * pos));
 
-        match CHARS.get(index % CHARS.len()) {
-            Some(&(c, _)) => Some(c),
-            None => None,
-        }
+        CHARS.get(index % CHARS.len()).map(|&(c, _)| c)
     }
 
     /// Calculates the C checksum character using a weighted modulo-47 algorithm.

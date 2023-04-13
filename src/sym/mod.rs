@@ -43,7 +43,7 @@ trait Parse {
 
         let bad_char = data
             .chars()
-            .find(|&c| valid_chars.iter().find(|&vc| *vc == c).is_none());
+            .find(|&c| !valid_chars.iter().any(|vc| *vc == c));
 
         match bad_char {
             Some(_) => Err(Error::Character),

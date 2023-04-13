@@ -278,7 +278,7 @@ impl Code128 {
             return Err(Error::Length);
         }
 
-        Code128::parse(data.chars().collect()).and_then(|u| Ok(Code128(u)))
+        Code128::parse(data.chars().collect()).map(Code128)
     }
 
     // Tokenizes and collects the data into the appropriate character-sets.
@@ -306,7 +306,7 @@ impl Code128 {
                         char_set = CharacterSet::from_char(ch)?;
                     }
                 }
-                d if d.is_digit(10) && char_set == CharacterSet::C => match carry {
+                d if d.is_ascii_digit() && char_set == CharacterSet::C => match carry {
                     None => carry = Some(d),
                     Some(n) => {
                         let num = format!("{}{}", n, d);
@@ -352,7 +352,7 @@ impl Code128 {
     }
 
     fn payload(&self) -> Vec<u8> {
-        let slices: Vec<Encoding> = self.0.iter().map(|u| self.unit_encoding(&u)).collect();
+        let slices: Vec<Encoding> = self.0.iter().map(|u| self.unit_encoding(u)).collect();
 
         helpers::join_iters(slices.iter())
     }

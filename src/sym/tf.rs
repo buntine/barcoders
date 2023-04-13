@@ -42,7 +42,7 @@ impl TF {
     ///
     /// Returns Result<TF::Interleaved, Error> indicating parse success.
     pub fn interleaved<T: AsRef<str>>(data: T) -> Result<TF> {
-        TF::parse(data.as_ref()).and_then(|d| {
+        TF::parse(data.as_ref()).map(|d| {
             let mut digits: Vec<u8> = d
                 .chars()
                 .map(|c| c.to_digit(10).expect("Unknown character") as u8)
@@ -54,7 +54,7 @@ impl TF {
                 digits.push(check_digit);
             }
 
-            Ok(TF::Interleaved(digits))
+            TF::Interleaved(digits)
         })
     }
 
@@ -62,12 +62,12 @@ impl TF {
     ///
     /// Returns Result<TF::Standard, Error> indicating parse success.
     pub fn standard<T: AsRef<str>>(data: T) -> Result<TF> {
-        TF::parse(data.as_ref()).and_then(|d| {
+        TF::parse(data.as_ref()).map(|d| {
             let digits: Vec<u8> = d
                 .chars()
                 .map(|c| c.to_digit(10).expect("Unknown character") as u8)
                 .collect();
-            Ok(TF::Standard(digits))
+            TF::Standard(digits)
         })
     }
 
