@@ -5,7 +5,7 @@
 //! You will pretty much never need to turn this feature on unless you are adding new functionality
 //! or running the test suite.
 
-use error::Result;
+use crate::error::Result;
 use std::iter::repeat;
 
 /// The ASCII barcode generator type.
@@ -56,16 +56,16 @@ impl ASCII {
 
 #[cfg(test)]
 mod tests {
-    use generators::ascii::*;
-    use sym::codabar::*;
-    use sym::code11::*;
-    use sym::code128::*;
-    use sym::code39::*;
-    use sym::code93::*;
-    use sym::ean13::*;
-    use sym::ean8::*;
-    use sym::ean_supp::*;
-    use sym::tf::*;
+    use crate::generators::ascii::*;
+    use crate::sym::codabar::*;
+    use crate::sym::code11::*;
+    use crate::sym::code128::*;
+    use crate::sym::code39::*;
+    use crate::sym::code93::*;
+    use crate::sym::ean13::*;
+    use crate::sym::ean8::*;
+    use crate::sym::ean_supp::*;
+    use crate::sym::tf::*;
 
     #[test]
     fn ean_13_as_ascii() {

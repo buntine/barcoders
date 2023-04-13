@@ -23,8 +23,13 @@
 
 extern crate image;
 
-use error::{Error, Result};
-use image::{DynamicImage, ImageBuffer, ImageRgba8, Rgba};
+use std::io::{BufReader, BufWriter, Cursor};
+
+use crate::error::{Error, Result};
+use image::{
+    DynamicImage::{self, ImageRgba8},
+    ImageBuffer, ImageOutputFormat, Rgba,
+};
 
 macro_rules! image_variants {
     ( $( #[$attr:meta] $v:ident ),* ) => {
@@ -87,7 +92,7 @@ pub struct Color {
 impl Color {
     /// Constructor.
     pub fn new(rgba: [u8; 4]) -> Color {
-        Color { rgba: rgba }
+        Color { rgba }
     }
 
     /// Constructor for black (#000000).
@@ -154,15 +159,17 @@ impl Image {
     /// an error message.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<Vec<u8>> {
         let format = match *self {
-            Image::GIF { .. } => image::GIF,
-            Image::PNG { .. } => image::PNG,
-            Image::JPEG { .. } => image::JPEG,
+            Image::GIF { .. } => ImageOutputFormat::Gif,
+            Image::PNG { .. } => ImageOutputFormat::Png,
+            // Vamist: Set quality to 100 for now, unsure if this is suitable
+            Image::JPEG { .. } => ImageOutputFormat::Jpeg(100),
             _ => return Err(Error::Generate),
         };
+
         let mut bytes: Vec<u8> = vec![];
         let img = self.place_pixels(&barcode);
 
-        match img.write_to(&mut bytes, format) {
+        match img.write_to(&mut Cursor::new(&mut bytes), format) {
             Ok(_) => Ok(bytes),
             _ => Err(Error::Generate),
         }
@@ -176,7 +183,7 @@ impl Image {
     ) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
 
-        Ok(img.to_rgba())
+        Ok(img.to_rgba8())
     }
 
     fn place_pixels<T: AsRef<[u8]>>(&self, barcode: T) -> DynamicImage {
@@ -214,20 +221,20 @@ impl Image {
 mod tests {
     extern crate image;
 
-    use generators::image::*;
+    use crate::generators::image::*;
+    use crate::sym::codabar::*;
+    use crate::sym::code11::*;
+    use crate::sym::code128::*;
+    use crate::sym::code39::*;
+    use crate::sym::code93::*;
+    use crate::sym::ean13::*;
+    use crate::sym::ean8::*;
+    use crate::sym::ean_supp::*;
+    use crate::sym::tf::*;
     use std::fs::File;
     use std::io::prelude::*;
     use std::io::BufWriter;
     use std::path::Path;
-    use sym::codabar::*;
-    use sym::code11::*;
-    use sym::code128::*;
-    use sym::code39::*;
-    use sym::code93::*;
-    use sym::ean13::*;
-    use sym::ean8::*;
-    use sym::ean_supp::*;
-    use sym::tf::*;
 
     const TEST_DATA_BASE: &str = "./target/debug";
     const WRITE_TO_FILE: bool = true;
