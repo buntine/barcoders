@@ -6,9 +6,9 @@
 //! Code11 is a discrete symbology. This encoder always provides a C checksum. For barcodes longer
 //! than 10 characters, a second checksum digit (K) is appended.
 
-use error::Result;
+use crate::error::Result;
+use crate::sym::{helpers, Parse};
 use std::ops::Range;
-use sym::{helpers, Parse};
 
 // Character -> Binary mappings for each of the allowable characters.
 // The special "full-ASCII" characters are represented with (, ), [, ].
@@ -136,9 +136,9 @@ impl Parse for Code11 {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::code11::*;
     use std::char;
-    use sym::code11::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

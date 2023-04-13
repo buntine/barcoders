@@ -24,7 +24,7 @@ pub mod ean_supp;
 mod helpers;
 pub mod tf;
 
-use error::Error;
+use crate::error::Error;
 use std::iter::Iterator;
 use std::ops::Range;
 

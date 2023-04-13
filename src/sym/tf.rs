@@ -7,11 +7,11 @@
 //!
 //! Most of the time you will want to use the interleaved barcode over the standard option.
 
-use error::Result;
+use crate::error::Result;
+use crate::sym::helpers;
+use crate::sym::Parse;
 use std::char;
 use std::ops::Range;
-use sym::helpers;
-use sym::Parse;
 
 #[rustfmt::skip]
 const WIDTHS: [&str; 10] = [
@@ -160,9 +160,9 @@ impl Parse for TF {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::tf::*;
     use std::char;
-    use sym::tf::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

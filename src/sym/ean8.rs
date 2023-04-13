@@ -3,11 +3,11 @@
 //! EAN-8 barcodes are EAN style barcodes for smaller packages on products like
 //! cigaretts, chewing gum, etc where package space is limited.
 
-use error::Result;
+use crate::error::Result;
+use crate::sym::ean13::{ENCODINGS, LEFT_GUARD, MIDDLE_GUARD, RIGHT_GUARD};
+use crate::sym::{helpers, Parse};
 use std::char;
 use std::ops::Range;
-use sym::ean13::{ENCODINGS, LEFT_GUARD, MIDDLE_GUARD, RIGHT_GUARD};
-use sym::{helpers, Parse};
 
 /// The EAN-8 barcode type.
 #[derive(Debug)]
@@ -112,9 +112,9 @@ impl Parse for EAN8 {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::ean8::*;
     use std::char;
-    use sym::ean8::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

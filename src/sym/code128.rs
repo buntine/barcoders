@@ -52,9 +52,8 @@
 //! - FNC4: ```ż``` (```\u{017C}```)
 //! - SHIFT: ```Ž``` (```\u{017D}```)
 
-use error::*;
-use sym::helpers;
-
+use crate::error::*;
+use crate::sym::helpers;
 use std::cmp;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -373,9 +372,9 @@ impl Code128 {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::code128::*;
     use std::char;
-    use sym::code128::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

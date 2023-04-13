@@ -9,10 +9,10 @@
 //!   * Bookland
 //!   * JAN
 
-use error::Result;
+use crate::error::Result;
+use crate::sym::{helpers, Parse};
 use std::char;
 use std::ops::Range;
-use sym::{helpers, Parse};
 
 /// Encoding mappings for EAN barcodes.
 /// 1 = bar, 0 = no bar.
@@ -196,9 +196,9 @@ impl Parse for EAN13 {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::ean13::*;
     use std::char;
-    use sym::ean13::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

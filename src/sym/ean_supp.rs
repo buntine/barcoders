@@ -6,11 +6,11 @@
 //!
 //! These supplemental barcodes never appear without a full EAN-13 barcode alongside them.
 
-use error::{Error, Result};
+use crate::error::{Error, Result};
+use crate::sym::ean13::ENCODINGS;
+use crate::sym::{helpers, Parse};
 use std::char;
 use std::ops::Range;
-use sym::ean13::ENCODINGS;
-use sym::{helpers, Parse};
 
 const LEFT_GUARD: [u8; 4] = [1, 0, 1, 1];
 
@@ -150,9 +150,9 @@ impl Parse for EANSUPP {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::ean_supp::*;
     use std::char;
-    use sym::ean_supp::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

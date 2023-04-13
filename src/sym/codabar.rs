@@ -7,9 +7,9 @@
 //! Barcodes of this variant should start and end with either A, B, C, or D depending on
 //! the industry.
 
-use error::Result;
+use crate::error::Result;
+use crate::sym::Parse;
 use std::ops::Range;
-use sym::Parse;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Unit {
@@ -137,9 +137,9 @@ impl Parse for Codabar {
 
 #[cfg(test)]
 mod tests {
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::codabar::*;
     use std::char;
-    use sym::codabar::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
