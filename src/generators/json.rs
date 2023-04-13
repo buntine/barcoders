@@ -22,6 +22,12 @@ pub struct JSON {
     pub xdim: usize,
 }
 
+impl Default for JSON {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl JSON {
     /// Returns a new JSON with default values.
     pub fn new() -> JSON {

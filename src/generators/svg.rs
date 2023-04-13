@@ -21,7 +21,7 @@
 use crate::error::Result;
 
 trait ToHex {
-    fn to_hex(&self) -> String;
+    fn to_hex(self) -> String;
 
     fn format_hex(n: u8) -> String {
         format!(
@@ -50,7 +50,7 @@ pub struct Color {
 impl Color {
     /// Constructor.
     pub fn new(rgba: [u8; 4]) -> Color {
-        Color { rgba: rgba }
+        Color { rgba }
     }
 
     /// Constructor for black (#000000).
@@ -63,13 +63,13 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-    fn to_opacity(&self) -> String {
+    fn to_opacity(self) -> String {
         format!("{:.*}", 2, (self.rgba[3] as f64 / 255.0))
     }
 }
 
 impl ToHex for Color {
-    fn to_hex(&self) -> String {
+    fn to_hex(self) -> String {
         self.rgba
             .iter()
             .take(3)
@@ -96,7 +96,7 @@ impl SVG {
     /// Returns a new SVG with default values.
     pub fn new(height: u32) -> SVG {
         SVG {
-            height: height,
+            height,
             xdim: 1,
             foreground: Color {
                 rgba: [0, 0, 0, 255],

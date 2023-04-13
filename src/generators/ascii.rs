@@ -21,6 +21,12 @@ pub struct ASCII {
 /// Maps binary digits to ASCII representation (0=' ', 1='#')
 const CHARS: [char; 2] = [' ', '#'];
 
+impl Default for ASCII {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ASCII {
     /// Returns a new ASCII with default values.
     pub fn new() -> ASCII {
@@ -46,7 +52,7 @@ impl ASCII {
             output.push_str(&row[..]);
 
             if i < self.height - 1 {
-                output.push_str("\n");
+                output.push('\n');
             }
         }
 

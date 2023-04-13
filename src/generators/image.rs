@@ -23,7 +23,7 @@
 
 extern crate image;
 
-use std::io::{BufReader, BufWriter, Cursor};
+use std::io::Cursor;
 
 use crate::error::{Error, Result};
 use image::{
@@ -105,7 +105,7 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-    fn to_rgba(&self) -> Rgba<u8> {
+    fn to_rgba(self) -> Rgba<u8> {
         Rgba(self.rgba)
     }
 }
@@ -178,7 +178,7 @@ impl Image {
     /// Generates the given barcode to an image::ImageBuffer. Returns a `Result<ImageBuffer<Rgba<u8>, Vec<u8>>, Error>`
     /// of the encoded bytes or an error message.
     pub fn generate_buffer<T: AsRef<[u8]>>(
-        &self,
+        self,
         barcode: T,
     ) -> Result<ImageBuffer<Rgba<u8>, Vec<u8>>> {
         let img = self.place_pixels(&barcode);
