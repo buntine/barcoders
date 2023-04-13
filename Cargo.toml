@@ -23,3 +23,6 @@ dev = ["clippy"]
 [dependencies]
 image = {version = "0.24", optional = true}
 clippy = {version = "0.0.302", optional = true}
+
+# Manually update exr as image uses an older ver
+exr="1.6.3"
