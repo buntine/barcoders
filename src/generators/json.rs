@@ -11,15 +11,21 @@
 //! }
 //! ```
 
-use error::Result;
+use crate::error::Result;
 
 /// The JSON  barcode generator type.
 #[derive(Copy, Clone, Debug)]
 pub struct JSON {
     /// The height of the barcode.
     pub height: usize,
-    /// The X dimension. Specifies the width of the "narrow" bars. 
+    /// The X dimension. Specifies the width of the "narrow" bars.
     pub xdim: usize,
+}
+
+impl Default for JSON {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl JSON {
@@ -33,23 +39,22 @@ impl JSON {
 
     /// Generates the given barcode. Returns a `Result<String, Error>` indicating success.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
-        let mut bits = barcode
-            .as_ref()
-            .iter()
-            .fold(String::new(), |acc, &b| {
-                let n = match b {
-                    0 => "0",
-                    _ => "1",
-                };
+        let mut bits = barcode.as_ref().iter().fold(String::new(), |acc, &b| {
+            let n = match b {
+                0 => "0",
+                _ => "1",
+            };
 
-                acc + n + ","
-            });
+            acc + n + ","
+        });
 
         // Kill trailing comma.
         bits.pop();
 
-        let output = format!("{{\"height\":{},\"xdim\":{},\"encoding\":[{}]}}",
-                             self.height, self.xdim, bits);
+        let output = format!(
+            "{{\"height\":{},\"xdim\":{},\"encoding\":[{}]}}",
+            self.height, self.xdim, bits
+        );
 
         Ok(output)
     }
@@ -57,16 +62,16 @@ impl JSON {
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean13::*;
-    use ::sym::ean8::*;
-    use ::sym::ean_supp::*;
-    use ::sym::code39::*;
-    use ::sym::code93::*;
-    use ::sym::code11::*;
-    use ::sym::code128::*;
-    use ::sym::tf::*;
-    use ::sym::codabar::*;
-    use ::generators::json::*;
+    use crate::generators::json::*;
+    use crate::sym::codabar::*;
+    use crate::sym::code11::*;
+    use crate::sym::code128::*;
+    use crate::sym::code39::*;
+    use crate::sym::code93::*;
+    use crate::sym::ean13::*;
+    use crate::sym::ean8::*;
+    use crate::sym::ean_supp::*;
+    use crate::sym::tf::*;
 
     #[test]
     fn ean_13_as_json() {
@@ -80,7 +85,7 @@ mod tests {
     #[test]
     fn ean_13_as_json_small_height_double_width() {
         let ean13 = EAN13::new("750103131130").unwrap();
-        let json = JSON{height: 6, xdim: 2};
+        let json = JSON { height: 6, xdim: 2 };
         let generated = json.generate(&ean13.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":6,\"xdim\":2,\"encoding\":[1,0,1,0,1,1,0,0,0,1,0,1,0,0,1,1,1,0,0,1,1,0,0,1,0,1,0,0,1,1,1,0,1,1,1,1,0,1,0,1,1,0,0,1,1,0,1,0,1,0,1,0,0,0,0,1,0,1,1,0,0,1,1,0,1,1,0,0,1,1,0,1,0,0,0,0,1,0,1,1,1,0,0,1,0,1,1,1,0,1,0,0,1,0,1]}".trim());
@@ -98,7 +103,7 @@ mod tests {
     #[test]
     fn ean_8_as_json_small_height_double_width() {
         let ean8 = EAN8::new("1234567").unwrap();
-        let json = JSON{height: 5, xdim: 2};
+        let json = JSON { height: 5, xdim: 2 };
         let generated = json.generate(&ean8.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":5,\"xdim\":2,\"encoding\":[1,0,1,0,0,1,1,0,0,1,0,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,0,0,0,1,1,0,1,0,1,0,1,0,0,1,1,1,0,1,0,1,0,0,0,0,1,0,0,0,1,0,0,1,1,1,0,0,1,0,1,0,1]}".trim());
@@ -116,7 +121,7 @@ mod tests {
     #[test]
     fn code_93_as_json_small_height_double_weight() {
         let code93 = Code93::new("1234").unwrap();
-        let json = JSON{height: 7, xdim: 2};
+        let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&code93.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":7,\"xdim\":2,\"encoding\":[1,0,1,0,1,1,1,1,0,1,0,1,0,0,1,0,0,0,1,0,1,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,1,0,0,0,1,1,0,1,0,1,0,1,0,0,0,0,1,0,1,0,1,0,1,1,1,1,0,1]}".trim());
@@ -134,7 +139,7 @@ mod tests {
     #[test]
     fn code_39_as_json_small_height_double_weight() {
         let code39 = Code39::new("1234").unwrap();
-        let json = JSON{height: 7, xdim: 2};
+        let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&code39.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":7,\"xdim\":2,\"encoding\":[1,0,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,0,1,0,1,0,1,1,0,1,1,0,1,1,0,0,1,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,1,0,1]}".trim());
@@ -152,7 +157,7 @@ mod tests {
     #[test]
     fn codabar_as_json_small_height_double_weight() {
         let codabar = Codabar::new("A40156B").unwrap();
-        let json = JSON{height: 7, xdim: 2};
+        let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&codabar.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":7,\"xdim\":2,\"encoding\":[1,0,1,1,0,0,1,0,0,1,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,0,1,1]}".trim());
@@ -170,7 +175,7 @@ mod tests {
     #[test]
     fn code_128_as_json_small_height_double_weight() {
         let code128 = Code128::new("ÀHELLO").unwrap();
-        let json = JSON{height: 7, xdim: 2};
+        let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&code128.encode()[..]).unwrap();
 
         assert_eq!(generated, "{\"height\":7,\"xdim\":2,\"encoding\":[1,1,0,1,0,0,0,0,1,0,0,1,1,0,0,0,1,0,1,0,0,0,1,0,0,0,1,1,0,1,0,0,0,1,0,0,0,1,1,0,1,1,1,0,1,0,0,0,1,1,0,1,1,1,0,1,0,0,0,1,1,1,0,1,1,0,1,1,0,1,0,0,0,1,0,0,0,1,1,0,0,0,1,1,1,0,1,0,1,1]}".trim());
@@ -182,7 +187,11 @@ mod tests {
         let json = JSON::new();
         let generated = json.generate(&ean2.encode()[..]).unwrap();
 
-        assert_eq!(generated, "{\"height\":10,\"xdim\":1,\"encoding\":[1,0,1,1,0,1,0,0,0,0,1,0,1,0,1,0,0,0,1,1]}".trim());
+        assert_eq!(
+            generated,
+            "{\"height\":10,\"xdim\":1,\"encoding\":[1,0,1,1,0,1,0,0,0,0,1,0,1,0,1,0,0,0,1,1]}"
+                .trim()
+        );
     }
 
     #[test]

@@ -6,21 +6,28 @@
 //! Code11 is a discrete symbology. This encoder always provides a C checksum. For barcodes longer
 //! than 10 characters, a second checksum digit (K) is appended.
 
-use sym::{Parse, helpers};
-use error::Result;
+use crate::error::Result;
+use crate::sym::{helpers, Parse};
 use std::ops::Range;
 
 // Character -> Binary mappings for each of the allowable characters.
 // The special "full-ASCII" characters are represented with (, ), [, ].
 const CHARS: [(char, &[u8]); 11] = [
-    ('0', &[1,0,1,0,1,1]), ('1', &[1,1,0,1,0,1,1]), ('2', &[1,0,0,1,0,1,1]),
-    ('3', &[1,1,0,0,1,0,1]), ('4', &[1,0,1,1,0,1,1]), ('5', &[1,1,0,1,1,0,1]),
-    ('6', &[1,0,0,1,1,0,1]), ('7', &[1,0,1,0,0,1,1]), ('8', &[1,1,0,1,0,0,1]),
-    ('9', &[1,1,0,1,0,1]), ('-', &[1,0,1,1,0,1]),
+    ('0', &[1, 0, 1, 0, 1, 1]),
+    ('1', &[1, 1, 0, 1, 0, 1, 1]),
+    ('2', &[1, 0, 0, 1, 0, 1, 1]),
+    ('3', &[1, 1, 0, 0, 1, 0, 1]),
+    ('4', &[1, 0, 1, 1, 0, 1, 1]),
+    ('5', &[1, 1, 0, 1, 1, 0, 1]),
+    ('6', &[1, 0, 0, 1, 1, 0, 1]),
+    ('7', &[1, 0, 1, 0, 0, 1, 1]),
+    ('8', &[1, 1, 0, 1, 0, 0, 1]),
+    ('9', &[1, 1, 0, 1, 0, 1]),
+    ('-', &[1, 0, 1, 1, 0, 1]),
 ];
 
 // Code11 barcodes must start and end with a special character.
-const GUARD: [u8; 7] = [1,0,1,1,0,0,1];
+const GUARD: [u8; 7] = [1, 0, 1, 1, 0, 0, 1];
 const SEPARATOR: [u8; 1] = [0];
 
 /// The Code11 barcode type.
@@ -34,43 +41,35 @@ impl Code11 {
     /// Creates a new barcode.
     /// Returns Result<Code11, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<Code11> {
-        Code11::parse(data.as_ref()).and_then(|d| {
-            Ok(Code11(d.chars()
-                       .collect()))
-        })
+        Code11::parse(data.as_ref()).map(|d| Code11(d.chars().collect()))
     }
 
     fn char_encoding(&self, c: char) -> &[u8] {
         match CHARS.iter().find(|&ch| ch.0 == c) {
             Some(&(_, enc)) => enc,
-            None => panic!(format!("Unknown char: {}", c)),
+            None => panic!("Unknown char: {}", c),
         }
     }
 
     /// Calculates a checksum character using a weighted modulo-11 algorithm.
     fn checksum_char(&self, data: &[char], weight_threshold: usize) -> Option<char> {
         let get_char_pos = |&c| CHARS.iter().position(|t| t.0 == c).unwrap();
-        let weight = |i| {
-            match i % weight_threshold {
-                0 => weight_threshold,
-                n => n,
-            }
+        let weight = |i| match i % weight_threshold {
+            0 => weight_threshold,
+            n => n,
         };
         let positions = data.iter().map(&get_char_pos);
-        let index = positions.rev()
-                             .enumerate()
-                             .fold(0, |acc, (i, pos)| acc + (weight(i + 1) * pos));
+        let index = positions
+            .rev()
+            .enumerate()
+            .fold(0, |acc, (i, pos)| acc + (weight(i + 1) * pos));
 
         // Some sources suggest that the C checksum should use modulo-11, whilst the K
         // checksum should use modulo-9. But most generators always use modulo-11.
-        // This algorithm currently just uses 11 for both checksums, but can be easily 
+        // This algorithm currently just uses 11 for both checksums, but can be easily
         // changed at a later date.
-        match CHARS.get(index % CHARS.len()) {
-            Some(&(c, _)) => Some(c),
-            None => None,
-        }
+        CHARS.get(index % CHARS.len()).map(|&(c, _)| c)
     }
-
 
     /// Calculates the C checksum character using a weighted modulo-11 algorithm.
     fn c_checksum_char(&self) -> Option<char> {
@@ -102,7 +101,9 @@ impl Code11 {
 
         // K-checksum is only appended on barcodes greater than 10 characters.
         if self.0.len() > 10 {
-            let k_checksum = self.k_checksum_char(c_checksum).expect("Cannot compute checksum K");
+            let k_checksum = self
+                .k_checksum_char(c_checksum)
+                .expect("Cannot compute checksum K");
 
             self.push_encoding(&mut enc, self.char_encoding(k_checksum));
         }
@@ -115,9 +116,7 @@ impl Code11 {
     pub fn encode(&self) -> Vec<u8> {
         let guard = &GUARD[..];
 
-        helpers::join_slices(&[guard, &SEPARATOR,
-                             &self.payload()[..],
-                             guard][..])
+        helpers::join_slices(&[guard, &SEPARATOR, &self.payload()[..], guard][..])
     }
 }
 
@@ -137,8 +136,8 @@ impl Parse for Code11 {
 
 #[cfg(test)]
 mod tests {
-    use sym::code11::*;
-    use error::Error;
+    use crate::error::Error;
+    use crate::sym::code11::*;
     use std::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
@@ -166,9 +165,18 @@ mod tests {
         let code112 = Code11::new("666").unwrap();
         let code113 = Code11::new("12-9").unwrap();
 
-        assert_eq!(collapse_vec(code111.encode()), "1011001011010110100101101100101010110101011011011011010110110101011001");
-        assert_eq!(collapse_vec(code112.encode()), "10110010100110101001101010011010110010101011001");
-        assert_eq!(collapse_vec(code113.encode()), "10110010110101101001011010110101101010100110101011001");
+        assert_eq!(
+            collapse_vec(code111.encode()),
+            "1011001011010110100101101100101010110101011011011011010110110101011001"
+        );
+        assert_eq!(
+            collapse_vec(code112.encode()),
+            "10110010100110101001101010011010110010101011001"
+        );
+        assert_eq!(
+            collapse_vec(code113.encode()),
+            "10110010110101101001011010110101101010100110101011001"
+        );
     }
 
     #[test]

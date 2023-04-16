@@ -18,15 +18,17 @@
 //! let svg = SVG::new(100);
 //! ```
 
-use error::Result;
+use crate::error::Result;
 
 trait ToHex {
-    fn to_hex(&self) -> String;
+    fn to_hex(self) -> String;
 
     fn format_hex(n: u8) -> String {
-        format!("{}{}",
-                Self::to_hex_digit(n / 16),
-                Self::to_hex_digit(n % 16))
+        format!(
+            "{}{}",
+            Self::to_hex_digit(n / 16),
+            Self::to_hex_digit(n % 16)
+        )
     }
 
     fn to_hex_digit(n: u8) -> char {
@@ -48,7 +50,7 @@ pub struct Color {
 impl Color {
     /// Constructor.
     pub fn new(rgba: [u8; 4]) -> Color {
-        Color{rgba: rgba}
+        Color { rgba }
     }
 
     /// Constructor for black (#000000).
@@ -61,13 +63,13 @@ impl Color {
         Color::new([255, 255, 255, 255])
     }
 
-    fn to_opacity(&self) -> String {
+    fn to_opacity(self) -> String {
         format!("{:.*}", 2, (self.rgba[3] as f64 / 255.0))
     }
 }
 
 impl ToHex for Color {
-   fn to_hex(&self) -> String {
+    fn to_hex(self) -> String {
         self.rgba
             .iter()
             .take(3)
@@ -81,7 +83,7 @@ impl ToHex for Color {
 pub struct SVG {
     /// The height of the barcode (```self.height``` pixels high for SVG).
     pub height: u32,
-    /// The X dimension. Specifies the width of the "narrow" bars. 
+    /// The X dimension. Specifies the width of the "narrow" bars.
     /// For SVG, each will be ```self.xdim``` pixels wide.
     pub xdim: u32,
     /// The RGBA color for the foreground.
@@ -94,10 +96,14 @@ impl SVG {
     /// Returns a new SVG with default values.
     pub fn new(height: u32) -> SVG {
         SVG {
-            height: height,
+            height,
             xdim: 1,
-            foreground: Color{rgba: [0, 0, 0, 255]},
-            background: Color{rgba: [255, 255, 255, 255]},
+            foreground: Color {
+                rgba: [0, 0, 0, 255],
+            },
+            background: Color {
+                rgba: [255, 255, 255, 255],
+            },
         }
     }
 
@@ -112,8 +118,14 @@ impl SVG {
             o => format!(" fill-opacity=\"{}\" ", o),
         };
 
-        format!("<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"#{}\"{}/>",
-                offset, width, self.height, fill.to_hex(), opacity)
+        format!(
+            "<rect x=\"{}\" y=\"0\" width=\"{}\" height=\"{}\" fill=\"#{}\"{}/>",
+            offset,
+            width,
+            self.height,
+            fill.to_hex(),
+            opacity
+        )
     }
 
     /// Generates the given barcode. Returns a `Result<String, Error>` of the SVG data or an
@@ -121,32 +133,38 @@ impl SVG {
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<String> {
         let barcode = barcode.as_ref();
         let width = (barcode.len() as u32) * self.xdim;
-        let rects: String = barcode.iter()
+        let rects: String = barcode
+            .iter()
             .enumerate()
             .filter(|&(_, &n)| n == 1)
             .map(|(i, &n)| self.rect(n, i as u32 * self.xdim, self.xdim))
             .collect();
 
-        Ok(format!("<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">{s}{r}</svg>",
-                   w=width, h=self.height, s=self.rect(0, 0, width), r=rects))
+        Ok(format!(
+            "<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">{s}{r}</svg>",
+            w = width,
+            h = self.height,
+            s = self.rect(0, 0, width),
+            r = rects
+        ))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use ::sym::ean13::*;
-    use ::sym::ean8::*;
-    use ::sym::code39::*;
-    use ::sym::code93::*;
-    use ::sym::code11::*;
-    use ::sym::code128::*;
-    use ::sym::ean_supp::*;
-    use ::sym::tf::*;
-    use ::sym::codabar::*;
-    use ::generators::svg::*;
+    use crate::generators::svg::*;
+    use crate::sym::codabar::*;
+    use crate::sym::code11::*;
+    use crate::sym::code128::*;
+    use crate::sym::code39::*;
+    use crate::sym::code93::*;
+    use crate::sym::ean13::*;
+    use crate::sym::ean8::*;
+    use crate::sym::ean_supp::*;
+    use crate::sym::tf::*;
+    use std::fs::File;
     use std::io::prelude::*;
     use std::io::BufWriter;
-    use std::fs::File;
     use std::path::Path;
 
     const TEST_DATA_BASE: &str = "./target/debug";
@@ -168,7 +186,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13.svg");
+        }
 
         assert_eq!(generated.len(), 2890);
     }
@@ -176,13 +196,21 @@ mod tests {
     #[test]
     fn colored_ean_13_as_svg() {
         let ean13 = EAN13::new("750103131130").unwrap();
-        let svg = SVG{height: 80,
-                      xdim: 1,
-                      background: Color{rgba: [255, 0, 0, 255]},
-                      foreground: Color{rgba: [0, 0, 255, 255]}};
+        let svg = SVG {
+            height: 80,
+            xdim: 1,
+            background: Color {
+                rgba: [255, 0, 0, 255],
+            },
+            foreground: Color {
+                rgba: [0, 0, 255, 255],
+            },
+        };
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13_colored.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13_colored.svg");
+        }
 
         assert_eq!(generated.len(), 2890);
     }
@@ -190,17 +218,24 @@ mod tests {
     #[test]
     fn colored_semi_transparent_ean_13_as_svg() {
         let ean13 = EAN13::new("750103131130").unwrap();
-        let svg = SVG{height: 70,
-                      xdim: 1,
-                      background: Color{rgba: [255, 0, 0, 128]},
-                      foreground: Color{rgba: [0, 0, 255, 128]}};
+        let svg = SVG {
+            height: 70,
+            xdim: 1,
+            background: Color {
+                rgba: [255, 0, 0, 128],
+            },
+            foreground: Color {
+                rgba: [0, 0, 255, 128],
+            },
+        };
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean13_colored_semi_transparent.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean13_colored_semi_transparent.svg");
+        }
 
         assert_eq!(generated.len(), 3940);
     }
-
 
     #[test]
     fn ean_8_as_svg() {
@@ -208,7 +243,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&ean8.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean8.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean8.svg");
+        }
 
         assert_eq!(generated.len(), 1921);
     }
@@ -219,7 +256,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&code39.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code39.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code39.svg");
+        }
 
         assert_eq!(generated.len(), 6539);
     }
@@ -230,7 +269,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&code93.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code93.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code93.svg");
+        }
 
         assert_eq!(generated.len(), 4458);
     }
@@ -241,7 +282,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&codabar.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "codabar.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "codabar.svg");
+        }
 
         assert_eq!(generated.len(), 2950);
     }
@@ -252,7 +295,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&code128.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code128.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code128.svg");
+        }
 
         assert_eq!(generated.len(), 2723);
     }
@@ -263,7 +308,9 @@ mod tests {
         let svg = SVG::new(80);
         let generated = svg.generate(&ean2.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "ean2.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "ean2.svg");
+        }
 
         assert_eq!(generated.len(), 725);
     }
@@ -271,13 +318,17 @@ mod tests {
     #[test]
     fn itf_as_svg() {
         let itf = TF::interleaved("1234123488993344556677118").unwrap();
-        let svg = SVG{height: 80,
-                      xdim: 1,
-                      background: Color::black(),
-                      foreground: Color::white()};
+        let svg = SVG {
+            height: 80,
+            xdim: 1,
+            background: Color::black(),
+            foreground: Color::white(),
+        };
         let generated = svg.generate(&itf.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "itf.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "itf.svg");
+        }
 
         assert_eq!(generated.len(), 7123);
     }
@@ -285,15 +336,18 @@ mod tests {
     #[test]
     fn code11_as_svg() {
         let code11 = Code11::new("9988-45643201").unwrap();
-        let svg = SVG{height: 80,
-                      xdim: 1,
-                      background: Color::black(),
-                      foreground: Color::white()};
+        let svg = SVG {
+            height: 80,
+            xdim: 1,
+            background: Color::black(),
+            foreground: Color::white(),
+        };
         let generated = svg.generate(&code11.encode()[..]).unwrap();
 
-        if WRITE_TO_FILE { write_file(&generated[..], "code11.svg"); }
+        if WRITE_TO_FILE {
+            write_file(&generated[..], "code11.svg");
+        }
 
         assert_eq!(generated.len(), 4219);
     }
-
 }
