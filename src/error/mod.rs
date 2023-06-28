@@ -12,6 +12,8 @@ pub enum Error {
     Length,
     /// An error during barcode generation.
     Generate,
+    /// Invalid checksum.
+    Checksum,
 }
 
 /// Alias-type for Result<T, barcoders::error::Error>.
@@ -23,6 +25,7 @@ impl fmt::Display for Error {
             Error::Character => write!(f, "Barcode data is invalid"),
             Error::Length => write!(f, "Barcode data length is invalid"),
             Error::Generate => write!(f, "Could not generate barcode data"),
+            Error::Checksum => write!(f, "Invalid checksum"),
         }
     }
 }
