@@ -9,7 +9,7 @@
 //!   * Bookland
 //!   * JAN
 
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::sym::{helpers, Parse};
 use std::char;
 use std::ops::Range;
@@ -102,13 +102,20 @@ impl EAN13 {
     /// Creates a new barcode.
     /// Returns Result<EAN13, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN13> {
-        EAN13::parse(data.as_ref()).map(|d| {
-            let digits = d
-                .chars()
-                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                .collect();
-            EAN13(digits)
-        })
+        let d = EAN13::parse(data.as_ref())?;
+        let digits: Vec<u8> = d
+            .chars()
+            .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+            .collect();
+
+        let ean13 = EAN13(digits[0..12].to_vec());
+
+        // If checksum digit is provided, check the checksum.
+        if digits.len() == 13 && ean13.checksum_digit() != digits[12] {
+            return Err(Error::Checksum);
+        }
+
+        return Ok(ean13);
     }
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
@@ -231,6 +238,13 @@ mod tests {
         let ean13 = EAN13::new("1111112222222333333");
 
         assert_eq!(ean13.err().unwrap(), Error::Length)
+    }
+
+    #[test]
+    fn invalid_checksum_ean13() {
+        let ean13 = EAN13::new("8801051294881");
+
+        assert_eq!(ean13.err().unwrap(), Error::Checksum)
     }
 
     #[test]
