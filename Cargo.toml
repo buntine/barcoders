@@ -1,6 +1,6 @@
 [package]
 name = "barcoders"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 authors = ["Andrew Buntine <info@bunts.io>"]
 description = "A barcode-encoding library"
@@ -16,9 +16,13 @@ exclude = [
 ]
 
 [features]
+default = ["ascii", "json", "svg", "std"]
 ascii = []
 json = []
 svg = []
+image = ["dep:image"]
+std = []
 
-[dependencies]
-image = {version = "0.24", optional = true}
+[dependencies.image]
+version = "0.25"
+optional = true

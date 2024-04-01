@@ -23,10 +23,12 @@ pub mod ean8;
 pub mod ean_supp;
 mod helpers;
 pub mod tf;
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
 
 use crate::error::Error;
-use std::iter::Iterator;
-use std::ops::Range;
+use core::iter::Iterator;
+use core::ops::Range;
 
 trait Parse {
     fn valid_chars() -> Vec<char>;

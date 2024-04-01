@@ -3,11 +3,12 @@
 //! EAN-8 barcodes are EAN style barcodes for smaller packages on products like
 //! cigaretts, chewing gum, etc where package space is limited.
 
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::sym::ean13::{ENCODINGS, LEFT_GUARD, MIDDLE_GUARD, RIGHT_GUARD};
 use crate::sym::{helpers, Parse};
-use std::char;
-use std::ops::Range;
+use core::char;
+use core::ops::Range;
+use helpers::{vec, Vec};
 
 /// The EAN-8 barcode type.
 #[derive(Debug)]
@@ -15,15 +16,22 @@ pub struct EAN8(Vec<u8>);
 
 impl EAN8 {
     /// Creates a new barcode.
-    /// Returns Result<EAN8, String> indicating parse success.
+    /// Returns Result<EAN8, Error> indicating parse success.
     pub fn new<T: AsRef<str>>(data: T) -> Result<EAN8> {
-        EAN8::parse(data.as_ref()).map(|d| {
-            let digits = d
-                .chars()
-                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                .collect();
-            EAN8(digits)
-        })
+        let d = EAN8::parse(data.as_ref())?;
+        let digits: Vec<u8> = d
+            .chars()
+            .map(|c| c.to_digit(10).expect("Unknown character") as u8)
+            .collect();
+
+        let ean8 = EAN8(digits[0..7].to_vec());
+
+        // If checksum digit is provided, check the checksum.
+        if digits.len() == 8 && ean8.checksum_digit() != digits[7] {
+            return Err(Error::Checksum);
+        }
+
+        Ok(ean8)
     }
 
     /// Calculates the checksum digit using a weighting algorithm.
@@ -114,7 +122,9 @@ impl Parse for EAN8 {
 mod tests {
     use crate::error::Error;
     use crate::sym::ean8::*;
-    use std::char;
+    #[cfg(not(feature = "std"))]
+    use alloc::string::String;
+    use core::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -140,6 +150,13 @@ mod tests {
         let ean8 = EAN8::new("1111112222222333333");
 
         assert_eq!(ean8.err().unwrap(), Error::Length);
+    }
+
+    #[test]
+    fn invalid_checksum_ean8() {
+        let ean8 = EAN8::new("88023020");
+
+        assert_eq!(ean8.err().unwrap(), Error::Checksum)
     }
 
     #[test]

@@ -8,9 +8,10 @@
 //! NOTE: This encoder currently only supports the basic Code93 implementation and not full-ASCII
 //! mode.
 
+use super::helpers::{vec, Vec};
 use crate::error::Result;
 use crate::sym::{helpers, Parse};
-use std::ops::Range;
+use core::ops::Range;
 
 // Character -> Binary mappings for each of the 47 allowable character.
 // The special "full-ASCII" characters are represented with (, ), [, ].
@@ -164,7 +165,9 @@ impl Parse for Code93 {
 mod tests {
     use crate::error::Error;
     use crate::sym::code93::*;
-    use std::char;
+    #[cfg(not(feature = "std"))]
+    use alloc::string::String;
+    use core::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

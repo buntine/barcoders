@@ -21,8 +21,6 @@
 //!
 //! See the README for more examples.
 
-extern crate image;
-
 use std::io::Cursor;
 
 use crate::error::{Error, Result};

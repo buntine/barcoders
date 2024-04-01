@@ -54,7 +54,10 @@
 
 use crate::error::*;
 use crate::sym::helpers;
-use std::cmp;
+#[cfg(not(feature = "std"))]
+use alloc::{format, string::ToString};
+use core::cmp;
+use helpers::{vec, Vec};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Unit {
@@ -374,7 +377,9 @@ impl Code128 {
 mod tests {
     use crate::error::Error;
     use crate::sym::code128::*;
-    use std::char;
+    #[cfg(not(feature = "std"))]
+    use alloc::string::String;
+    use core::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

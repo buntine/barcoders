@@ -9,6 +9,12 @@
 //! [dependencies]
 //! barcoders = {version = "*", features = ["image"]}
 //! ```
+//!
+//! Features:
+//! - `ascii`: Generate ASCII-art barcodes.
+//! - `json`: Generate JSON barcodes.
+//! - `image`: Generate image-based barcodes.
+//! - `svg`: Generate SVG barcodes.
 
 #[cfg(feature = "ascii")]
 pub mod ascii;
@@ -16,7 +22,7 @@ pub mod ascii;
 #[cfg(feature = "json")]
 pub mod json;
 
-#[cfg(feature = "image")]
+#[cfg(all(feature = "image", feature = "std"))]
 pub mod image;
 
 #[cfg(feature = "svg")]

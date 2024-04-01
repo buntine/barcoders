@@ -53,12 +53,10 @@
     unused_import_braces,
     unused_qualifications
 )]
-#![cfg_attr(feature = "dev", allow(unstable_features))]
-#![cfg_attr(feature = "dev", feature(plugin))]
-#![cfg_attr(feature = "dev", plugin(clippy))]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(feature = "image")]
-extern crate image;
+#[cfg(not(feature = "std"))]
+extern crate alloc;
 
 pub mod error;
 pub mod generators;
