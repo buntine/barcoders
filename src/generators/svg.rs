@@ -12,10 +12,15 @@
 //! let svg = SVG{height: 80,
 //!               xdim: 1,
 //!               background: Color{rgba: [255, 0, 0, 255]},
-//!               foreground: Color::black()};
+//!               foreground: Color::black(),
+//!               xmlns: Some(String::from("http://www.w3.org/2000/svg"))};
 //!
 //! // Or use the constructor for defaults (you must specify the height).
-//! let svg = SVG::new(100);
+//! let svg = SVG::new(100)
+//!               .xdim(2)
+//!               .background(Color::white())
+//!               .foreground(Color::black())
+//!               .xmlns(String::from("http://www.w3.org/2000/svg"));
 //! ```
 
 use crate::error::Result;
@@ -79,7 +84,7 @@ impl ToHex for Color {
 }
 
 /// The SVG barcode generator type.
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct SVG {
     /// The height of the barcode (```self.height``` pixels high for SVG).
     pub height: u32,
@@ -90,6 +95,8 @@ pub struct SVG {
     pub foreground: Color,
     /// The RGBA color for the foreground.
     pub background: Color,
+    /// The XML namespace
+    pub xmlns: Option<String> 
 }
 
 impl SVG {
@@ -104,7 +111,32 @@ impl SVG {
             background: Color {
                 rgba: [255, 255, 255, 255],
             },
+            xmlns: None 
         }
+    }
+
+    /// Set the xml namespace (xmlns) of the SVG
+    pub fn xmlns(mut self, xmlns_uri: String) -> Self {
+        self.xmlns = Some(xmlns_uri);
+        self
+    }
+
+    /// Set the x dimensional bar width
+    pub fn xdim(mut self, xdim: u32) -> Self {
+        self.xdim = xdim;
+        self
+    }
+
+    /// Set the foreground (bar) color
+    pub fn foreground(mut self, color: Color) -> Self {
+        self.foreground = color;
+        self
+    }
+
+    /// Set the background color
+    pub fn background(mut self, color: Color) -> Self {
+        self.background= color;
+        self
     }
 
     fn rect(&self, style: u8, offset: u32, width: u32) -> String {
@@ -140,8 +172,14 @@ impl SVG {
             .map(|(i, &n)| self.rect(n, i as u32 * self.xdim, self.xdim))
             .collect();
 
+        let xmlns = match &self.xmlns {
+            Some(xmlns) => format!("xmlns=\"{xmlns}\" "),
+            None => "".to_string() 
+        };
+
         Ok(format!(
-            "<svg version=\"1.1\" viewBox=\"0 0 {w} {h}\">{s}{r}</svg>",
+            "<svg version=\"1.1\" {x}viewBox=\"0 0 {w} {h}\">{s}{r}</svg>",
+            x = xmlns,
             w = width,
             h = self.height,
             s = self.rect(0, 0, width),
@@ -205,6 +243,7 @@ mod tests {
             foreground: Color {
                 rgba: [0, 0, 255, 255],
             },
+            xmlns: None
         };
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
@@ -227,6 +266,7 @@ mod tests {
             foreground: Color {
                 rgba: [0, 0, 255, 128],
             },
+            xmlns: None
         };
         let generated = svg.generate(&ean13.encode()[..]).unwrap();
 
@@ -240,79 +280,79 @@ mod tests {
     #[test]
     fn ean_8_as_svg() {
         let ean8 = EAN8::new("9998823").unwrap();
-        let svg = SVG::new(80);
+        let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&ean8.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
             write_file(&generated[..], "ean8.svg");
         }
 
-        assert_eq!(generated.len(), 1921);
+        assert_eq!(generated.len(), 1956);
     }
 
     #[test]
     fn code39_as_svg() {
         let code39 = Code39::new("IGOT99PROBLEMS").unwrap();
-        let svg = SVG::new(80);
+        let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&code39.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
             write_file(&generated[..], "code39.svg");
         }
 
-        assert_eq!(generated.len(), 6539);
+        assert_eq!(generated.len(), 6574);
     }
 
     #[test]
     fn code93_as_svg() {
         let code93 = Code93::new("IGOT99PROBLEMS").unwrap();
-        let svg = SVG::new(80);
+        let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&code93.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
             write_file(&generated[..], "code93.svg");
         }
 
-        assert_eq!(generated.len(), 4458);
+        assert_eq!(generated.len(), 4493);
     }
 
     #[test]
     fn codabar_as_svg() {
         let codabar = Codabar::new("A12----34A").unwrap();
-        let svg = SVG::new(80);
+        let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&codabar.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
             write_file(&generated[..], "codabar.svg");
         }
 
-        assert_eq!(generated.len(), 2950);
+        assert_eq!(generated.len(), 2985);
     }
 
     #[test]
     fn code128_as_svg() {
         let code128 = Code128::new("ÀHIĆ345678").unwrap();
-        let svg = SVG::new(80);
+        let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&code128.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
             write_file(&generated[..], "code128.svg");
         }
 
-        assert_eq!(generated.len(), 2723);
+        assert_eq!(generated.len(), 2758);
     }
 
     #[test]
     fn ean_2_as_svg() {
         let ean2 = EANSUPP::new("78").unwrap();
-        let svg = SVG::new(80);
+        let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&ean2.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
             write_file(&generated[..], "ean2.svg");
         }
 
-        assert_eq!(generated.len(), 725);
+        assert_eq!(generated.len(), 760);
     }
 
     #[test]
@@ -323,6 +363,7 @@ mod tests {
             xdim: 1,
             background: Color::black(),
             foreground: Color::white(),
+            xmlns: None
         };
         let generated = svg.generate(&itf.encode()[..]).unwrap();
 
@@ -341,6 +382,7 @@ mod tests {
             xdim: 1,
             background: Color::black(),
             foreground: Color::white(),
+            xmlns: None
         };
         let generated = svg.generate(&code11.encode()[..]).unwrap();
 
