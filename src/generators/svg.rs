@@ -19,6 +19,11 @@
 //! ```
 
 use crate::error::Result;
+#[cfg(not(feature = "std"))]
+use alloc::{
+    format,
+    string::{String, ToString},
+};
 
 trait ToHex {
     fn to_hex(self) -> String;
@@ -162,20 +167,29 @@ mod tests {
     use crate::sym::ean8::*;
     use crate::sym::ean_supp::*;
     use crate::sym::tf::*;
+    #[cfg(feature = "std")]
     use std::fs::File;
+    #[cfg(feature = "std")]
     use std::io::prelude::*;
+    #[cfg(feature = "std")]
     use std::io::BufWriter;
+    #[cfg(feature = "std")]
     use std::path::Path;
 
     const TEST_DATA_BASE: &str = "./target/debug";
     const WRITE_TO_FILE: bool = true;
 
+    #[cfg(feature = "std")]
     fn write_file(data: &str, file: &'static str) {
         let path = open_file(file);
         let mut writer = BufWriter::new(path);
         writer.write(data.as_bytes()).unwrap();
     }
 
+    #[cfg(not(feature = "std"))]
+    fn write_file(_data: &str, _file: &'static str) {}
+
+    #[cfg(feature = "std")]
     fn open_file(name: &'static str) -> File {
         File::create(&Path::new(&format!("{}/{}", TEST_DATA_BASE, name)[..])).unwrap()
     }

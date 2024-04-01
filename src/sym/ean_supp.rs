@@ -9,8 +9,9 @@
 use crate::error::{Error, Result};
 use crate::sym::ean13::ENCODINGS;
 use crate::sym::{helpers, Parse};
-use std::char;
-use std::ops::Range;
+use core::char;
+use core::ops::Range;
+use helpers::{vec, Vec};
 
 const LEFT_GUARD: [u8; 4] = [1, 0, 1, 1];
 
@@ -152,7 +153,9 @@ impl Parse for EANSUPP {
 mod tests {
     use crate::error::Error;
     use crate::sym::ean_supp::*;
-    use std::char;
+    #[cfg(not(feature = "std"))]
+    use alloc::string::String;
+    use core::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

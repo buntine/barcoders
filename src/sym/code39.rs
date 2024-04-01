@@ -8,7 +8,8 @@
 
 use crate::error::Result;
 use crate::sym::{helpers, Parse};
-use std::ops::Range;
+use core::ops::Range;
+use helpers::{vec, Vec};
 
 // Character -> Binary mappings for each of the 43 allowable character.
 const CHARS: [(char, [u8; 12]); 43] = [
@@ -156,7 +157,9 @@ impl Parse for Code39 {
 mod tests {
     use crate::error::Error;
     use crate::sym::code39::*;
-    use std::char;
+    #[cfg(not(feature = "std"))]
+    use alloc::string::String;
+    use core::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());

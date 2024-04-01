@@ -1,3 +1,12 @@
+#[cfg(not(feature = "std"))]
+pub(crate) use alloc::vec;
+#[cfg(not(feature = "std"))]
+pub(crate) use alloc::vec::Vec;
+#[cfg(feature = "std")]
+pub(crate) use std::vec;
+#[cfg(feature = "std")]
+pub(crate) use std::vec::Vec;
+
 /// Joins and flattens the given slice of &[u8] slices into a Vec<u8>.
 /// TODO: Work out how to use join_iters with slices and then remove this function.
 pub fn join_slices(slices: &[&[u8]]) -> Vec<u8> {

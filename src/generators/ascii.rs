@@ -6,7 +6,9 @@
 //! or running the test suite.
 
 use crate::error::Result;
-use std::iter::repeat;
+#[cfg(not(feature = "std"))]
+use alloc::string::String;
+use core::iter::repeat;
 
 /// The ASCII barcode generator type.
 #[derive(Copy, Clone, Debug)]

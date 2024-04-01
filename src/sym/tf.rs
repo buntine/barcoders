@@ -10,8 +10,9 @@
 use crate::error::Result;
 use crate::sym::helpers;
 use crate::sym::Parse;
-use std::char;
-use std::ops::Range;
+use core::char;
+use core::ops::Range;
+use helpers::{vec, Vec};
 
 #[rustfmt::skip]
 const WIDTHS: [&str; 10] = [
@@ -162,7 +163,9 @@ impl Parse for TF {
 mod tests {
     use crate::error::Error;
     use crate::sym::tf::*;
-    use std::char;
+    #[cfg(not(feature = "std"))]
+    pub(crate) use alloc::string::{String, ToString};
+    use core::char;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -171,54 +174,54 @@ mod tests {
 
     #[test]
     fn new_itf() {
-        let itf = TF::interleaved("12345679".to_owned());
+        let itf = TF::interleaved("12345679".to_string());
 
         assert!(itf.is_ok());
     }
 
     #[test]
     fn new_stf() {
-        let stf = TF::standard("12345".to_owned());
+        let stf = TF::standard("12345".to_string());
 
         assert!(stf.is_ok());
     }
 
     #[test]
     fn invalid_data_itf() {
-        let itf = TF::interleaved("1234er123412".to_owned());
+        let itf = TF::interleaved("1234er123412".to_string());
 
         assert_eq!(itf.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_data_stf() {
-        let stf = TF::standard("WORDUP".to_owned());
+        let stf = TF::standard("WORDUP".to_string());
 
         assert_eq!(stf.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn itf_raw_data() {
-        let itf = TF::interleaved("12345679".to_owned()).unwrap();
+        let itf = TF::interleaved("12345679".to_string()).unwrap();
 
         assert_eq!(itf.raw_data(), &[1, 2, 3, 4, 5, 6, 7, 9]);
     }
 
     #[test]
     fn itf_encode() {
-        let itf = TF::interleaved("1234567".to_owned()).unwrap(); // Check digit: 0
+        let itf = TF::interleaved("1234567".to_string()).unwrap(); // Check digit: 0
 
         assert_eq!(
             collapse_vec(itf.encode()),
             "10101110100010101110001110111010001010001110100011100010101010100011100011101101"
-                .to_owned()
+                .to_string()
         );
     }
 
     #[test]
     fn stf_encode() {
-        let stf = TF::standard("1234567".to_owned()).unwrap();
+        let stf = TF::standard("1234567".to_string()).unwrap();
 
-        assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_owned());
+        assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_string());
     }
 }

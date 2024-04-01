@@ -12,6 +12,8 @@
 //! ```
 
 use crate::error::Result;
+#[cfg(not(feature = "std"))]
+use alloc::{format, string::String};
 
 /// The JSON  barcode generator type.
 #[derive(Copy, Clone, Debug)]
