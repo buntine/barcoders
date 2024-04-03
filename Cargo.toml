@@ -1,6 +1,6 @@
 [package]
 name = "barcoders"
-version = "1.0.4"
+version = "2.0.0"
 edition = "2021"
 authors = ["Andrew Buntine <info@bunts.io>"]
 description = "A barcode-encoding library"
