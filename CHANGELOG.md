@@ -11,6 +11,15 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v2.0.0 (2024-04-04)
+
+- [changed] Updated image dependency from 0.22.0 to 0.25.0.
+- [removed] JPEG support for image generation because it doesn't support RGBA in Image 0.25
+- [added] WEBP support for image generation
+- [fixed] Ensure checksum digit is provided for EAN13 barcodes
+- [added] Support for adding an xml namespace to a generated SVG
+- [added] Support for no_std
+
 ### v1.0.2 (2020-09-09)
 
 - [fixed] Typo in Code128 binary mappings for char: FS, |, 92
