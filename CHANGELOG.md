@@ -15,6 +15,7 @@ Possible log types:
 
 - [changed] Updated image dependency from 0.22.0 to 0.25.0.
 - [removed] JPEG support for image generation because it doesn't support RGBA in Image 0.25
+- [changed] Default features is now ["ascii", "json", "svg", "std"]
 - [added] WEBP support for image generation
 - [fixed] Ensure checksum digit is provided for EAN13 barcodes
 - [added] Support for adding an xml namespace to a generated SVG
