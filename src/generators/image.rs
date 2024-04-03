@@ -22,11 +22,10 @@
 //! See the README for more examples.
 
 use std::io::Cursor;
-
 use crate::error::{Error, Result};
 use image::{
     DynamicImage::{self, ImageRgba8},
-    ImageBuffer, ImageOutputFormat, Rgba,
+    ImageBuffer, ImageFormat, Rgba,
 };
 
 macro_rules! image_variants {
@@ -126,8 +125,8 @@ image_variants![
     GIF,
     /// PNG image generator type.
     PNG,
-    /// JPEG image generator type.
-    JPEG,
+    /// WEBP image generator type.
+    WEBP,
     /// Image Buffer generator type.
     ImageBuffer
 ];
@@ -143,9 +142,9 @@ impl Image {
         image_defaults!(PNG, height)
     }
 
-    /// Returns a new JPEG with default values.
-    pub fn jpeg(height: u32) -> Image {
-        image_defaults!(JPEG, height)
+    /// Returns a new WEBP with default values.
+    pub fn webp(height: u32) -> Image {
+        image_defaults!(WEBP, height)
     }
 
     /// Returns a new ImageBuffer with default values.
@@ -157,10 +156,9 @@ impl Image {
     /// an error message.
     pub fn generate<T: AsRef<[u8]>>(&self, barcode: T) -> Result<Vec<u8>> {
         let format = match *self {
-            Image::GIF { .. } => ImageOutputFormat::Gif,
-            Image::PNG { .. } => ImageOutputFormat::Png,
-            // Vamist: Set quality to 100 for now, unsure if this is suitable
-            Image::JPEG { .. } => ImageOutputFormat::Jpeg(100),
+            Image::GIF { .. } => ImageFormat::Gif,
+            Image::PNG { .. } => ImageFormat::Png,
+            Image::WEBP { .. } => ImageFormat::WebP,
             _ => return Err(Error::Generate),
         };
 
@@ -189,7 +187,7 @@ impl Image {
         let (xdim, height, rotation, bg, fg) = expand_image_variants!(
             *self,
             {height: h, xdim: x, rotation: r, background: b, foreground: f} => (x, h, r, b.to_rgba(), f.to_rgba()),
-            GIF, PNG, JPEG, ImageBuffer
+            GIF, PNG, WEBP, ImageBuffer
         );
         let width = (barcode.len() as u32) * xdim;
         let mut buffer = ImageBuffer::new(width, height);
@@ -307,9 +305,9 @@ mod tests {
     }
 
     #[test]
-    fn ean_13_as_jpeg() {
+    fn ean_13_as_webp() {
         let ean13 = EAN13::new("999988881234").unwrap();
-        let jpeg = Image::JPEG {
+        let webp = Image::WEBP {
             height: 100,
             xdim: 3,
             rotation: Rotation::Zero,
@@ -320,18 +318,18 @@ mod tests {
                 rgba: [255, 255, 255, 255],
             },
         };
-        let generated = jpeg.generate(&ean13.encode()[..]).unwrap();
+        let generated = webp.generate(&ean13.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
-            write_file(&generated[..], "ean13.jpg");
-        }
+           write_file(&generated[..], "ean13.webp");
+       }
 
-        assert_eq!(generated.len(), 10267);
+       assert_eq!(generated.len(), 150);
     }
 
     #[test]
     fn ean_13_as_image_buffer() {
-        let ean13 = EAN13::new("7503995991130").unwrap();
+        let ean13 = EAN13::new("750399599113").unwrap();
         let img = Image::ImageBuffer {
             height: 99,
             xdim: 1,
@@ -346,7 +344,7 @@ mod tests {
         let generated = img.generate_buffer(&ean13.encode()[..]).unwrap();
 
         assert_eq!(generated.height(), 99);
-        assert_eq!(generated.width(), 102);
+        assert_eq!(generated.width(), 95);
     }
 
     #[test]
@@ -809,9 +807,9 @@ mod tests {
     }
 
     #[test]
-    fn ean8_as_jpeg() {
+    fn ean8_as_webp() {
         let ean8 = EAN8::new("9992227").unwrap();
-        let jpeg = Image::JPEG {
+        let webp = Image::WEBP {
             height: 70,
             xdim: 2,
             rotation: Rotation::Zero,
@@ -822,13 +820,13 @@ mod tests {
                 rgba: [255, 255, 255, 255],
             },
         };
-        let generated = jpeg.generate(&ean8.encode()[..]).unwrap();
+        let generated = webp.generate(&ean8.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
-            write_file(&generated[..], "ean8.jpg");
+            write_file(&generated[..], "ean8.webp");
         }
 
-        assert_eq!(generated.len(), 3445);
+        assert_eq!(generated.len(), 114);
     }
 
     #[test]
@@ -878,9 +876,9 @@ mod tests {
     }
 
     #[test]
-    fn ean5_as_jpeg() {
+    fn ean5_as_webp() {
         let ean5 = EANSUPP::new("51574").unwrap();
-        let jpeg = Image::JPEG {
+        let webp = Image::WEBP {
             height: 140,
             xdim: 5,
             rotation: Rotation::Zero,
@@ -891,13 +889,13 @@ mod tests {
                 rgba: [255, 255, 255, 255],
             },
         };
-        let generated = jpeg.generate(&ean5.encode()[..]).unwrap();
+        let generated = webp.generate(&ean5.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
-            write_file(&generated[..], "ean5.jpg");
+            write_file(&generated[..], "ean5.webp");
         }
 
-        assert_eq!(generated.len(), 10490);
+        assert_eq!(generated.len(), 124);
     }
 
     #[test]
@@ -990,9 +988,9 @@ mod tests {
     }
 
     #[test]
-    fn itf_as_jpeg() {
+    fn itf_as_webp() {
         let itf = TF::interleaved("98766543561").unwrap();
-        let jpeg = Image::JPEG {
+        let webp = Image::WEBP {
             height: 130,
             xdim: 1,
             rotation: Rotation::Zero,
@@ -1003,13 +1001,13 @@ mod tests {
                 rgba: [255, 255, 255, 255],
             },
         };
-        let generated = jpeg.generate(&itf.encode()[..]).unwrap();
+        let generated = webp.generate(&itf.encode()[..]).unwrap();
 
         if WRITE_TO_FILE {
-            write_file(&generated[..], "ift.jpg");
+            write_file(&generated[..], "ift.webp");
         }
 
-        assert_eq!(generated.len(), 6337);
+        assert_eq!(generated.len(), 116);
     }
 
     #[test]

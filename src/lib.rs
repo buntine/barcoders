@@ -35,7 +35,7 @@
 //! * SVG (feature: `svg`)
 //! * PNG (feature: `image`)
 //! * GIF (feature: `image`)
-//! * JPEG (feature: `image`)
+//! * WEBP (feature: `image`)
 //! * Or add your own
 //!
 //! ## Examples

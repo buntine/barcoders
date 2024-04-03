@@ -65,7 +65,7 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 * SVG (feature: `svg`)
 * PNG (feature: `image`)
 * GIF (feature: `image`)
-* JPEG (feature: `image`)
+* WEBP (feature: `image`)
 * Image Buffer (feature: `image`)
 * Or add your own
 
@@ -86,7 +86,7 @@ let barcode = EAN13::new("593456661897").unwrap();
 let encoded: Vec<u8> = barcode.encode();
 ```
 
-### Image (GIF, JPEG, PNG) generation
+### Image (GIF, WEBP, PNG) generation
 ```rust
 extern crate barcoders;
 
