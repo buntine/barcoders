@@ -223,6 +223,19 @@ const STOP: Encoding = [1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0];
 const TERM: [u8; 2] = [1, 1];
 
 /// The Code128 barcode type.
+///
+/// # Character sets
+///
+/// * 128A (Code Set A) – ASCII characters 00 to 95 (0–9, A–Z and control
+///   codes), special characters, and FNC 1–4
+/// * 128B (Code Set B) – ASCII characters 32 to 127 (0–9, A–Z, a–z), special
+///   characters, and FNC 1–4
+/// * 128C (Code Set C) – 00–99 (encodes two digits with a single code point)
+///   and FNC1
+///
+/// See [module] docs for additional information.
+///
+/// [module]: crate::sym::code128
 #[derive(Debug)]
 pub struct Code128(Vec<Unit>);
 
