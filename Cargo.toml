@@ -16,7 +16,7 @@ exclude = [
 ]
 
 [features]
-default = ["ascii", "json", "svg", "std"]
+default = ["ascii", "std"]
 ascii = []
 json = []
 svg = []

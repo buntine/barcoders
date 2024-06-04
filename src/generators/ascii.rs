@@ -74,6 +74,7 @@ mod tests {
     use crate::sym::ean8::*;
     use crate::sym::ean_supp::*;
     use crate::sym::tf::*;
+    use crate::Barcode;
 
     #[test]
     fn ean_13_as_ascii() {
@@ -197,7 +198,7 @@ mod tests {
 
     #[test]
     fn codabar_as_ascii() {
-        let codabar = Codabar::new("A98B").unwrap();
+        let codabar = Codabar::new(b"A98B").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&codabar.encode()[..]).unwrap();
 
@@ -221,7 +222,7 @@ mod tests {
 
     #[test]
     fn codabar_as_ascii_small_height_double_weight() {
-        let codabar = Codabar::new("A40156B").unwrap();
+        let codabar = Codabar::new(b"A40156B").unwrap();
         let ascii = ASCII { height: 7, xdim: 2 };
         let generated = ascii.generate(&codabar.encode()[..]).unwrap();
 

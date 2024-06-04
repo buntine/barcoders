@@ -5,7 +5,7 @@ use core::fmt;
 use std::error::Error as StdError;
 
 /// The possible errors that can occur during barcode encoding and generation.
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Error {
     /// An invalid character found during encoding.
     Character,

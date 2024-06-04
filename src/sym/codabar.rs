@@ -7,132 +7,103 @@
 //! Barcodes of this variant should start and end with either A, B, C, or D depending on
 //! the industry.
 
-use super::helpers::{vec, Vec};
 use crate::error::Result;
-use crate::sym::Parse;
 use core::ops::Range;
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum Unit {
-    Zero,
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-    Dash,
-    Dollar,
-    Colon,
-    Slash,
-    Point,
-    Plus,
-    A,
-    B,
-    C,
-    D,
-}
-
-impl Unit {
-    fn lookup(self) -> Vec<u8> {
-        match self {
-            Unit::Zero => vec![1, 0, 1, 0, 1, 0, 0, 1, 1],
-            Unit::One => vec![1, 0, 1, 0, 1, 1, 0, 0, 1],
-            Unit::Two => vec![1, 0, 1, 0, 0, 1, 0, 1, 1],
-            Unit::Three => vec![1, 1, 0, 0, 1, 0, 1, 0, 1],
-            Unit::Four => vec![1, 0, 1, 1, 0, 1, 0, 0, 1],
-            Unit::Five => vec![1, 1, 0, 1, 0, 1, 0, 0, 1],
-            Unit::Six => vec![1, 0, 0, 1, 0, 1, 0, 1, 1],
-            Unit::Seven => vec![1, 0, 0, 1, 0, 1, 1, 0, 1],
-            Unit::Eight => vec![1, 0, 0, 1, 1, 0, 1, 0, 1],
-            Unit::Nine => vec![1, 1, 0, 1, 0, 0, 1, 0, 1],
-            Unit::Dash => vec![1, 0, 1, 0, 0, 1, 1, 0, 1],
-            Unit::Dollar => vec![1, 0, 1, 1, 0, 0, 1, 0, 1],
-            Unit::Colon => vec![1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-            Unit::Slash => vec![1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
-            Unit::Point => vec![1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
-            Unit::Plus => vec![1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1],
-            Unit::A => vec![1, 0, 1, 1, 0, 0, 1, 0, 0, 1],
-            Unit::B => vec![1, 0, 1, 0, 0, 1, 0, 0, 1, 1],
-            Unit::C => vec![1, 0, 0, 1, 0, 0, 1, 0, 1, 1],
-            Unit::D => vec![1, 0, 1, 0, 0, 1, 1, 0, 0, 1],
-        }
-    }
-
-    fn from_char(c: char) -> Option<Unit> {
-        match c {
-            '0' => Some(Unit::Zero),
-            '1' => Some(Unit::One),
-            '2' => Some(Unit::Two),
-            '3' => Some(Unit::Three),
-            '4' => Some(Unit::Four),
-            '5' => Some(Unit::Five),
-            '6' => Some(Unit::Six),
-            '7' => Some(Unit::Seven),
-            '8' => Some(Unit::Eight),
-            '9' => Some(Unit::Nine),
-            '-' => Some(Unit::Dash),
-            '$' => Some(Unit::Dollar),
-            '/' => Some(Unit::Slash),
-            ':' => Some(Unit::Colon),
-            '.' => Some(Unit::Point),
-            '+' => Some(Unit::Plus),
-            'A' => Some(Unit::A),
-            'B' => Some(Unit::B),
-            'C' => Some(Unit::C),
-            'D' => Some(Unit::D),
-            _ => None,
-        }
-    }
-}
 
 /// The Codabar barcode type.
 #[derive(Debug)]
-pub struct Codabar(Vec<Unit>);
+pub struct Codabar<'a>(&'a [u8]);
 
-impl Codabar {
-    /// Creates a new barcode.
-    /// Returns Result<Codabar, Error> indicating parse success.
-    pub fn new<T: AsRef<str>>(data: T) -> Result<Codabar> {
-        let d = Codabar::parse(data.as_ref())?;
-        let units = d.chars().map(|c| Unit::from_char(c).unwrap()).collect();
-
-        Ok(Codabar(units))
-    }
-
-    /// Encodes the barcode.
-    /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> Vec<u8> {
-        let mut enc: Vec<u8> = vec![];
-
-        for (i, u) in self.0.iter().enumerate() {
-            enc.extend(u.lookup().iter().cloned());
-
-            if i < self.0.len() - 1 {
-                enc.push(0);
+impl<'a> Codabar<'a> {
+    fn get_sum(&self) -> usize {
+        let mut sum: usize = 0;
+        for byte in self.0.iter() {
+            match byte {
+                b'0'..=b'9' => sum += 9,
+                b'-' | b'$' | b':' | b'/' | b'.' => sum += 10,
+                b'+' => sum += 12,
+                b'A' | b'B' | b'C' | b'D' => sum += 10,
+                _ => unreachable!("Validation did not catch an illegal character"),
             }
+            sum += 1; // Padding between characters
         }
+        sum -= 1; // Remove padding after last character
+        sum
+    }
+    fn encode_into(&self, buffer: &mut [u8]) {
+        let mut i = 0;
+        macro_rules! encode {
+            ($iter:expr => $name:ident {$(
+                $pattern:pat => $bits:expr
+            ),*}) => (
+                for $name in $iter {
+                    match $name {
+                        $($pattern => {
+                            let length = $bits.len();
+                            for j in 0..length {
+                                buffer[i + j] = $bits[j];
+                            }
+                            i += length;
 
-        enc
+                            // Don't forget the padding
+                            if i < buffer.len() {
+                                buffer[i] = 0;
+                                i += 1;
+                            }
+                        },)*
+                        _ => unreachable!("Validation did not catch an illegal character"),
+                    }
+                }
+            );
+        }
+        encode!(self.0.iter() => byte {
+            b'0' => [1, 0, 1, 0, 1, 0, 0, 1, 1],
+            b'1' => [1, 0, 1, 0, 1, 1, 0, 0, 1],
+            b'2' => [1, 0, 1, 0, 0, 1, 0, 1, 1],
+            b'3' => [1, 1, 0, 0, 1, 0, 1, 0, 1],
+            b'4' => [1, 0, 1, 1, 0, 1, 0, 0, 1],
+            b'5' => [1, 1, 0, 1, 0, 1, 0, 0, 1],
+            b'6' => [1, 0, 0, 1, 0, 1, 0, 1, 1],
+            b'7' => [1, 0, 0, 1, 0, 1, 1, 0, 1],
+            b'8' => [1, 0, 0, 1, 1, 0, 1, 0, 1],
+            b'9' => [1, 1, 0, 1, 0, 0, 1, 0, 1],
+            b'-' => [1, 0, 1, 0, 0, 1, 1, 0, 1],
+            b'$' => [1, 0, 1, 1, 0, 0, 1, 0, 1],
+            b':' => [1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
+            b'/' => [1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
+            b'.' => [1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
+            b'+' => [1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1],
+            b'A' => [1, 0, 1, 1, 0, 0, 1, 0, 0, 1],
+            b'B' => [1, 0, 1, 0, 0, 1, 0, 0, 1, 1],
+            b'C' => [1, 0, 0, 1, 0, 0, 1, 0, 1, 1],
+            b'D' => [1, 0, 1, 0, 0, 1, 1, 0, 0, 1]
+        });
     }
 }
 
-impl Parse for Codabar {
-    /// Returns the valid length of data acceptable in this type of barcode.
-    /// Codabar barcodes are variable-length.
-    fn valid_len() -> Range<u32> {
-        1..256
+impl<'a> crate::Barcode<'a> for Codabar<'a> {
+    const SIZE: Range<u16> = 1..256;
+    const ALLOWED_VALUES: &'static [u8] = &[
+        b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'-', b'$', b':', b'/', b'.',
+        b'+', b'A', b'B', b'C', b'D',
+    ];
+    fn new(data: &'a [u8]) -> Result<Self> {
+        Self::validate(data)?;
+        Ok(Self(data))
     }
-
-    /// Returns the set of valid characters allowed in this type of barcode.
-    fn valid_chars() -> Vec<char> {
-        vec![
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '/', '.', ':', '+', '$', 'A',
-            'B', 'C', 'D',
-        ]
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
+        let sum = self.get_sum();
+        if buffer.len() < sum {
+            return None;
+        }
+        self.encode_into(buffer);
+        Some(())
+    }
+    fn encode(&self) -> Vec<u8> {
+        let sum = self.get_sum();
+        let mut buffer = vec![0; sum];
+        self.encode_into(&mut buffer);
+        buffer
     }
 }
 
@@ -140,6 +111,7 @@ impl Parse for Codabar {
 mod tests {
     use crate::error::Error;
     use crate::sym::codabar::*;
+    use crate::Barcode;
     #[cfg(not(feature = "std"))]
     use alloc::string::String;
     use core::char;
@@ -151,22 +123,39 @@ mod tests {
 
     #[test]
     fn invalid_length_codabar() {
-        let codabar = Codabar::new("");
+        let codabar = Codabar::new(b"");
 
         assert_eq!(codabar.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_codabar() {
-        let codabar = Codabar::new("A12345G");
+        let codabar = Codabar::new(b"A12345G");
 
         assert_eq!(codabar.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn codabar_encode() {
-        let codabar_a = Codabar::new("A1234B").unwrap();
-        let codabar_b = Codabar::new("A40156B").unwrap();
+        let codabar_a = Codabar::new(b"A1234B").unwrap();
+        let codabar_b = Codabar::new(b"A40156B").unwrap();
+
+        let encoded = codabar_a.encode();
+        let expected = vec![
+            1, 0, 1, 1, 0, 0, 1, 0, 0, 1, // A
+            0,
+            1, 0, 1, 0, 1, 1, 0, 0, 1, // 1
+            0,
+            1, 0, 1, 0, 0, 1, 0, 1, 1, // 2
+            0,
+            1, 1, 0, 0, 1, 0, 1, 0, 1, // 3
+            0,
+            1, 0, 1, 1, 0, 1, 0, 0, 1, // 4
+            0,
+            1, 0, 1, 0, 0, 1, 0, 0, 1, 1, // B
+        ];
+        println!("{:?}", encoded);
+        assert_eq!(encoded, expected);
 
         assert_eq!(
             collapse_vec(codabar_a.encode()),

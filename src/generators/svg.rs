@@ -205,6 +205,7 @@ mod tests {
     use crate::sym::ean8::*;
     use crate::sym::ean_supp::*;
     use crate::sym::tf::*;
+    use crate::Barcode;
     #[cfg(feature = "std")]
     use std::fs::File;
     #[cfg(feature = "std")]
@@ -332,7 +333,7 @@ mod tests {
 
     #[test]
     fn codabar_as_svg() {
-        let codabar = Codabar::new("A12----34A").unwrap();
+        let codabar = Codabar::new(b"A12----34A").unwrap();
         let svg = SVG::new(80).xmlns("http://www.w3.org/2000/svg".to_string());
         let generated = svg.generate(&codabar.encode()[..]).unwrap();
 

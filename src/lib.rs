@@ -55,8 +55,54 @@
 )]
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(not(feature = "std"))]
-extern crate alloc;
+use core::ops::Range;
+use error::Result;
+
+/// The Barcode trait.
+/// 
+/// All barcode symbologies must implement this trait.
+pub trait Barcode<'a>: Sized {
+    /// The valid data length for the barcode.
+    const SIZE: Range<u16>;
+    /// The valid data values for the barcode.
+    const ALLOWED_VALUES: &'static [u8];
+
+    /// Performs validation on the data.
+    /// 
+    /// This is provided as a convenience method for the implementor.
+    /// 
+    /// It is NOT recommended to override nor call this method directly
+    /// as a user of the library.
+    #[inline]
+    #[doc(hidden)]
+    fn validate(data: &'a [u8]) -> Result<()> {
+        let len = data.len() as u16;
+        if len < Self::SIZE.start || len > Self::SIZE.end {
+            return Err(error::Error::Length);
+        }
+        for &byte in data.iter() {
+            if !Self::ALLOWED_VALUES.contains(&byte) {
+                return Err(error::Error::Character);
+            }
+        }
+        Ok(())
+    }
+
+    /// Creates a new barcode.
+    fn new(data: &'a [u8]) -> Result<Self>;
+    /// Encodes the barcode in-place.
+    /// (Without any allocation or copying of data)
+    /// 
+    /// This method returns None if the buffer size is too small.
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()>;
+    /// Encodes the barcode.
+    #[cfg(feature = "std")]
+    fn encode(&self) -> Vec<u8> {
+        let mut buffer = Vec::new();
+        self.encode_in_place(&mut buffer);
+        buffer
+    }
+}
 
 pub mod error;
 pub mod generators;
