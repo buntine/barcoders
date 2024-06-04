@@ -16,7 +16,7 @@ use super::*;
 pub struct Codabar<'a>(&'a [u8]);
 
 impl<'a> Codabar<'a> {
-    fn get_sum(&self) -> usize {
+    fn calc_sum(&self) -> usize {
         let mut sum: usize = 0;
         for byte in self.0.iter() {
             match byte {
@@ -33,52 +33,35 @@ impl<'a> Codabar<'a> {
     }
     fn encode_into(&self, buffer: &mut [u8]) {
         let mut i = 0;
-        macro_rules! encode {
-            ($iter:expr => $name:ident {$(
-                $pattern:pat => $bits:expr
-            ),*}) => (
-                for $name in $iter {
-                    match $name {
-                        $($pattern => {
-                            let length = $bits.len();
-                            for j in 0..length {
-                                buffer[i + j] = $bits[j];
-                            }
-                            i += length;
-
-                            // Don't forget the padding
-                            if i < buffer.len() {
-                                buffer[i] = 0;
-                                i += 1;
-                            }
-                        },)*
-                        _ => unreachable!("Validation did not catch an illegal character"),
-                    }
-                }
-            );
+        for byte in self.0.iter() {
+            encode!((buffer, i) byte {
+                b'0' => [1, 0, 1, 0, 1, 0, 0, 1, 1],
+                b'1' => [1, 0, 1, 0, 1, 1, 0, 0, 1],
+                b'2' => [1, 0, 1, 0, 0, 1, 0, 1, 1],
+                b'3' => [1, 1, 0, 0, 1, 0, 1, 0, 1],
+                b'4' => [1, 0, 1, 1, 0, 1, 0, 0, 1],
+                b'5' => [1, 1, 0, 1, 0, 1, 0, 0, 1],
+                b'6' => [1, 0, 0, 1, 0, 1, 0, 1, 1],
+                b'7' => [1, 0, 0, 1, 0, 1, 1, 0, 1],
+                b'8' => [1, 0, 0, 1, 1, 0, 1, 0, 1],
+                b'9' => [1, 1, 0, 1, 0, 0, 1, 0, 1],
+                b'-' => [1, 0, 1, 0, 0, 1, 1, 0, 1],
+                b'$' => [1, 0, 1, 1, 0, 0, 1, 0, 1],
+                b':' => [1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
+                b'/' => [1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
+                b'.' => [1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
+                b'+' => [1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1],
+                b'A' => [1, 0, 1, 1, 0, 0, 1, 0, 0, 1],
+                b'B' => [1, 0, 1, 0, 0, 1, 0, 0, 1, 1],
+                b'C' => [1, 0, 0, 1, 0, 0, 1, 0, 1, 1],
+                b'D' => [1, 0, 1, 0, 0, 1, 1, 0, 0, 1],
+            });
+            // Don't forget the padding
+            if i < buffer.len() {
+                buffer[i] = 0;
+                i += 1;
+            }
         }
-        encode!(self.0.iter() => byte {
-            b'0' => [1, 0, 1, 0, 1, 0, 0, 1, 1],
-            b'1' => [1, 0, 1, 0, 1, 1, 0, 0, 1],
-            b'2' => [1, 0, 1, 0, 0, 1, 0, 1, 1],
-            b'3' => [1, 1, 0, 0, 1, 0, 1, 0, 1],
-            b'4' => [1, 0, 1, 1, 0, 1, 0, 0, 1],
-            b'5' => [1, 1, 0, 1, 0, 1, 0, 0, 1],
-            b'6' => [1, 0, 0, 1, 0, 1, 0, 1, 1],
-            b'7' => [1, 0, 0, 1, 0, 1, 1, 0, 1],
-            b'8' => [1, 0, 0, 1, 1, 0, 1, 0, 1],
-            b'9' => [1, 1, 0, 1, 0, 0, 1, 0, 1],
-            b'-' => [1, 0, 1, 0, 0, 1, 1, 0, 1],
-            b'$' => [1, 0, 1, 1, 0, 0, 1, 0, 1],
-            b':' => [1, 1, 0, 1, 0, 1, 1, 0, 1, 1],
-            b'/' => [1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
-            b'.' => [1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
-            b'+' => [1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1],
-            b'A' => [1, 0, 1, 1, 0, 0, 1, 0, 0, 1],
-            b'B' => [1, 0, 1, 0, 0, 1, 0, 0, 1, 1],
-            b'C' => [1, 0, 0, 1, 0, 0, 1, 0, 1, 1],
-            b'D' => [1, 0, 1, 0, 0, 1, 1, 0, 0, 1]
-        });
     }
 }
 
@@ -91,7 +74,7 @@ impl<'a> Barcode<'a> for Codabar<'a> {
     }
 
     fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
-        let sum = self.get_sum();
+        let sum = self.calc_sum();
         if buffer.len() < sum {
             return None;
         }
@@ -101,7 +84,7 @@ impl<'a> Barcode<'a> for Codabar<'a> {
 
     #[cfg(feature = "alloc")]
     fn encode(&self) -> Vec<u8> {
-        let sum = self.get_sum();
+        let sum = self.calc_sum();
         let mut buffer = vec![0; sum];
         self.encode_into(&mut buffer);
         buffer
@@ -121,14 +104,14 @@ mod tests {
     fn invalid_length_codabar() {
         let codabar = Codabar::new(b"");
 
-        assert_eq!(codabar.err().unwrap(), Error::Length);
+        assert_eq!(codabar.err().unwrap(), error::Error::Length);
     }
 
     #[test]
     fn invalid_data_codabar() {
         let codabar = Codabar::new(b"A12345G");
 
-        assert_eq!(codabar.err().unwrap(), Error::Character);
+        assert_eq!(codabar.err().unwrap(), error::Error::Character);
     }
 
     #[test]
