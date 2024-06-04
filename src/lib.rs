@@ -100,7 +100,7 @@ pub trait Barcode<'a>: Sized {
 }
 
 pub mod error;
-pub mod generators;
+// pub mod generators;
 
 #[doc(hidden)]
 pub mod sym;

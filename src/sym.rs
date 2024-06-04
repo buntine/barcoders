@@ -6,21 +6,21 @@ pub use codabar::Codabar;
 mod code11;
 pub use code11::Code11;
 
-// mod code39;
-// pub use code39::Code39;
-// 
+mod code39;
+pub use code39::Code39;
+
 // mod code93;
 // pub use code93::Code93;
-// 
+
 // mod code128;
 // pub use code128::Code128;
-// 
+
 // mod ean8;
 // pub use ean8::EAN8;
-// 
+
 // mod ean13;
 // pub use ean13::EAN13;
-// 
+
 // mod tf;
 // pub use tf::TF;
 
@@ -61,7 +61,20 @@ macro_rules! encode {
             },)*
             _ => ::core::unreachable!("Validation did not catch an illegal character"),
         }
-    )
+    );
+    (($buffer:ident, $i:ident) $v:ident {
+        $($pat:pat => $val:expr,)+
+    }) => (
+        match $v {
+            $($pat => {
+                for value in $val {
+                    $buffer[$i] = value;
+                    $i += 1;
+                }
+            },)*
+            _ => ::core::unreachable!("Validation did not catch an illegal character"),
+        }
+    );
 }
 
 impl<'a, B> BarcodeDevExt<'a> for B where B: Barcode<'a> {}

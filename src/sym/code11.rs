@@ -175,7 +175,7 @@ impl<'a> Code11<'a> {
 }
 
 impl<'a> Barcode<'a> for Code11<'a> {
-    const SIZE: Range<u16> = 1..257; // 1..=256
+    const SIZE: Range<u16> = 1..256;
     const CHARS: &'static [u8] = b"0123456789-";
 
     fn new(data: &'a [u8]) -> Result<Self> {
