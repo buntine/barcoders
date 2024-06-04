@@ -7,11 +7,12 @@
 //! Barcodes of this variant should start and end with either A, B, C, or D depending on
 //! the industry.
 
-use crate::error::Result;
 use core::ops::Range;
+use super::*;
 
 /// The Codabar barcode type.
-#[derive(Debug)]
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Codabar<'a>(&'a [u8]);
 
 impl<'a> Codabar<'a> {
@@ -81,16 +82,14 @@ impl<'a> Codabar<'a> {
     }
 }
 
-impl<'a> crate::Barcode<'a> for Codabar<'a> {
+impl<'a> Barcode<'a> for Codabar<'a> {
     const SIZE: Range<u16> = 1..256;
-    const ALLOWED_VALUES: &'static [u8] = &[
-        b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'-', b'$', b':', b'/', b'.',
-        b'+', b'A', b'B', b'C', b'D',
-    ];
+    const CHARS: &'static [u8] = b"0123456789-$:/+.ABCD";
+
     fn new(data: &'a [u8]) -> Result<Self> {
-        Self::validate(data)?;
-        Ok(Self(data))
+        Self::validate(data).map(Self)
     }
+
     fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
         let sum = self.get_sum();
         if buffer.len() < sum {
@@ -99,6 +98,8 @@ impl<'a> crate::Barcode<'a> for Codabar<'a> {
         self.encode_into(buffer);
         Some(())
     }
+
+    #[cfg(feature = "alloc")]
     fn encode(&self) -> Vec<u8> {
         let sum = self.get_sum();
         let mut buffer = vec![0; sum];
@@ -109,12 +110,7 @@ impl<'a> crate::Barcode<'a> for Codabar<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::error::Error;
-    use crate::sym::codabar::*;
-    use crate::Barcode;
-    #[cfg(not(feature = "std"))]
-    use alloc::string::String;
-    use core::char;
+    use super::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -140,26 +136,21 @@ mod tests {
         let codabar_a = Codabar::new(b"A1234B").unwrap();
         let codabar_b = Codabar::new(b"A40156B").unwrap();
 
-        let encoded = codabar_a.encode();
-        let expected = vec![
-            1, 0, 1, 1, 0, 0, 1, 0, 0, 1, // A
-            0,
-            1, 0, 1, 0, 1, 1, 0, 0, 1, // 1
-            0,
-            1, 0, 1, 0, 0, 1, 0, 1, 1, // 2
-            0,
-            1, 1, 0, 0, 1, 0, 1, 0, 1, // 3
-            0,
-            1, 0, 1, 1, 0, 1, 0, 0, 1, // 4
-            0,
-            1, 0, 1, 0, 0, 1, 0, 0, 1, 1, // B
-        ];
-        println!("{:?}", encoded);
-        assert_eq!(encoded, expected);
-
         assert_eq!(
-            collapse_vec(codabar_a.encode()),
-            "1011001001010101100101010010110110010101010110100101010010011"
+            codabar_a.encode(),
+            vec![
+                1, 0, 1, 1, 0, 0, 1, 0, 0, 1, // A
+                0,
+                1, 0, 1, 0, 1, 1, 0, 0, 1, // 1
+                0,
+                1, 0, 1, 0, 0, 1, 0, 1, 1, // 2
+                0,
+                1, 1, 0, 0, 1, 0, 1, 0, 1, // 3
+                0,
+                1, 0, 1, 1, 0, 1, 0, 0, 1, // 4
+                0,
+                1, 0, 1, 0, 0, 1, 0, 0, 1, 1, // B
+            ]
         );
         assert_eq!(
             collapse_vec(codabar_b.encode()),

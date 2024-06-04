@@ -16,12 +16,17 @@ exclude = [
 ]
 
 [features]
-default = ["ascii", "std"]
+# default = ["ascii", "json", "svg", "nightly", "alloc"]
+default = ["ascii", "json", "svg", "std"]
+
 ascii = []
 json = []
 svg = []
-image = ["dep:image"]
-std = []
+image = ["std", "dep:image"] # Uses std::io
+
+nightly = [] # for error_in_core feature
+alloc = [] # For vec and string
+std = ["alloc"] # std is a superset of alloc
 
 [dependencies.image]
 version = "0.25"

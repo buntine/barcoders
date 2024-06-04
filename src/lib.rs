@@ -42,18 +42,39 @@
 //!
 //! See the Github repository.
 
+#![cfg_attr(
+    all(
+        feature = "nightly",
+        not(feature = "std"),
+    ),
+    feature(error_in_core)
+)] // Enable error_in_core feature for nightly builds without std
+
 #![warn(
-    missing_docs,
     missing_debug_implementations,
     missing_copy_implementations,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unstable_features,
-    unused_import_braces,
-    unused_qualifications
+    missing_docs,
+    unused
 )]
+
 #![cfg_attr(not(feature = "std"), no_std)]
+
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+extern crate alloc;
+
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+use alloc as __alloc;
+#[cfg(feature = "std")]
+use std as __alloc;
+
+#[cfg(feature = "alloc")]
+use __alloc::{
+    string::ToString,
+    string::String,
+    vec::Vec,
+    format,
+    vec,
+};
 
 use core::ops::Range;
 use error::Result;
@@ -65,29 +86,7 @@ pub trait Barcode<'a>: Sized {
     /// The valid data length for the barcode.
     const SIZE: Range<u16>;
     /// The valid data values for the barcode.
-    const ALLOWED_VALUES: &'static [u8];
-
-    /// Performs validation on the data.
-    /// 
-    /// This is provided as a convenience method for the implementor.
-    /// 
-    /// It is NOT recommended to override nor call this method directly
-    /// as a user of the library.
-    #[inline]
-    #[doc(hidden)]
-    fn validate(data: &'a [u8]) -> Result<()> {
-        let len = data.len() as u16;
-        if len < Self::SIZE.start || len > Self::SIZE.end {
-            return Err(error::Error::Length);
-        }
-        for &byte in data.iter() {
-            if !Self::ALLOWED_VALUES.contains(&byte) {
-                return Err(error::Error::Character);
-            }
-        }
-        Ok(())
-    }
-
+    const CHARS: &'static [u8];
     /// Creates a new barcode.
     fn new(data: &'a [u8]) -> Result<Self>;
     /// Encodes the barcode in-place.
@@ -96,14 +95,16 @@ pub trait Barcode<'a>: Sized {
     /// This method returns None if the buffer size is too small.
     fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()>;
     /// Encodes the barcode.
-    #[cfg(feature = "std")]
-    fn encode(&self) -> Vec<u8> {
-        let mut buffer = Vec::new();
-        self.encode_in_place(&mut buffer);
-        buffer
-    }
+    #[cfg(feature = "alloc")]
+    fn encode(&self) -> Vec<u8>;
 }
 
 pub mod error;
 pub mod generators;
+
+#[doc(hidden)]
 pub mod sym;
+pub use sym::{
+    Codabar,
+    Code11,
+};

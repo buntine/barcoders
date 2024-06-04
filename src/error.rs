@@ -1,8 +1,11 @@
 //! Custom error types.
 
-use core::fmt;
+#[cfg(all(not(feature = "std"), feature = "nightly"))]
+use core::error::Error as ErrorTrait;
 #[cfg(feature = "std")]
-use std::error::Error as StdError;
+use std::error::Error as ErrorTrait;
+
+use core::fmt;
 
 /// The possible errors that can occur during barcode encoding and generation.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -31,5 +34,8 @@ impl fmt::Display for Error {
     }
 }
 
-#[cfg(feature = "std")]
-impl StdError for Error {}
+#[cfg(any(
+    feature = "std",
+    feature = "nightly"
+))]
+impl ErrorTrait for Error {}
