@@ -59,9 +59,8 @@ const CHARS: [(u8, [u8; CHAR_SIZE]); CHARS_COUNT] = [
 const PADDING_SIZE: usize = 1;
 const PADDING: u8 = 0;
 
-const GUARD_SIZE: usize = 12;
 // Code39 barcodes must start and end with the '*' special character.
-const GUARD: [u8; GUARD_SIZE] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
+const GUARD: [u8; CHAR_SIZE] = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1];
 
 /// The Code39 barcode type.
 // #[cfg_attr(feature = "nightly", repr(packed))] // May be useful for embedded systems.
@@ -73,7 +72,15 @@ pub struct Code39<'a> {
 }
 
 fn char2id(c: &u8) -> usize {
-    CHARS.iter().position(|t| t.0 == *c).unwrap()
+    #[cfg(not(feature = "unsafety"))]
+    {
+        CHARS.iter().position(|t| t.0 == *c).unwrap()
+    }
+    #[cfg(feature = "unsafety")]
+    unsafe {
+        CHARS.iter().position(|t| t.0 == *c)
+            .unwrap_unchecked()
+    }
 }
 
 impl<'a> Code39<'a> {
@@ -82,7 +89,8 @@ impl<'a> Code39<'a> {
         if self.checksum {
             payload += CHAR_SIZE + PADDING_SIZE;
         }
-        return GUARD_SIZE + PADDING_SIZE + payload + GUARD_SIZE;
+        // Guards at the beginning and end
+        return CHAR_SIZE + PADDING_SIZE + payload + CHAR_SIZE;
     }
 
     fn calc_checksum(&self) -> [u8; 12] {

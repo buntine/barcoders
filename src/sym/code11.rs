@@ -78,7 +78,10 @@ impl<'a> Code11<'a> {
             match byte {
                 b'0' | b'9' | b'-' => payload_len += 6,
                 b'1'..=b'8' => payload_len += 7,
+                #[cfg(not(feature = "unsafety"))]
                 _ => unreachable!("Validation did not catch an illegal character"),
+                #[cfg(feature = "unsafety")]
+                _ => unsafe { core::hint::unreachable_unchecked() },
             }
             payload_len += PADDING;
         }
@@ -87,7 +90,10 @@ impl<'a> Code11<'a> {
         match c_checksum {
             b'0' | b'9' | b'-' => payload_len += 6,
             b'1'..=b'8' => payload_len += 7,
+            #[cfg(not(feature = "unsafety"))]
             _ => unreachable!("Checksum C is not a valid character"),
+            #[cfg(feature = "unsafety")]
+            _ => unsafe { core::hint::unreachable_unchecked() },
         }
         payload_len += PADDING; // Padding after checksum C
 
@@ -97,7 +103,10 @@ impl<'a> Code11<'a> {
             match k_checksum {
                 b'0' | b'9' | b'-' => payload_len += 6,
                 b'1'..=b'8' => payload_len += 7,
+                #[cfg(not(feature = "unsafety"))]
                 _ => unreachable!("Checksum K is not a valid character"),
+                #[cfg(feature = "unsafety")]
+                _ => unsafe { core::hint::unreachable_unchecked() },
             }
             payload_len += PADDING; // Padding after checksum K
         }
@@ -123,17 +132,17 @@ impl<'a> Code11<'a> {
 
         macro_rules! enc {
             ($v:ident) => ( encode!((buffer, i) $v {
-                b'0' => [1, 0, 1, 0, 1, 1],
-                b'1' => [1, 1, 0, 1, 0, 1, 1],
-                b'2' => [1, 0, 0, 1, 0, 1, 1],
-                b'3' => [1, 1, 0, 0, 1, 0, 1],
-                b'4' => [1, 0, 1, 1, 0, 1, 1],
-                b'5' => [1, 1, 0, 1, 1, 0, 1],
-                b'6' => [1, 0, 0, 1, 1, 0, 1],
-                b'7' => [1, 0, 1, 0, 0, 1, 1],
-                b'8' => [1, 1, 0, 1, 0, 0, 1],
-                b'9' => [1, 1, 0, 1, 0, 1],
-                b'-' => [1, 0, 1, 1, 0, 1],
+                b'0' => ([1, 0, 1, 0, 1, 1]),
+                b'1' => ([1, 1, 0, 1, 0, 1, 1]),
+                b'2' => ([1, 0, 0, 1, 0, 1, 1]),
+                b'3' => ([1, 1, 0, 0, 1, 0, 1]),
+                b'4' => ([1, 0, 1, 1, 0, 1, 1]),
+                b'5' => ([1, 1, 0, 1, 1, 0, 1]),
+                b'6' => ([1, 0, 0, 1, 1, 0, 1]),
+                b'7' => ([1, 0, 1, 0, 0, 1, 1]),
+                b'8' => ([1, 1, 0, 1, 0, 0, 1]),
+                b'9' => ([1, 1, 0, 1, 0, 1]),
+                b'-' => ([1, 0, 1, 1, 0, 1]),
             }) );
         }
 

@@ -24,6 +24,7 @@ json = []
 svg = []
 image = ["std", "dep:image"] # Uses std::io
 
+unsafety = [] # For faster (unsafe) implementations
 nightly = [] # for error_in_core feature
 alloc = [] # For vec and string
 std = ["alloc"] # std is a superset of alloc

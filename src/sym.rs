@@ -9,8 +9,8 @@ pub use code11::Code11;
 mod code39;
 pub use code39::Code39;
 
-// mod code93;
-// pub use code93::Code93;
+mod code93;
+pub use code93::Code93;
 
 // mod code128;
 // pub use code128::Code128;
@@ -49,30 +49,29 @@ pub trait BarcodeDevExt<'a>: Barcode<'a> {
 
 #[macro_export(local_inner_macros)]
 macro_rules! encode {
-    (($buffer:ident, $i:ident) $v:ident {
-        $($pat:pat => [$($bit:literal),+],)+
-    }) => (
-        match $v {
-            $($pat => {
-                $(
-                    $buffer[$i] = $bit;
-                    $i += 1;
-                )+
-            },)*
-            _ => ::core::unreachable!("Validation did not catch an illegal character"),
+    (@VALUE ($buffer:ident, $i:ident) [$($bit:literal),+]) => (
+        $(
+            $buffer[$i] = $bit;
+            $i += 1;
+        )+
+    );
+    (@VALUE ($buffer:ident, $i:ident) $val:expr) => (
+        for value in $val {
+            $buffer[$i] = value;
+            $i += 1;
         }
     );
     (($buffer:ident, $i:ident) $v:ident {
-        $($pat:pat => $val:expr,)+
+        $($pat:pat => ($($t:tt)*),)+
     }) => (
         match $v {
             $($pat => {
-                for value in $val {
-                    $buffer[$i] = value;
-                    $i += 1;
-                }
+                $crate::encode!(@VALUE ($buffer, $i) $($t)+);
             },)*
+            #[cfg(not(feature = "unsafety"))]
             _ => ::core::unreachable!("Validation did not catch an illegal character"),
+            #[cfg(feature = "unsafety")]
+            _ => unsafe { ::core::hint::unreachable_unchecked() },
         }
     );
 }
