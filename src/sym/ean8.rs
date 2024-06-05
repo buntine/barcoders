@@ -89,7 +89,7 @@ impl<'a> Barcode<'a> for EAN8 {
             }
             digits[i] = byte - b'0';
         }
-        let this = EAN8(digits);
+        let this = Self(digits);
 
         // If checksum digit is provided, check the checksum.
         if data.len() == 8 {

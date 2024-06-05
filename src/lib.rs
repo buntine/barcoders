@@ -108,5 +108,5 @@ pub use sym::{
     code93::Code93,
     // code128::Code128,
     ean8::EAN8,
-    // ean13::EAN13,
+    ean13::EAN13,
 };
