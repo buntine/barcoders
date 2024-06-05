@@ -72,11 +72,11 @@ pub struct Code39<'a> {
 }
 
 fn char2id(c: &u8) -> usize {
-    #[cfg(not(feature = "unsafety"))]
+    #[cfg(not(feature = "blitz"))]
     {
         CHARS.iter().position(|t| t.0 == *c).unwrap()
     }
-    #[cfg(feature = "unsafety")]
+    #[cfg(feature = "blitz")]
     unsafe {
         CHARS.iter().position(|t| t.0 == *c)
             .unwrap_unchecked()
@@ -146,9 +146,12 @@ impl<'a> Code39<'a> {
     }
 }
 
-impl<'a> Barcode<'a> for Code39<'a> {
+impl<'a> BarcodeDevExt<'a> for Code39<'a> {
     const SIZE: Range<u16> = 1..256;
     const CHARS: &'static [u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%";
+}
+
+impl<'a> Barcode<'a> for Code39<'a> {
     fn new(data: &'a [u8]) -> Result<Self> {
         Self::validate(data).map(|data| Self {
             checksum: false,

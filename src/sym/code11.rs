@@ -78,9 +78,9 @@ impl<'a> Code11<'a> {
             match byte {
                 b'0' | b'9' | b'-' => payload_len += 6,
                 b'1'..=b'8' => payload_len += 7,
-                #[cfg(not(feature = "unsafety"))]
+                #[cfg(not(feature = "blitz"))]
                 _ => unreachable!("Validation did not catch an illegal character"),
-                #[cfg(feature = "unsafety")]
+                #[cfg(feature = "blitz")]
                 _ => unsafe { core::hint::unreachable_unchecked() },
             }
             payload_len += PADDING;
@@ -90,9 +90,9 @@ impl<'a> Code11<'a> {
         match c_checksum {
             b'0' | b'9' | b'-' => payload_len += 6,
             b'1'..=b'8' => payload_len += 7,
-            #[cfg(not(feature = "unsafety"))]
+            #[cfg(not(feature = "blitz"))]
             _ => unreachable!("Checksum C is not a valid character"),
-            #[cfg(feature = "unsafety")]
+            #[cfg(feature = "blitz")]
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
         payload_len += PADDING; // Padding after checksum C
@@ -103,9 +103,9 @@ impl<'a> Code11<'a> {
             match k_checksum {
                 b'0' | b'9' | b'-' => payload_len += 6,
                 b'1'..=b'8' => payload_len += 7,
-                #[cfg(not(feature = "unsafety"))]
+                #[cfg(not(feature = "blitz"))]
                 _ => unreachable!("Checksum K is not a valid character"),
-                #[cfg(feature = "unsafety")]
+                #[cfg(feature = "blitz")]
                 _ => unsafe { core::hint::unreachable_unchecked() },
             }
             payload_len += PADDING; // Padding after checksum K
@@ -131,7 +131,7 @@ impl<'a> Code11<'a> {
         }
 
         macro_rules! enc {
-            ($v:ident) => ( encode!((buffer, i) $v {
+            ($v:ident) => ( __encode!((buffer, i) $v {
                 b'0' => ([1, 0, 1, 0, 1, 1]),
                 b'1' => ([1, 1, 0, 1, 0, 1, 1]),
                 b'2' => ([1, 0, 0, 1, 0, 1, 1]),
@@ -183,10 +183,12 @@ impl<'a> Code11<'a> {
     }
 }
 
-impl<'a> Barcode<'a> for Code11<'a> {
+impl<'a> BarcodeDevExt<'a> for Code11<'a> {
     const SIZE: Range<u16> = 1..256;
     const CHARS: &'static [u8] = b"0123456789-";
+}
 
+impl<'a> Barcode<'a> for Code11<'a> {
     fn new(data: &'a [u8]) -> Result<Self> {
         Self::validate(data).map(Self)
     }

@@ -1,24 +1,19 @@
 use crate::*;
 
-mod codabar;
-pub use codabar::Codabar;
+pub mod codabar;
 
-mod code11;
-pub use code11::Code11;
+pub mod code11;
 
-mod code39;
-pub use code39::Code39;
+pub mod code39;
 
-mod code93;
-pub use code93::Code93;
+pub mod code93;
 
-// mod code128;
-// pub use code128::Code128;
+// pub mod code128;
 
-// mod ean8;
+pub mod ean8;
 // pub use ean8::EAN8;
 
-// mod ean13;
+pub mod ean13;
 // pub use ean13::EAN13;
 
 // mod tf;
@@ -28,18 +23,22 @@ pub use code93::Code93;
 /// 
 /// This trait provides a default implementation for the `validate` method
 /// commonly used in the `new` method of barcode symbologies.
-pub trait BarcodeDevExt<'a>: Barcode<'a> {
+pub trait BarcodeDevExt<'a, SegmentSize: 'static + PartialEq = u8>: Barcode<'a> {
+    /// The valid data length for the barcode.
+    const SIZE: Range<u16>;
+    /// The valid data values for the barcode.
+    const CHARS: &'static [SegmentSize];
     /// Performs validation on the data.
     /// 
     /// Users of the library should not need to call this method directly.
     /// This method is provided for potential implementors of new barcode symbologies.
-    fn validate(data: &'a [u8]) -> Result<&'a [u8]> {
+    fn validate(data: &'a [SegmentSize]) -> Result<&'a [SegmentSize]> {
         let len = data.len() as u16;
         if len < Self::SIZE.start || len > Self::SIZE.end {
             return Err(error::Error::Length);
         }
-        for &byte in data.iter() {
-            if !Self::CHARS.contains(&byte) {
+        for byte in data {
+            if !Self::CHARS.contains(byte) {
                 return Err(error::Error::Character);
             }
         }
@@ -47,8 +46,9 @@ pub trait BarcodeDevExt<'a>: Barcode<'a> {
     }
 }
 
+#[doc(hidden)]
 #[macro_export(local_inner_macros)]
-macro_rules! encode {
+macro_rules! __encode {
     (@VALUE ($buffer:ident, $i:ident) [$($bit:literal),+]) => (
         $(
             $buffer[$i] = $bit;
@@ -66,14 +66,12 @@ macro_rules! encode {
     }) => (
         match $v {
             $($pat => {
-                $crate::encode!(@VALUE ($buffer, $i) $($t)+);
+                $crate::__encode!(@VALUE ($buffer, $i) $($t)+);
             },)*
-            #[cfg(not(feature = "unsafety"))]
+            #[cfg(not(feature = "blitz"))]
             _ => ::core::unreachable!("Validation did not catch an illegal character"),
-            #[cfg(feature = "unsafety")]
+            #[cfg(feature = "blitz")]
             _ => unsafe { ::core::hint::unreachable_unchecked() },
         }
     );
 }
-
-impl<'a, B> BarcodeDevExt<'a> for B where B: Barcode<'a> {}

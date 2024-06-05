@@ -111,11 +111,11 @@ fn checksum_char(data: &[u8], weight_threshold: usize, c_checksum: Option<u8>) -
 }
 
 fn char2id(c: &u8) -> usize {
-    #[cfg(not(feature = "unsafety"))]
+    #[cfg(not(feature = "blitz"))]
     {
         CHARS.iter().position(|t| t.0 == *c).unwrap()
     }
-    #[cfg(feature = "unsafety")]
+    #[cfg(feature = "blitz")]
     unsafe {
         CHARS.iter().position(|t| t.0 == *c).unwrap_unchecked()
     }
@@ -184,9 +184,12 @@ impl<'a> Code93<'a> {
     }
 }
 
-impl<'a> Barcode<'a> for Code93<'a> {
+impl<'a> BarcodeDevExt<'a> for Code93<'a> {
     const CHARS: &'static [u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%()[]";
     const SIZE: Range<u16> = 1..256;
+}
+
+impl<'a> Barcode<'a> for Code93<'a> {
     fn new(data: &'a [u8]) -> Result<Self> {
         Self::validate(data).map(Self)
     }

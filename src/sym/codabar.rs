@@ -34,7 +34,7 @@ impl<'a> Codabar<'a> {
     fn encode_into(&self, buffer: &mut [u8]) {
         let mut i = 0;
         for byte in self.0.iter() {
-            encode!((buffer, i) byte {
+            __encode!((buffer, i) byte {
                 b'0' => ([1, 0, 1, 0, 1, 0, 0, 1, 1]),
                 b'1' => ([1, 0, 1, 0, 1, 1, 0, 0, 1]),
                 b'2' => ([1, 0, 1, 0, 0, 1, 0, 1, 1]),
@@ -65,10 +65,12 @@ impl<'a> Codabar<'a> {
     }
 }
 
-impl<'a> Barcode<'a> for Codabar<'a> {
+impl<'a> BarcodeDevExt<'a> for Codabar<'a> {
     const SIZE: Range<u16> = 1..256;
     const CHARS: &'static [u8] = b"0123456789-$:/+.ABCD";
+}
 
+impl<'a> Barcode<'a> for Codabar<'a> {
     fn new(data: &'a [u8]) -> Result<Self> {
         Self::validate(data).map(Self)
     }

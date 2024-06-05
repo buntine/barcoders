@@ -3,118 +3,116 @@
 //! EAN-8 barcodes are EAN style barcodes for smaller packages on products like
 //! cigaretts, chewing gum, etc where package space is limited.
 
-use crate::error::{Error, Result};
-use crate::sym::ean13::{ENCODINGS, LEFT_GUARD, MIDDLE_GUARD, RIGHT_GUARD};
-use crate::sym::{helpers, Parse};
-use core::char;
-use core::ops::Range;
-use helpers::{vec, Vec};
+use super::*;
+use ean13::{
+    ENCODING_LEFT_A, ENCODING_RIGHT,
+    LEFT_GUARD, MIDDLE_GUARD, RIGHT_GUARD,
+    modulo_10_checksum
+};
 
 /// The EAN-8 barcode type.
-#[derive(Debug)]
-pub struct EAN8(Vec<u8>);
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct EAN8([u8; 7]);
+
+const OUTPUT_SIZE: usize = 67;
 
 impl EAN8 {
-    /// Creates a new barcode.
-    /// Returns Result<EAN8, Error> indicating parse success.
-    pub fn new<T: AsRef<str>>(data: T) -> Result<EAN8> {
-        let d = EAN8::parse(data.as_ref())?;
-        let digits: Vec<u8> = d
-            .chars()
-            .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-            .collect();
+    fn encode_into(&self, buffer: &mut [u8]) {
+        let mut i = 0;
 
-        let ean8 = EAN8(digits[0..7].to_vec());
-
-        // If checksum digit is provided, check the checksum.
-        if digits.len() == 8 && ean8.checksum_digit() != digits[7] {
-            return Err(Error::Checksum);
+        // Left guard
+        for bit in LEFT_GUARD {
+            buffer[i] = bit;
+            i += 1;
         }
 
-        Ok(ean8)
-    }
-
-    /// Calculates the checksum digit using a weighting algorithm.
-    fn checksum_digit(&self) -> u8 {
-        helpers::modulo_10_checksum(&self.0[..], false)
-    }
-
-    fn number_system_digits(&self) -> &[u8] {
-        &self.0[0..2]
-    }
-
-    fn number_system_encoding(&self) -> Vec<u8> {
-        let mut ns = vec![];
-
-        for d in self.number_system_digits() {
-            ns.extend(self.char_encoding(0, *d).iter().cloned());
+        // Number system
+        for &digit in &self.0[0..2] {
+            for bit in ENCODING_LEFT_A[digit as usize] {
+                buffer[i] = bit;
+                i += 1;
+            }
         }
 
-        ns
+        // Left payload
+        for &digit in &self.0[2..4] {
+            for bit in ENCODING_LEFT_A[digit as usize] {
+                buffer[i] = bit;
+                i += 1;
+            }
+        }
+
+        // Middle guard
+        for bit in MIDDLE_GUARD {
+            buffer[i] = bit;
+            i += 1;
+        }
+
+        // Right payload
+        for &digit in &self.0[4..] {
+            for bit in ENCODING_RIGHT[digit as usize] {
+                buffer[i] = bit;
+                i += 1;
+            }
+        }
+
+        // Checksum
+        let checksum = self.checksum();
+        for bit in ENCODING_RIGHT[checksum as usize] {
+            buffer[i] = bit;
+            i += 1;
+        }
+
+        // Right guard
+        for bit in RIGHT_GUARD {
+            buffer[i] = bit;
+            i += 1;
+        }
     }
 
-    fn checksum_encoding(&self) -> [u8; 7] {
-        self.char_encoding(2, self.checksum_digit())
-    }
-
-    fn char_encoding(&self, side: usize, d: u8) -> [u8; 7] {
-        ENCODINGS[side][d as usize]
-    }
-
-    fn left_digits(&self) -> &[u8] {
-        &self.0[2..4]
-    }
-
-    fn right_digits(&self) -> &[u8] {
-        &self.0[4..]
-    }
-
-    fn left_payload(&self) -> Vec<u8> {
-        let slices: Vec<[u8; 7]> = self
-            .left_digits()
-            .iter()
-            .map(|d| self.char_encoding(0, *d))
-            .collect();
-
-        helpers::join_iters(slices.iter())
-    }
-
-    fn right_payload(&self) -> Vec<u8> {
-        let slices: Vec<[u8; 7]> = self
-            .right_digits()
-            .iter()
-            .map(|d| self.char_encoding(2, *d))
-            .collect();
-
-        helpers::join_iters(slices.iter())
-    }
-
-    /// Encodes the barcode.
-    /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(
-            &[
-                &LEFT_GUARD[..],
-                &self.number_system_encoding()[..],
-                &self.left_payload()[..],
-                &MIDDLE_GUARD[..],
-                &self.right_payload()[..],
-                &self.checksum_encoding()[..],
-                &RIGHT_GUARD[..],
-            ][..],
-        )
+    fn checksum(&self) -> u8 {
+        modulo_10_checksum(&self.0, false)
     }
 }
 
-impl Parse for EAN8 {
-    /// Returns the valid length of data acceptable in this type of barcode.
-    fn valid_len() -> Range<u32> {
-        7..8
+impl<'a> Barcode<'a> for EAN8 {
+    fn new(data: &'a [u8]) -> Result<Self> {
+        if data.len() != 7 && data.len() != 8 {
+            return Err(error::Error::Length);
+        }
+        let mut digits = [0; 7];
+        for i in 0..7 {
+            let byte = data[i];
+            if byte < b'0' || byte > b'9' {
+                return Err(error::Error::Character);
+            }
+            digits[i] = byte - b'0';
+        }
+        let this = EAN8(digits);
+
+        // If checksum digit is provided, check the checksum.
+        if data.len() == 8 {
+            if this.checksum() != data[7] - b'0' {
+                return Err(error::Error::Checksum);
+            }
+        }
+
+        Ok(this)
     }
 
-    /// Returns the set of valid characters allowed in this type of barcode.
-    fn valid_chars() -> Vec<char> {
-        (0..10).map(|i| char::from_digit(i, 10).unwrap()).collect()
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
+        if buffer.len() < OUTPUT_SIZE {
+            return None;
+        }
+        self.encode_into(buffer);
+        Some(())
+    }
+
+    fn encode(&self) -> Vec<u8> {
+        let mut buffer = vec![0; OUTPUT_SIZE];
+        self.encode_into(&mut buffer);
+        buffer
     }
 }
 
@@ -133,44 +131,54 @@ mod tests {
 
     #[test]
     fn new_ean8() {
-        let ean8 = EAN8::new("1234567");
+        let ean8 = EAN8::new(b"1234567");
 
         assert!(ean8.is_ok());
     }
 
     #[test]
     fn invalid_data_ean8() {
-        let ean8 = EAN8::new("1234er1");
+        let ean8 = EAN8::new(b"1234er1");
 
         assert_eq!(ean8.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_ean8() {
-        let ean8 = EAN8::new("1111112222222333333");
+        let ean8 = EAN8::new(b"1111112222222333333");
 
         assert_eq!(ean8.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_checksum_ean8() {
-        let ean8 = EAN8::new("88023020");
+        let ean8 = EAN8::new(b"88023020");
 
         assert_eq!(ean8.err().unwrap(), Error::Checksum)
     }
 
     #[test]
     fn ean8_encode() {
-        let ean81 = EAN8::new("5512345").unwrap(); // Check digit: 7
-        let ean82 = EAN8::new("9834651").unwrap(); // Check digit: 3
+        let ean81 = EAN8::new(b"5512345").unwrap(); // Check digit: 7
+        let ean82 = EAN8::new(b"9834651").unwrap(); // Check digit: 3
 
         assert_eq!(
-            collapse_vec(ean81.encode()),
-            "1010110001011000100110010010011010101000010101110010011101000100101"
+            "1010110001011000100110010010011010101000010101110010011101000100101",
+            collapse_vec(ean81.encode())
         );
         assert_eq!(
-            collapse_vec(ean82.encode()),
-            "1010001011011011101111010100011010101010000100111011001101010000101"
+            "1010001011011011101111010100011010101010000100111011001101010000101",
+            collapse_vec(ean82.encode())
+        );
+    }
+
+    #[test]
+    fn ean8_encode_with_checksum() {
+        let ean8 = EAN8::new(b"98346516").unwrap();
+
+        assert_eq!(
+            "1010001011011011101111010100011010101010000100111011001101010000101",
+            collapse_vec(ean8.encode())
         );
     }
 }

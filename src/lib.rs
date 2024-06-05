@@ -82,13 +82,9 @@ use error::Result;
 /// The Barcode trait.
 /// 
 /// All barcode symbologies must implement this trait.
-pub trait Barcode<'a>: Sized {
-    /// The valid data length for the barcode.
-    const SIZE: Range<u16>;
-    /// The valid data values for the barcode.
-    const CHARS: &'static [u8];
+pub trait Barcode<'a> {
     /// Creates a new barcode.
-    fn new(data: &'a [u8]) -> Result<Self>;
+    fn new(data: &'a [u8]) -> Result<Self> where Self: Sized;
     /// Encodes the barcode in-place.
     /// (Without any allocation or copying of data)
     /// 
@@ -102,9 +98,15 @@ pub trait Barcode<'a>: Sized {
 pub mod error;
 // pub mod generators;
 
-#[doc(hidden)]
+// #[doc(hidden)]
 pub mod sym;
+#[doc(inline)]
 pub use sym::{
-    Codabar,
-    Code11,
+    codabar::Codabar,
+    code11::Code11,
+    code39::Code39,
+    code93::Code93,
+    // code128::Code128,
+    ean8::EAN8,
+    // ean13::EAN13,
 };
