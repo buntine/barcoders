@@ -109,6 +109,7 @@ impl<'a> Barcode<'a> for EAN8 {
         Some(())
     }
 
+    #[cfg(feature = "alloc")]
     fn encode(&self) -> Vec<u8> {
         let mut buffer = vec![0; OUTPUT_SIZE];
         self.encode_into(&mut buffer);

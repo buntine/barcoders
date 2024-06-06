@@ -109,4 +109,5 @@ pub use sym::{
     // code128::Code128,
     ean8::EAN8,
     ean13::EAN13,
+    tf::ToF,
 };

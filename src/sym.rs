@@ -11,19 +11,16 @@ pub mod code93;
 // pub mod code128;
 
 pub mod ean8;
-// pub use ean8::EAN8;
 
 pub mod ean13;
-// pub use ean13::EAN13;
 
-// mod tf;
-// pub use tf::TF;
+pub mod tf;
 
 /// An extension trait for barcode symbologies.
 /// 
 /// This trait provides a default implementation for the `validate` method
 /// commonly used in the `new` method of barcode symbologies.
-pub trait BarcodeDevExt<'a, SegmentSize: 'static + PartialEq = u8>: Barcode<'a> {
+pub trait BarcodeDevExt<'a, SegmentSize: 'static + PartialEq = u8> {
     /// The valid data length for the barcode.
     const SIZE: Range<u16>;
     /// The valid data values for the barcode.
@@ -46,6 +43,47 @@ pub trait BarcodeDevExt<'a, SegmentSize: 'static + PartialEq = u8>: Barcode<'a> 
     }
 }
 
+/// A helper macro for encoding data into a buffer.
+/// 
+/// Example usage:
+/// ```rust
+/// # struct Dummy([u8; 0]);
+/// # macro_rules! encode { ($($t:tt)*) => () }
+/// # impl Dummy {
+/// fn encode_into(&self, buffer: &mut [u8]) {
+///     let mut i = 0;
+///     for byte in self.0.iter() {
+///         encode!((buffer, i) byte {
+///             b'0' => ([1, 0, 1, 0, 1, 0, 0, 1, 1]),
+///             b'1' => ([1, 0, 1, 0, 1, 1, 0, 0, 1]),
+///             b'2' => ([1, 0, 1, 0, 0, 1, 0, 1, 1]),
+///             b'3' => ([1, 1, 0, 0, 1, 0, 1, 0, 1]),
+///             b'4' => ([1, 0, 1, 1, 0, 1, 0, 0, 1]),
+///             b'5' => ([1, 1, 0, 1, 0, 1, 0, 0, 1]),
+///             b'6' => ([1, 0, 0, 1, 0, 1, 0, 1, 1]),
+///             b'7' => ([1, 0, 0, 1, 0, 1, 1, 0, 1]),
+///             b'8' => ([1, 0, 0, 1, 1, 0, 1, 0, 1]),
+///             b'9' => ([1, 1, 0, 1, 0, 0, 1, 0, 1]),
+///             b'-' => ([1, 0, 1, 0, 0, 1, 1, 0, 1]),
+///             b'$' => ([1, 0, 1, 1, 0, 0, 1, 0, 1]),
+///             b':' => ([1, 1, 0, 1, 0, 1, 1, 0, 1, 1]),
+///             b'/' => ([1, 1, 0, 1, 1, 0, 1, 0, 1, 1]),
+///             b'.' => ([1, 1, 0, 1, 1, 0, 1, 1, 0, 1]),
+///             b'+' => ([1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1]),
+///             b'A' => ([1, 0, 1, 1, 0, 0, 1, 0, 0, 1]),
+///             b'B' => ([1, 0, 1, 0, 0, 1, 0, 0, 1, 1]),
+///             b'C' => ([1, 0, 0, 1, 0, 0, 1, 0, 1, 1]),
+///             b'D' => ([1, 0, 1, 0, 0, 1, 1, 0, 0, 1]),
+///         });
+///         // Don't forget the padding
+///         if i < buffer.len() {
+///             buffer[i] = 0;
+///             i += 1;
+///         }
+///     }
+/// }
+/// # }
+/// ```
 #[doc(hidden)]
 #[macro_export(local_inner_macros)]
 macro_rules! __encode {

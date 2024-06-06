@@ -202,6 +202,7 @@ impl<'a> Barcode<'a> for Code11<'a> {
         Some(())
     }
 
+    #[cfg(feature = "alloc")]
     fn encode(&self) -> Vec<u8> {
         let (sum, c, k) = self.calc_sum_and_checksums();
         let mut buffer = vec![0; sum];
