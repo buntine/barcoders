@@ -60,10 +60,8 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(all(not(feature = "std"), feature = "alloc"))]
-extern crate alloc;
+extern crate alloc as __alloc;
 
-#[cfg(all(not(feature = "std"), feature = "alloc"))]
-use alloc as __alloc;
 #[cfg(feature = "std")]
 use std as __alloc;
 

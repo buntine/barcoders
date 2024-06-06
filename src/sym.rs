@@ -1,19 +1,13 @@
 use crate::*;
 
 pub mod codabar;
-
 pub mod code11;
-
-pub mod code39;
-
-pub mod code93;
-
 // pub mod code128;
-
-pub mod ean8;
-
+pub mod code39;
+pub mod code93;
 pub mod ean13;
-
+pub mod ean8;
+pub mod ean_supp;
 pub mod tf;
 
 /// An extension trait for barcode symbologies.
