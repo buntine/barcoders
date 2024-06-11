@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_json() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let json = JSON::new();
         let generated = json.generate(&ean13.encode()[..]).unwrap();
 
@@ -87,7 +87,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_json_small_height_double_width() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let json = JSON { height: 6, xdim: 2 };
         let generated = json.generate(&ean13.encode()[..]).unwrap();
 
@@ -96,7 +96,7 @@ mod tests {
 
     #[test]
     fn ean_8_as_json() {
-        let ean8 = EAN8::new("1234567").unwrap();
+        let ean8 = EAN8::new(b"1234567").unwrap();
         let json = JSON::new();
         let generated = json.generate(&ean8.encode()[..]).unwrap();
 
@@ -105,7 +105,7 @@ mod tests {
 
     #[test]
     fn ean_8_as_json_small_height_double_width() {
-        let ean8 = EAN8::new("1234567").unwrap();
+        let ean8 = EAN8::new(b"1234567").unwrap();
         let json = JSON { height: 5, xdim: 2 };
         let generated = json.generate(&ean8.encode()[..]).unwrap();
 
@@ -114,7 +114,7 @@ mod tests {
 
     #[test]
     fn code_93_as_json() {
-        let code93 = Code93::new("MONKEYMAGIC").unwrap();
+        let code93 = Code93::new(b"MONKEYMAGIC").unwrap();
         let json = JSON::new();
         let generated = json.generate(&code93.encode()[..]).unwrap();
 
@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn code_93_as_json_small_height_double_weight() {
-        let code93 = Code93::new("1234").unwrap();
+        let code93 = Code93::new(b"1234").unwrap();
         let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&code93.encode()[..]).unwrap();
 
@@ -132,7 +132,7 @@ mod tests {
 
     #[test]
     fn code_39_as_json() {
-        let code39 = Code39::new("TEST8052").unwrap();
+        let code39 = Code39::new(b"TEST8052").unwrap();
         let json = JSON::new();
         let generated = json.generate(&code39.encode()[..]).unwrap();
 
@@ -141,7 +141,7 @@ mod tests {
 
     #[test]
     fn code_39_as_json_small_height_double_weight() {
-        let code39 = Code39::new("1234").unwrap();
+        let code39 = Code39::new(b"1234").unwrap();
         let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&code39.encode()[..]).unwrap();
 
@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn code_128_as_json() {
-        let code128 = Code128::new("ÀHELLO").unwrap();
+        let code128 = Code128::new("ÀHELLO".as_bytes()).unwrap();
         let json = JSON::new();
         let generated = json.generate(&code128.encode()[..]).unwrap();
 
@@ -177,7 +177,7 @@ mod tests {
 
     #[test]
     fn code_128_as_json_small_height_double_weight() {
-        let code128 = Code128::new("ÀHELLO").unwrap();
+        let code128 = Code128::new("ÀHELLO".as_bytes()).unwrap();
         let json = JSON { height: 7, xdim: 2 };
         let generated = json.generate(&code128.encode()[..]).unwrap();
 
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn ean2_as_json() {
-        let ean2 = EANSUPP::new("34").unwrap();
+        let ean2 = EAN2::new(b"34").unwrap();
         let json = JSON::new();
         let generated = json.generate(&ean2.encode()[..]).unwrap();
 
@@ -199,7 +199,7 @@ mod tests {
 
     #[test]
     fn ean5_as_json() {
-        let ean5 = EANSUPP::new("50799").unwrap();
+        let ean5 = EAN5::new(b"50799").unwrap();
         let json = JSON::new();
         let generated = json.generate(&ean5.encode()[..]).unwrap();
 
@@ -208,7 +208,7 @@ mod tests {
 
     #[test]
     fn itf_as_json() {
-        let itf = TF::interleaved("12345").unwrap();
+        let itf = ToF::interleaved(b"12345").unwrap();
         let json = JSON::new();
         let generated = json.generate(&itf.encode()[..]).unwrap();
 
@@ -217,7 +217,7 @@ mod tests {
 
     #[test]
     fn code11_as_json() {
-        let code11 = Code11::new("111-999-8").unwrap();
+        let code11 = Code11::new(b"111-999-8").unwrap();
         let json = JSON::new();
         let generated = json.generate(&code11.encode()[..]).unwrap();
 

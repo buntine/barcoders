@@ -16,14 +16,14 @@ For encode-only functionality (e.g if you just want to translate a `String` into
 
 ```toml
 [dependencies]
-barcoders = "2.0.0"
+barcoders = "3.0"
 ```
 
 If you want to generate barcodes into a particular format, turn on the appropriate feature(s):
 
 ```toml
 [dependencies]
-barcoders = {version = "2.0.0", features = ["image", "ascii", "svg", "json"]}
+barcoders = {version = "3.0", features = ["image", "ascii", "svg", "json"]}
 ```
 
 Each generator is an optional feature so you only need to compile what you want to use.
@@ -40,21 +40,21 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 ### Symbologies
 
 * EAN-13
-  * UPC-A
-  * JAN
-  * Bookland
+    * UPC-A
+    * JAN
+    * Bookland
 * EAN-8
 * EAN Supplementals
-  * EAN-2
-  * EAN-5
+    * EAN-2
+    * EAN-5
 * Code11
-  * USD-8
+    * USD-8
 * Code39
 * Code93
 * Code128 (A, B, C)
 * Two-Of-Five
-  * Interleaved (ITF)
-  * Standard (STF)
+    * Interleaved (ITF)
+    * Standard (STF)
 * Codabar
 * More coming!
 
@@ -72,14 +72,13 @@ The ultimate goal of Barcoders is to provide encoding support for all major (and
 ## Examples
 
 ### Encoding
-```rust
-extern crate barcoders;
 
-use barcoders::sym::ean13::*;
+```rust
+use barcoders::*;
 
 // Each encoder accepts a String to be encoded. Valid data is barcode-specific
 // and thus constructors return an Result<T, barcoders::error::Error>.
-let barcode = EAN13::new("593456661897").unwrap();
+let barcode = EAN13::new(b"593456661897").unwrap();
 
 // The `encode` method returns a Vec<u8> of the binary representation of the
 // generated barcode. This is useful if you want to add your own generator.
@@ -87,9 +86,8 @@ let encoded: Vec<u8> = barcode.encode();
 ```
 
 ### Image (GIF, WEBP, PNG) generation
-```rust
-extern crate barcoders;
 
+```rust
 use barcoders::sym::code39::*;
 use barcoders::generators::image::*;
 use std::io::prelude::*;
@@ -97,40 +95,45 @@ use std::io::BufWriter;
 use std::fs::File;
 use std::path::Path;
 
-let barcode = Code39::new("1ISTHELONELIESTNUMBER").unwrap();
+let barcode = Code39::new(b"1ISTHELONELIESTNUMBER").unwrap();
 let png = Image::png(80); // You must specify the height in pixels.
 let encoded = barcode.encode();
 
 // Image generators return a Result<Vec<u8>, barcoders::error::Error) of encoded bytes.
-let bytes = png.generate(&encoded[..]).unwrap();
+let bytes = png.generate(&encoded).unwrap();
 
 // Which you can then save to disk.
 let file = File::create(&Path::new("my_barcode.png")).unwrap();
 let mut writer = BufWriter::new(file);
-writer.write(&bytes[..]).unwrap();
+writer.write(&bytes).unwrap();
 
 // Generated file ↓ ↓ ↓
 ```
+
 ![Code 39: 1ISTHELONELIESTNUMBER](/media/code39_1istheloneliestnumber.png?raw=true "Code 39: 1ISTHELONELIESTNUMBER")
 
 You can also request an [image::RgbaImage](http://www.piston.rs/image/image/type.RgbaImage.html), which you can manipulate yourself:
+
 ```rust
-let barcode = Code39::new("BEELZEBUB").unwrap();
+let barcode = Code39::new(b"BEELZEBUB").unwrap();
 let buffer = Image::image_buffer(100);
 let encoded = barcode.encode();
-let img = buffer.generate_buffer(&encoded[..]).unwrap();
+let img = buffer.generate_buffer(&encoded).unwrap();
 
 // Manipulate and save the image here...
 ```
 
 You may also specify the barcode x-dimension, rotation, background/foreground colors and opacity by specifying the struct fields:
+
 ```rust
-let gif = Image::GIF{height: 80,
-                     xdim: 1,
-                     rotation: Rotation::Zero,
-                     // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
-                     foreground: Color::new([255, 0, 0, 255]),
-                     background: Color::new([0, 255, 20, 255])};
+let gif = Image::GIF{
+    height: 80,
+    xdim: 1,
+    rotation: Rotation::Zero,
+    // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
+    foreground: Color::new([255, 0, 0, 255]),
+    background: Color::new([0, 255, 20, 255])
+};
 ```
 
 ### SVG generation
@@ -138,8 +141,6 @@ let gif = Image::GIF{height: 80,
 SVG is similar to the other image types, but I've supplied it as a separate feature as it doesn't require third-party dependencies.
 
 ```rust
-extern crate barcoders;
-
 use barcoders::sym::code39::*;
 use barcoders::generators::svg::*;
 use std::io::prelude::*;
@@ -147,7 +148,7 @@ use std::io::BufWriter;
 use std::fs::File;
 use std::path::Path;
 
-let barcode = Code39::new("56DFU4A777H").unwrap();
+let barcode = Code39::new(b"56DFU4A777H").unwrap();
 let svg = SVG::new(200); // You must specify the height in pixels.
 let encoded = barcode.encode();
 let data: String = svg.generate(&encoded).unwrap();
@@ -158,12 +159,15 @@ writer.write(data.as_bytes()).unwrap();
 ```
 
 You may also specify the barcode x-dimension, background/foreground colors and opacity by specifying the struct fields:
+
 ```rust
-let svg = SVG{height: 80,
-              xdim: 1,
-              // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
-              foreground: Color::black(),
-              background: Color::new([0, 255, 20, 255])};
+let svg = SVG{
+    height: 80,
+    xdim: 1,
+    // Using non black/white colors is generally not recommended by most vendors, but barcoders makes it possible.
+    foreground: Color::black(),
+    background: Color::new([0, 255, 20, 255])
+};
 ```
 
 ### ASCII generation
@@ -171,12 +175,10 @@ let svg = SVG{height: 80,
 The ASCII generator is useful for testing purposes.
 
 ```rust
-extern crate barcoders;
-
 use barcoders::sym::ean13::*;
 use barcoders::generators::ascii::*;
 
-let barcode = EAN13::new("750103131130").unwrap();
+let barcode = EAN13::new(b"750103131130").unwrap();
 let encoded = barcode.encode();
 
 let ascii = ASCII::new();
@@ -197,7 +199,6 @@ assert_eq!(ascii.unwrap(),
 ".trim());
 ```
 
-
 ### JSON generation
 
 This may be useful for passing encoded data to third-party systems in a conventional format.
@@ -208,18 +209,18 @@ extern crate barcoders;
 use barcoders::sym::codabar::*;
 use barcoders::generators::json::*;
 
-let codabar = Codabar::new("A98B").unwrap();
+let codabar = Codabar::new(b"A98B").unwrap();
 let json = JSON::new();
-let generated = json.generate(&codabar.encode()[..]);
+let generated = json.generate(&codabar.encode());
 
 assert_eq!(generated.unwrap(),
 "
 {
- \"height\": 10,
- \"xdim\": 1,
- \"encoding\": [1,0,1,1,0,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,1]
+    \"height\": 10,
+    \"xdim\": 1,
+    \"encoding\": [1,0,1,1,0,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,0,1,0,0,1,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,1]
 }
-"
+")
 ```
 
 ## Tests
@@ -228,12 +229,14 @@ Note, if you want to output actual image/svg files to the filesystem for visual 
 the `WRITE_TO_FILE` variable in the appropriate test modules.
 
 Full suite:
-```
+
+```shell
 $ cargo test --features="image svg ascii json"
 ```
 
 Encoding only:
-```
+
+```shell
 $ cargo test
 ```
 
@@ -241,8 +244,8 @@ $ cargo test
 
 Licensed under either of
 
- * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+* MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
 

@@ -11,6 +11,13 @@ Possible log types:
 - `[fixed]` for any bug fixes.
 - `[security]` to invite users to upgrade in case of vulnerabilities.
 
+### v3.0.0 (2024-06-11)
+
+- [added] the `Barcode` trait to allow for a more generic interface to all barcode types.
+- [fixed] [#37](https://github.com/buntine/barcoders/issues/37)
+- [changed] all barcode types now implement the `Barcode` trait.
+- [changed] Barcodes accept a `&[u8]` slice instead of a `&str` for data.
+
 ### v2.0.0 (2024-04-04)
 
 - [changed] Updated image dependency from 0.22.0 to 0.25.0.

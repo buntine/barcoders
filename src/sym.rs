@@ -1,3 +1,18 @@
+//! Supported barcode symbologies.
+//!
+//! Symbologies are separated into logical modules and thus you must `use` the appropriate one(s).
+//!
+//! For example:
+//!
+//! ```rust
+//! use barcoders::sym::ean13::*;
+//!
+//! let barcode = EAN13::new(b"750103131130").unwrap();
+//! let encoded = barcode.encode();
+//! ```
+//! Each encoder accepts a `String` to be encoded. Valid data is barcode-specific and thus
+//! constructors return an Option<T>.
+
 use crate::*;
 
 pub mod codabar;

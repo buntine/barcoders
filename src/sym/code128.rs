@@ -439,8 +439,8 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128_a = Code128::new("À !! Ć0201");
-        let code128_b = Code128::new("À!!  \" ");
+        let code128_a = Code128::new("À !! Ć0201".as_bytes());
+        let code128_b = Code128::new("À!!  \" ".as_bytes());
 
         assert!(code128_a.is_ok());
         assert!(code128_b.is_ok());
@@ -448,16 +448,16 @@ mod tests {
 
     #[test]
     fn invalid_length_code128() {
-        let code128_a = Code128::new("");
+        let code128_a = Code128::new(b"");
 
         assert_eq!(code128_a.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code128() {
-        let code128_a = Code128::new("À☺ "); // Unknown character.
-        let code128_b = Code128::new("ÀHELLOĆ12352"); // Trailing carry at the end.
-        let code128_c = Code128::new("HELLO"); // No Character-Set specified.
+        let code128_a = Code128::new("À☺ ".as_bytes()); // Unknown character.
+        let code128_b = Code128::new("ÀHELLOĆ12352".as_bytes()); // Trailing carry at the end.
+        let code128_c = Code128::new(b"HELLO"); // No Character-Set specified.
 
         assert_eq!(code128_a.err().unwrap(), Error::Character);
         assert_eq!(code128_b.err().unwrap(), Error::Character);
@@ -466,9 +466,9 @@ mod tests {
 
     #[test]
     fn code128_encode() {
-        let code128_a = Code128::new("ÀHELLO").unwrap();
-        let code128_b = Code128::new("ÀXYĆ2199").unwrap();
-        let code128_c = Code128::new("ƁxyZÀ199!*1").unwrap();
+        let code128_a = Code128::new("ÀHELLO".as_bytes()).unwrap();
+        let code128_b = Code128::new("ÀXYĆ2199".as_bytes()).unwrap();
+        let code128_c = Code128::new("ƁxyZÀ199!*1".as_bytes()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011");
         assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011");
@@ -477,7 +477,7 @@ mod tests {
 
     #[test]
     fn code128_encode_special_chars() {
-        let code128_a = Code128::new("ÀB\u{0006}").unwrap();
+        let code128_a = Code128::new("ÀB\u{0006}".as_bytes()).unwrap();
 
         assert_eq!(
             collapse_vec(code128_a.encode()),
@@ -487,16 +487,16 @@ mod tests {
 
     #[test]
     fn code128_encode_fnc_chars() {
-        let code128_a = Code128::new("ĆŹ4218402050À0").unwrap();
+        let code128_a = Code128::new("ĆŹ4218402050À0".as_bytes()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100111001111010111010110111000110011100101100010100011001001110110001011101110101111010011101100101011110001100011101011");
     }
 
     #[test]
     fn code128_encode_longhand() {
-        let code128_a = Code128::new("\u{00C0}HELLO").unwrap();
-        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199").unwrap();
-        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1").unwrap();
+        let code128_a = Code128::new("\u{00C0}HELLO".as_bytes()).unwrap();
+        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199".as_bytes()).unwrap();
+        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1".as_bytes()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011");
         assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011");

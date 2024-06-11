@@ -1,6 +1,6 @@
 [package]
 name = "barcoders"
-version = "2.0.0"
+version = "3.0.0"
 edition = "2021"
 authors = ["Andrew Buntine <info@bunts.io>"]
 description = "A barcode-encoding library"
@@ -16,7 +16,6 @@ exclude = [
 ]
 
 [features]
-# default = ["ascii", "json", "svg", "nightly", "alloc"]
 default = ["ascii", "json", "svg", "std"]
 
 ascii = []
@@ -24,7 +23,7 @@ json = []
 svg = []
 image = ["std", "dep:image"] # Uses std::io
 
-unsafety = [] # For faster (unsafe) implementations
+# blitz = [] # For faster (unsafe) implementations
 nightly = [] # for error_in_core feature
 alloc = [] # For vec and string
 std = ["alloc"] # std is a superset of alloc

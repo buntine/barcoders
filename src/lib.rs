@@ -94,7 +94,7 @@ pub trait Barcode<'a> {
 }
 
 pub mod error;
-// pub mod generators;
+pub mod generators;
 
 // #[doc(hidden)]
 pub mod sym;
