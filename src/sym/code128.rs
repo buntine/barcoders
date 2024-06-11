@@ -52,12 +52,9 @@
 //! - FNC4: ```ż``` (```\u{017C}```)
 //! - SHIFT: ```Ž``` (```\u{017D}```)
 
-use crate::error::*;
-use crate::sym::helpers;
-#[cfg(not(feature = "std"))]
-use alloc::{format, string::ToString};
-use core::cmp;
-use helpers::{vec, Vec};
+#![cfg(feature = "alloc")]
+
+use super::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Unit {
@@ -285,19 +282,8 @@ impl CharacterSet {
 }
 
 impl Code128 {
-    /// Creates a new barcode.
-    /// Returns Result<Code128, Error> indicating parse success.
-    pub fn new<T: AsRef<str>>(data: T) -> Result<Code128> {
-        let data = data.as_ref();
-        if data.len() < 2 {
-            return Err(Error::Length);
-        }
-
-        Code128::parse(data.chars().collect()).map(Code128)
-    }
-
     // Tokenizes and collects the data into the appropriate character-sets.
-    fn parse(chars: Vec<char>) -> Result<Vec<Unit>> {
+    fn parse(chars: core::str::Chars) -> Result<Vec<Unit>> {
         let mut units: Vec<Unit> = vec![];
         let mut char_set = CharacterSet::None;
         let mut carry: Option<char> = None;
@@ -349,7 +335,7 @@ impl Code128 {
             .0
             .iter()
             .zip(0..self.0.len() as i32)
-            .fold(0, |t, (u, i)| t + (u.index() as i32 * cmp::max(1, i)));
+            .fold(0, |t, (u, i)| t + (u.index() as i32 * core::cmp::max(1, i)));
 
         (sum % 103) as u8
     }
@@ -368,31 +354,83 @@ impl Code128 {
 
     fn payload(&self) -> Vec<u8> {
         let slices: Vec<Encoding> = self.0.iter().map(|u| self.unit_encoding(u)).collect();
+        let size = slices.len() * 11; // Each encoding is 11 bits.
+        let mut buffer = vec![0; size];
+        let mut i = 0;
+        for item in slices {
+            buffer[i..i + 11].copy_from_slice(&item[..]);
+            i += 11;
+        }
+        buffer
+    }
+}
 
-        helpers::join_iters(slices.iter())
+impl<'a> Barcode<'a> for Code128 {
+    fn new(data: &'a [u8]) -> Result<Self> where Self: Sized {
+        let data = core::str::from_utf8(data).map_err(|_| Error::Character)?;
+        if data.len() < 2 {
+            return Err(Error::Length);
+        }
+        Code128::parse(data.chars()).map(Code128)
     }
 
-    /// Encodes the barcode.
-    /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> Vec<u8> {
-        helpers::join_slices(
-            &[
-                &self.payload()[..],
-                &self.checksum_encoding()[..],
-                &STOP[..],
-                &TERM[..],
-            ][..],
-        )
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
+        let mut size = 0;
+        let payload = self.payload();
+        size += payload.len();
+        let checksum = self.checksum_encoding();
+        size += 11;
+
+        size += STOP.len();
+        size += TERM.len();
+
+        if buffer.len() < size {
+            return None;
+        }
+
+        let mut i = 0;
+        for j in 0..payload.len() {
+            buffer[i + j] = payload[i + j];
+        }
+        i += payload.len();
+
+        for j in 0..checksum.len() {
+            buffer[i + j] = checksum[j];
+        }
+        i += checksum.len();
+
+        for j in 0..STOP.len() {
+            buffer[i + j] = STOP[j];
+        }
+        i += STOP.len();
+
+        for j in 0..TERM.len() {
+            buffer[i + j] = TERM[j];
+        }
+
+        Some(())
+    }
+
+    fn encode(&self) -> Vec<u8> {
+        let mut payload = self.payload();
+        let checksum = self.checksum_encoding();
+        payload.reserve(checksum.len() + STOP.len() + TERM.len());
+        for i in 0..checksum.len() {
+            payload.push(checksum[i]);
+        }
+        for i in 0..STOP.len() {
+            payload.push(STOP[i]);
+        }
+        for i in 0..TERM.len() {
+            payload.push(TERM[i]);
+        }
+        payload
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::error::Error;
-    use crate::sym::code128::*;
-    #[cfg(not(feature = "std"))]
-    use alloc::string::String;
-    use core::char;
+    use super::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -401,8 +439,8 @@ mod tests {
 
     #[test]
     fn new_code128() {
-        let code128_a = Code128::new("À !! Ć0201");
-        let code128_b = Code128::new("À!!  \" ");
+        let code128_a = Code128::new("À !! Ć0201".as_bytes());
+        let code128_b = Code128::new("À!!  \" ".as_bytes());
 
         assert!(code128_a.is_ok());
         assert!(code128_b.is_ok());
@@ -410,16 +448,16 @@ mod tests {
 
     #[test]
     fn invalid_length_code128() {
-        let code128_a = Code128::new("");
+        let code128_a = Code128::new(b"");
 
         assert_eq!(code128_a.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code128() {
-        let code128_a = Code128::new("À☺ "); // Unknown character.
-        let code128_b = Code128::new("ÀHELLOĆ12352"); // Trailing carry at the end.
-        let code128_c = Code128::new("HELLO"); // No Character-Set specified.
+        let code128_a = Code128::new("À☺ ".as_bytes()); // Unknown character.
+        let code128_b = Code128::new("ÀHELLOĆ12352".as_bytes()); // Trailing carry at the end.
+        let code128_c = Code128::new(b"HELLO"); // No Character-Set specified.
 
         assert_eq!(code128_a.err().unwrap(), Error::Character);
         assert_eq!(code128_b.err().unwrap(), Error::Character);
@@ -428,9 +466,9 @@ mod tests {
 
     #[test]
     fn code128_encode() {
-        let code128_a = Code128::new("ÀHELLO").unwrap();
-        let code128_b = Code128::new("ÀXYĆ2199").unwrap();
-        let code128_c = Code128::new("ƁxyZÀ199!*1").unwrap();
+        let code128_a = Code128::new("ÀHELLO".as_bytes()).unwrap();
+        let code128_b = Code128::new("ÀXYĆ2199".as_bytes()).unwrap();
+        let code128_c = Code128::new("ƁxyZÀ199!*1".as_bytes()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011");
         assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011");
@@ -439,7 +477,7 @@ mod tests {
 
     #[test]
     fn code128_encode_special_chars() {
-        let code128_a = Code128::new("ÀB\u{0006}").unwrap();
+        let code128_a = Code128::new("ÀB\u{0006}".as_bytes()).unwrap();
 
         assert_eq!(
             collapse_vec(code128_a.encode()),
@@ -449,16 +487,16 @@ mod tests {
 
     #[test]
     fn code128_encode_fnc_chars() {
-        let code128_a = Code128::new("ĆŹ4218402050À0").unwrap();
+        let code128_a = Code128::new("ĆŹ4218402050À0".as_bytes()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100111001111010111010110111000110011100101100010100011001001110110001011101110101111010011101100101011110001100011101011");
     }
 
     #[test]
     fn code128_encode_longhand() {
-        let code128_a = Code128::new("\u{00C0}HELLO").unwrap();
-        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199").unwrap();
-        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1").unwrap();
+        let code128_a = Code128::new("\u{00C0}HELLO".as_bytes()).unwrap();
+        let code128_b = Code128::new("\u{00C0}XY\u{0106}2199".as_bytes()).unwrap();
+        let code128_c = Code128::new("\u{0181}xyZ\u{00C0}199!*1".as_bytes()).unwrap();
 
         assert_eq!(collapse_vec(code128_a.encode()), "110100001001100010100010001101000100011011101000110111010001110110110100010001100011101011");
         assert_eq!(collapse_vec(code128_b.encode()), "110100001001110001011011101101000101110111101101110010010111011110100111011001100011101011");

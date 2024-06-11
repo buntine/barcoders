@@ -7,165 +7,219 @@
 //!
 //! Most of the time you will want to use the interleaved barcode over the standard option.
 
-use crate::error::Result;
-use crate::sym::helpers;
-use crate::sym::Parse;
-use core::char;
-use core::ops::Range;
-use helpers::{vec, Vec};
+use super::*;
 
-#[rustfmt::skip]
-const WIDTHS: [&str; 10] = [
-    "NNWWN", "WNNNW", "NWNNW",
-    "WWNNN", "NNWNW", "WNWNN",
-    "NWWNN", "NNNWW", "WNNWN",
-    "NWNWN",
+const ITF_GUARD_SIZE: usize = 4;
+const ITF_START: [u8; ITF_GUARD_SIZE] = [1, 0, 1, 0];
+const ITF_STOP: [u8; ITF_GUARD_SIZE] = [1, 1, 0, 1];
+const ITF_CHAR_WIDTH_DOUBLE: usize = ITF_CHAR_WIDTH * 2;
+const ITF_CHAR_WIDTH: usize = 9;
+
+const STF_GUARD_SIZE: usize = 8;
+const STF_START: [u8; STF_GUARD_SIZE] = [1, 1, 0, 1, 1, 0, 1, 0];
+const STF_STOP: [u8; STF_GUARD_SIZE] = [1, 1, 0, 1, 0, 1, 1, 0];
+
+const CHAR_WIDTH: usize = 14;
+// Used only by the standard barcode
+const CHARS: [[u8; CHAR_WIDTH]; 10] = [
+    [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
+    [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
+    [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0],
+    [1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0],
+    [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0],
+    [1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0],
+    [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
 ];
 
-const ITF_START: [u8; 4] = [1, 0, 1, 0];
-const ITF_STOP: [u8; 4] = [1, 1, 0, 1];
-const STF_START: [u8; 8] = [1, 1, 0, 1, 1, 0, 1, 0];
-const STF_STOP: [u8; 8] = [1, 1, 0, 1, 0, 1, 1, 0];
+// Used only by the interleaved barcode
+const LENGTH_MODIFIER_SIZE: usize = 5;
+const LENGTH_MODIFIERS: [[u8; LENGTH_MODIFIER_SIZE]; 10] = [
+    [1, 1, 3, 3, 1],
+    [3, 1, 1, 1, 3],
+    [1, 3, 1, 1, 3],
+    [3, 3, 1, 1, 1],
+    [1, 1, 3, 1, 3],
+    [3, 1, 3, 1, 1],
+    [1, 3, 3, 1, 1],
+    [1, 1, 1, 3, 3],
+    [3, 1, 1, 3, 1],
+    [1, 3, 1, 3, 1],
+];
 
-/// The 2-of-5 barcode type.
-#[derive(Debug)]
-pub enum TF {
-    /// The standard 2-of-5 barcode type.
-    Standard(Vec<u8>),
-    /// The interleaved 2-of-5 barcode type.
-    Interleaved(Vec<u8>),
+/// The standard 2-of-5 barcode type.
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ToF<'a>(&'a [u8]);
+
+impl<'a> BarcodeDevExt<'a> for ToF<'a> {
+    const CHARS: &'static [u8] = b"0123456789";
+    const SIZE: Range<u16> = 1..256;
 }
 
-impl TF {
-    /// Creates a new ITF barcode.
-    /// If the length of the given data is odd, a checksum value will be computed and appended to
-    /// the data for encoding.
-    ///
-    /// Returns Result<TF::Interleaved, Error> indicating parse success.
-    pub fn interleaved<T: AsRef<str>>(data: T) -> Result<TF> {
-        TF::parse(data.as_ref()).map(|d| {
-            let mut digits: Vec<u8> = d
-                .chars()
-                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                .collect();
-            let checksum_required = digits.len() % 2 == 1;
-
-            if checksum_required {
-                let check_digit = helpers::modulo_10_checksum(&digits[..], false);
-                digits.push(check_digit);
-            }
-
-            TF::Interleaved(digits)
-        })
+impl<'a> ToF<'a> {
+    /// Create a new interleaved 2-of-5 barcode.
+    #[inline]
+    pub fn interleaved(data: &'a [u8]) -> Result<ToFI<'a>> {
+        ToFI::new(data)
     }
+}
 
-    /// Creates a new STF barcode.
-    ///
-    /// Returns Result<TF::Standard, Error> indicating parse success.
-    pub fn standard<T: AsRef<str>>(data: T) -> Result<TF> {
-        TF::parse(data.as_ref()).map(|d| {
-            let digits: Vec<u8> = d
-                .chars()
-                .map(|c| c.to_digit(10).expect("Unknown character") as u8)
-                .collect();
-            TF::Standard(digits)
-        })
+impl<'a> ToF<'a> {
+    #[inline]
+    fn calc_sum(&self) -> usize {
+        STF_GUARD_SIZE +
+        self.0.len() * CHAR_WIDTH +
+        STF_GUARD_SIZE
     }
-
-    fn raw_data(&self) -> &[u8] {
-        match *self {
-            TF::Standard(ref d) | TF::Interleaved(ref d) => &d[..],
+    fn encode_into(&self, buffer: &mut [u8]) {
+        let mut i = 0;
+        
+        // Start guard
+        for bit in STF_START {
+            buffer[i] = bit;
+            i += 1;
         }
-    }
 
-    fn interleave(&self, bars: u8, spaces: u8) -> Vec<u8> {
-        let bwidths = WIDTHS[bars as usize].chars();
-        let swidths = WIDTHS[spaces as usize].chars();
-        let mut encoding: Vec<u8> = vec![];
-
-        for (b, s) in bwidths.zip(swidths) {
-            for &(c, i) in &[(b, 1), (s, 0)] {
-                match c {
-                    'W' => encoding.extend([i; 3].iter().cloned()),
-                    _ => encoding.push(i),
-                }
+        // Payload
+        for &byte in self.0 {
+            let index = byte - b'0';
+            for &bit in &CHARS[index as usize] {
+                buffer[i] = bit;
+                i += 1;
             }
         }
 
-        encoding
-    }
-
-    fn char_encoding(&self, d: u8) -> Vec<u8> {
-        let bars: Vec<Vec<u8>> = self
-            .char_widths(d)
-            .chars()
-            .map(|c| match c {
-                'W' => vec![1, 1, 1, 0],
-                _ => vec![1, 0],
-            })
-            .collect();
-
-        helpers::join_iters(bars.iter())
-    }
-
-    fn char_widths(&self, d: u8) -> &'static str {
-        WIDTHS[d as usize]
-    }
-
-    fn stf_payload(&self) -> Vec<u8> {
-        let mut encodings = vec![];
-
-        for d in self.raw_data() {
-            encodings.extend(self.char_encoding(*d).iter().cloned());
-        }
-
-        encodings
-    }
-
-    fn itf_payload(&self) -> Vec<u8> {
-        let weaves: Vec<Vec<u8>> = self
-            .raw_data()
-            .chunks(2)
-            .map(|c| self.interleave(c[0], c[1]))
-            .collect();
-
-        helpers::join_iters(weaves.iter())
-    }
-
-    /// Encodes the barcode.
-    /// Returns a Vec<u8> of binary digits.
-    pub fn encode(&self) -> Vec<u8> {
-        match *self {
-            TF::Standard(_) => {
-                helpers::join_slices(&[&STF_START[..], &self.stf_payload()[..], &STF_STOP[..]][..])
-            }
-            TF::Interleaved(_) => {
-                helpers::join_slices(&[&ITF_START[..], &self.itf_payload()[..], &ITF_STOP[..]][..])
-            }
+        // Stop guard
+        for bit in STF_STOP {
+            buffer[i] = bit;
+            i += 1;
         }
     }
 }
 
-impl Parse for TF {
-    /// Returns the valid length of data acceptable in this type of barcode.
-    /// 2-of-5 barcodes are variable-length.
-    fn valid_len() -> Range<u32> {
-        1..256
+impl<'a> Barcode<'a> for ToF<'a> {
+    fn new(data: &'a [u8]) -> Result<Self> where Self: Sized {
+        Self::validate(data).map(Self)
+    }
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
+        let sum = self.calc_sum();
+        if buffer.len() < sum {
+            return None;
+        }
+        self.encode_into(buffer);
+        Some(())
     }
 
-    /// Returns the set of valid characters allowed in this type of barcode.
-    fn valid_chars() -> Vec<char> {
-        (0..10).map(|i| char::from_digit(i, 10).unwrap()).collect()
+    #[cfg(feature = "alloc")]
+    fn encode(&self) -> Vec<u8> {
+        let sum = self.calc_sum();
+        let mut buffer = vec![0; sum];
+        self.encode_into(&mut buffer);
+        buffer
+    }
+}
+
+/// The interleaved 2-of-5 barcode type.
+#[repr(transparent)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ToFI<'a>(&'a [u8]);
+
+impl<'a> BarcodeDevExt<'a> for ToFI<'a> {
+    const CHARS: &'static [u8] = b"0123456789";
+    const SIZE: Range<u16> = 1..256;
+}
+
+impl<'a> ToFI<'a> {
+    fn calc_sum(&self) -> usize {
+        let mut len = self.0.len();
+        if len % 2 == 1 {
+            len += 1;
+        }
+        ITF_GUARD_SIZE +
+        len * ITF_CHAR_WIDTH +
+        ITF_GUARD_SIZE
+    }
+    fn interleave(bars: u8, spaces: u8) -> [u8; ITF_CHAR_WIDTH_DOUBLE] {
+        let bwidths = LENGTH_MODIFIERS[bars as usize];
+        let swidths = LENGTH_MODIFIERS[spaces as usize];
+        let mut buffer = [0; ITF_CHAR_WIDTH_DOUBLE];
+        let mut index = 0;
+
+        for modifier in 0..LENGTH_MODIFIER_SIZE {
+            for _ in 0..bwidths[modifier] {
+                buffer[index] = 1;
+                index += 1;
+            }
+            for _ in 0..swidths[modifier] {
+                buffer[index] = 0;
+                index += 1;
+            }
+        }
+        
+        buffer
+    }
+    fn encode_into(&self, buffer: &mut [u8]) {
+        let mut i = 0;
+        
+        // Start guard
+        for bit in ITF_START {
+            buffer[i] = bit;
+            i += 1;
+        }
+
+        // Payload
+        for byte in self.0.chunks(2) {
+            let bars = byte[0] - b'0';
+
+            // In the case of an odd number of input bytes
+            let mut spaces = 0;
+            if byte.len() == 2 {
+                spaces = byte[1] - b'0';
+            }
+            
+            let interleaved = Self::interleave(bars, spaces);
+            for &bit in &interleaved {
+                buffer[i] = bit;
+                i += 1;
+            }
+        }
+
+        // Stop guard
+        for bit in ITF_STOP {
+            buffer[i] = bit;
+            i += 1;
+        }
+    }
+}
+
+impl<'a> Barcode<'a> for ToFI<'a> {
+    fn new(data: &'a [u8]) -> Result<Self> where Self: Sized {
+        Self::validate(data).map(Self)
+    }
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()> {
+        let sum = self.calc_sum();
+        if buffer.len() < sum {
+            return None;
+        }
+        self.encode_into(buffer);
+        Some(())
+    }
+
+    #[cfg(feature = "alloc")]
+    fn encode(&self) -> Vec<u8> {
+        let sum = self.calc_sum();
+        let mut buffer = vec![0; sum];
+        self.encode_into(&mut buffer);
+        buffer
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::error::Error;
-    use crate::sym::tf::*;
-    #[cfg(not(feature = "std"))]
-    pub(crate) use alloc::string::{String, ToString};
-    use core::char;
+    use super::*;
 
     fn collapse_vec(v: Vec<u8>) -> String {
         let chars = v.iter().map(|d| char::from_digit(*d as u32, 10).unwrap());
@@ -174,54 +228,49 @@ mod tests {
 
     #[test]
     fn new_itf() {
-        let itf = TF::interleaved("12345679".to_string());
+        let itf = ToF::interleaved(b"12345679");
 
         assert!(itf.is_ok());
     }
 
     #[test]
-    fn new_stf() {
-        let stf = TF::standard("12345".to_string());
+    fn new() {
+        let tof = ToF::new(b"12345");
 
-        assert!(stf.is_ok());
+        assert!(tof.is_ok());
     }
 
     #[test]
     fn invalid_data_itf() {
-        let itf = TF::interleaved("1234er123412".to_string());
+        let itf = ToF::interleaved(b"1234er123412");
 
         assert_eq!(itf.err().unwrap(), Error::Character);
     }
 
     #[test]
-    fn invalid_data_stf() {
-        let stf = TF::standard("WORDUP".to_string());
+    fn invalid_data() {
+        let tof = ToF::new(b"WORDUP");
 
-        assert_eq!(stf.err().unwrap(), Error::Character);
-    }
-
-    #[test]
-    fn itf_raw_data() {
-        let itf = TF::interleaved("12345679".to_string()).unwrap();
-
-        assert_eq!(itf.raw_data(), &[1, 2, 3, 4, 5, 6, 7, 9]);
+        assert_eq!(tof.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn itf_encode() {
-        let itf = TF::interleaved("1234567".to_string()).unwrap(); // Check digit: 0
+        let itf = ToF::interleaved(b"1234567").unwrap(); // Check digit: 0
 
         assert_eq!(
-            collapse_vec(itf.encode()),
-            "10101110100010101110001110111010001010001110100011100010101010100011100011101101"
-                .to_string()
+            "10101110100010101110001110111010001010001110100011100010101010100011100011101101",
+            collapse_vec(itf.encode())
         );
     }
 
     #[test]
-    fn stf_encode() {
-        let stf = TF::standard("1234567".to_string()).unwrap();
+    fn encode() {
+        let tof = ToF::new(b"1234567").unwrap();
 
-        assert_eq!(collapse_vec(stf.encode()), "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110".to_string());
+        assert_eq!(
+            "110110101110101010111010111010101110111011101010101010111010111011101011101010101110111010101010101110111011010110",
+            collapse_vec(tof.encode())
+        );
     }
 }

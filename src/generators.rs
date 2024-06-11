@@ -22,7 +22,7 @@ pub mod ascii;
 #[cfg(feature = "json")]
 pub mod json;
 
-#[cfg(all(feature = "image", feature = "std"))]
+#[cfg(feature = "image")]
 pub mod image;
 
 #[cfg(feature = "svg")]

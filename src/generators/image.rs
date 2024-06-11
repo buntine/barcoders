@@ -247,7 +247,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_gif() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let gif = Image::gif(80);
         let generated = gif.generate(&ean13.encode()[..]).unwrap();
 
@@ -260,7 +260,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_png() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let png = Image::PNG {
             height: 100,
             xdim: 1,
@@ -283,7 +283,7 @@ mod tests {
 
     #[test]
     fn rotated_ean_13_as_png() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let png = Image::PNG {
             height: 100,
             xdim: 1,
@@ -306,7 +306,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_webp() {
-        let ean13 = EAN13::new("999988881234").unwrap();
+        let ean13 = EAN13::new(b"999988881234").unwrap();
         let webp = Image::WEBP {
             height: 100,
             xdim: 3,
@@ -329,7 +329,7 @@ mod tests {
 
     #[test]
     fn ean_13_as_image_buffer() {
-        let ean13 = EAN13::new("750399599113").unwrap();
+        let ean13 = EAN13::new(b"750399599113").unwrap();
         let img = Image::ImageBuffer {
             height: 99,
             xdim: 1,
@@ -349,7 +349,7 @@ mod tests {
 
     #[test]
     fn colored_ean_13_as_gif() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let gif = Image::GIF {
             height: 99,
             xdim: 1,
@@ -373,7 +373,7 @@ mod tests {
 
     #[test]
     fn colored_semi_opaque_ean_13_as_png() {
-        let ean13 = EAN13::new("750153666132").unwrap();
+        let ean13 = EAN13::new(b"750153666132").unwrap();
         let png = Image::PNG {
             height: 99,
             xdim: 1,
@@ -397,7 +397,7 @@ mod tests {
 
     #[test]
     fn code39_as_png() {
-        let code39 = Code39::new("ILOVEMEL").unwrap();
+        let code39 = Code39::new(b"ILOVEMEL").unwrap();
         let png = Image::PNG {
             height: 60,
             xdim: 1,
@@ -420,7 +420,7 @@ mod tests {
 
     #[test]
     fn code39_as_gif() {
-        let code39 = Code39::new("WIKIPEDIA").unwrap();
+        let code39 = Code39::new(b"WIKIPEDIA").unwrap();
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
@@ -443,7 +443,7 @@ mod tests {
 
     #[test]
     fn rotated_code39_as_gif() {
-        let code39 = Code39::new("HELLOWORLD").unwrap();
+        let code39 = Code39::new(b"HELLOWORLD").unwrap();
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
@@ -466,7 +466,7 @@ mod tests {
 
     #[test]
     fn code93_as_png() {
-        let code93 = Code93::new("ILOVEBAH").unwrap();
+        let code93 = Code93::new(b"ILOVEBAH").unwrap();
         let png = Image::PNG {
             height: 60,
             xdim: 1,
@@ -489,7 +489,7 @@ mod tests {
 
     #[test]
     fn code93_as_gif() {
-        let code93 = Code93::new("CIVIC VIDEO").unwrap();
+        let code93 = Code93::new(b"CIVIC VIDEO").unwrap();
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
@@ -512,7 +512,7 @@ mod tests {
 
     #[test]
     fn rotated_code93_as_gif() {
-        let code93 = Code93::new("TWISTIES 100").unwrap();
+        let code93 = Code93::new(b"TWISTIES 100").unwrap();
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
@@ -535,7 +535,7 @@ mod tests {
 
     #[test]
     fn code11_as_png() {
-        let code11 = Code11::new("9923-1111").unwrap();
+        let code11 = Code11::new(b"9923-1111").unwrap();
         let png = Image::PNG {
             height: 60,
             xdim: 1,
@@ -558,7 +558,7 @@ mod tests {
 
     #[test]
     fn code11_as_gif() {
-        let code11 = Code11::new("122333444455556666").unwrap();
+        let code11 = Code11::new(b"122333444455556666").unwrap();
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
@@ -581,7 +581,7 @@ mod tests {
 
     #[test]
     fn codabar_as_png() {
-        let codabar = Codabar::new("B12354999A").unwrap();
+        let codabar = Codabar::new(b"B12354999A").unwrap();
         let png = Image::PNG {
             height: 60,
             xdim: 1,
@@ -604,7 +604,7 @@ mod tests {
 
     #[test]
     fn codabar_as_gif() {
-        let codabar = Codabar::new("A5675+++3$$B").unwrap();
+        let codabar = Codabar::new(b"A5675+++3$$B").unwrap();
         let gif = Image::GIF {
             height: 80,
             xdim: 2,
@@ -627,7 +627,7 @@ mod tests {
 
     #[test]
     fn rotated_codabar_as_gif() {
-        let codabar = Codabar::new("C1234D").unwrap();
+        let codabar = Codabar::new(b"C1234D").unwrap();
         let gif = Image::GIF {
             height: 60,
             xdim: 1,
@@ -650,7 +650,7 @@ mod tests {
 
     #[test]
     fn code128_as_png() {
-        let code128 = Code128::new("ÀHIĆ345678").unwrap();
+        let code128 = Code128::new("ÀHIĆ345678".as_bytes()).unwrap();
         let png = Image::PNG {
             height: 60,
             xdim: 1,
@@ -673,7 +673,7 @@ mod tests {
 
     #[test]
     fn code128_as_gif() {
-        let code128 = Code128::new("ÀHELLOWORLD").unwrap();
+        let code128 = Code128::new("ÀHELLOWORLD".as_bytes()).unwrap();
         let gif = Image::GIF {
             height: 90,
             xdim: 3,
@@ -696,7 +696,7 @@ mod tests {
 
     #[test]
     fn rotated_code128_as_gif() {
-        let code128 = Code128::new("ÀHELLOWORLD").unwrap();
+        let code128 = Code128::new("ÀHELLOWORLD".as_bytes()).unwrap();
         let gif = Image::GIF {
             height: 90,
             xdim: 3,
@@ -719,7 +719,7 @@ mod tests {
 
     #[test]
     fn rotated_code128_as_image_buffer() {
-        let code128 = Code128::new("ƁCLOJURE").unwrap();
+        let code128 = Code128::new("ƁCLOJURE".as_bytes()).unwrap();
         let img = Image::ImageBuffer {
             height: 93,
             xdim: 2,
@@ -739,7 +739,7 @@ mod tests {
 
     #[test]
     fn ean8_as_png() {
-        let ean8 = EAN8::new("5512345").unwrap();
+        let ean8 = EAN8::new(b"5512345").unwrap();
         let png = Image::PNG {
             height: 70,
             xdim: 2,
@@ -762,7 +762,7 @@ mod tests {
 
     #[test]
     fn rotated_ean8_as_png() {
-        let ean8 = EAN8::new("5512345").unwrap();
+        let ean8 = EAN8::new(b"5512345").unwrap();
         let png = Image::PNG {
             height: 70,
             xdim: 2,
@@ -785,7 +785,7 @@ mod tests {
 
     #[test]
     fn ean8_as_gif() {
-        let ean8 = EAN8::new("9992227").unwrap();
+        let ean8 = EAN8::new(b"9992227").unwrap();
         let gif = Image::GIF {
             height: 70,
             xdim: 2,
@@ -808,7 +808,7 @@ mod tests {
 
     #[test]
     fn ean8_as_webp() {
-        let ean8 = EAN8::new("9992227").unwrap();
+        let ean8 = EAN8::new(b"9992227").unwrap();
         let webp = Image::WEBP {
             height: 70,
             xdim: 2,
@@ -831,7 +831,7 @@ mod tests {
 
     #[test]
     fn ean2_as_png() {
-        let ean2 = EANSUPP::new("94").unwrap();
+        let ean2 = EAN2::new(b"94").unwrap();
         let png = Image::PNG {
             height: 70,
             xdim: 2,
@@ -854,7 +854,7 @@ mod tests {
 
     #[test]
     fn ean5_as_gif() {
-        let ean5 = EANSUPP::new("51234").unwrap();
+        let ean5 = EAN5::new(b"51234").unwrap();
         let gif = Image::GIF {
             height: 70,
             xdim: 2,
@@ -877,7 +877,7 @@ mod tests {
 
     #[test]
     fn ean5_as_webp() {
-        let ean5 = EANSUPP::new("51574").unwrap();
+        let ean5 = EAN5::new(b"51574").unwrap();
         let webp = Image::WEBP {
             height: 140,
             xdim: 5,
@@ -900,7 +900,7 @@ mod tests {
 
     #[test]
     fn ean5_as_imagebuffer() {
-        let ean5 = EANSUPP::new("99888").unwrap();
+        let ean5 = EAN5::new(b"99888").unwrap();
         let img = Image::ImageBuffer {
             height: 140,
             xdim: 1,
@@ -920,7 +920,7 @@ mod tests {
 
     #[test]
     fn itf_as_png() {
-        let itf = TF::interleaved("1234567").unwrap();
+        let itf = ToF::interleaved(b"1234567").unwrap();
         let png = Image::PNG {
             height: 100,
             xdim: 2,
@@ -943,7 +943,7 @@ mod tests {
 
     #[test]
     fn stf_as_png() {
-        let stf = TF::standard("1234567").unwrap();
+        let stf = ToF::new(b"1234567").unwrap();
         let png = Image::PNG {
             height: 100,
             xdim: 2,
@@ -966,7 +966,7 @@ mod tests {
 
     #[test]
     fn itf_as_gif() {
-        let itf = TF::interleaved("98766543561").unwrap();
+        let itf = ToF::interleaved(b"98766543561").unwrap();
         let gif = Image::GIF {
             height: 130,
             xdim: 1,
@@ -989,7 +989,7 @@ mod tests {
 
     #[test]
     fn itf_as_webp() {
-        let itf = TF::interleaved("98766543561").unwrap();
+        let itf = ToF::interleaved(b"98766543561").unwrap();
         let webp = Image::WEBP {
             height: 130,
             xdim: 1,
@@ -1012,7 +1012,7 @@ mod tests {
 
     #[test]
     fn itf_as_imagebuffer() {
-        let itf = TF::interleaved("98766543561").unwrap();
+        let itf = ToF::interleaved(b"98766543561").unwrap();
         let img = Image::ImageBuffer {
             height: 130,
             xdim: 1,
@@ -1032,7 +1032,7 @@ mod tests {
 
     #[test]
     fn image_buffer_fails_on_generate() {
-        let itf = TF::interleaved("98766543561").unwrap();
+        let itf = ToF::interleaved(b"98766543561").unwrap();
         let img = Image::ImageBuffer {
             height: 130,
             xdim: 1,

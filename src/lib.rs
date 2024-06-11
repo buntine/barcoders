@@ -42,22 +42,74 @@
 //!
 //! See the Github repository.
 
+#![cfg_attr(
+    all(
+        feature = "nightly",
+        not(feature = "std"),
+    ),
+    feature(error_in_core)
+)] // Enable error_in_core feature for nightly builds without std
+
 #![warn(
-    missing_docs,
     missing_debug_implementations,
     missing_copy_implementations,
-    trivial_casts,
-    trivial_numeric_casts,
-    unsafe_code,
-    unstable_features,
-    unused_import_braces,
-    unused_qualifications
+    missing_docs,
+    unused
 )]
+
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(not(feature = "std"))]
-extern crate alloc;
+#[cfg(all(not(feature = "std"), feature = "alloc"))]
+extern crate alloc as __alloc;
+
+#[cfg(feature = "std")]
+use std as __alloc;
+
+#[cfg(feature = "alloc")]
+use __alloc::{
+    string::ToString,
+    string::String,
+    vec::Vec,
+    format,
+    vec,
+};
+
+use core::ops::Range;
+use error::{Error, Result};
+
+/// The Barcode trait.
+/// 
+/// All barcode symbologies must implement this trait.
+pub trait Barcode<'a> {
+    /// Creates a new barcode.
+    fn new(data: &'a [u8]) -> Result<Self> where Self: Sized;
+    /// Encodes the barcode in-place.
+    /// (Without any allocation or copying of data)
+    /// 
+    /// This method returns None if the buffer size is too small.
+    fn encode_in_place(&self, buffer: &mut [u8]) -> Option<()>;
+    /// Encodes the barcode.
+    #[cfg(feature = "alloc")]
+    fn encode(&self) -> Vec<u8>;
+}
 
 pub mod error;
 pub mod generators;
+
+// #[doc(hidden)]
 pub mod sym;
+#[doc(inline)]
+pub use sym::{
+    codabar::Codabar,
+    code11::Code11,
+    code39::Code39,
+    code93::Code93,
+    // code128::Code128,
+    ean8::EAN8,
+    ean13::EAN13,
+    tf::ToF,
+};
+
+#[doc(inline)]
+#[cfg(feature = "alloc")]
+pub use sym::code128::Code128;

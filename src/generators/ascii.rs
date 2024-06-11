@@ -74,12 +74,13 @@ mod tests {
     use crate::sym::ean8::*;
     use crate::sym::ean_supp::*;
     use crate::sym::tf::*;
+    use crate::Barcode;
 
     #[test]
     fn ean_13_as_ascii() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&ean13.encode()[..]).unwrap();
+        let generated = ascii.generate(&ean13.encode()).unwrap();
 
         assert_eq!(
             generated,
@@ -101,9 +102,9 @@ mod tests {
 
     #[test]
     fn ean_13_as_ascii_small_height_double_width() {
-        let ean13 = EAN13::new("750103131130").unwrap();
+        let ean13 = EAN13::new(b"750103131130").unwrap();
         let ascii = ASCII { height: 6, xdim: 2 };
-        let generated = ascii.generate(&ean13.encode()[..]).unwrap();
+        let generated = ascii.generate(&ean13.encode()).unwrap();
 
         assert_eq!(generated,
 "
@@ -118,9 +119,9 @@ mod tests {
 
     #[test]
     fn ean_8_as_ascii() {
-        let ean8 = EAN8::new("1234567").unwrap();
+        let ean8 = EAN8::new(b"1234567").unwrap();
         let ascii = ASCII::new();
-        let generated = ascii.generate(&ean8.encode()[..]).unwrap();
+        let generated = ascii.generate(&ean8.encode()).unwrap();
 
         assert_eq!(
             generated,
@@ -142,9 +143,9 @@ mod tests {
 
     #[test]
     fn ean_8_as_ascii_small_height_double_width() {
-        let ean8 = EAN8::new("1234567").unwrap();
+        let ean8 = EAN8::new(b"1234567").unwrap();
         let ascii = ASCII { height: 5, xdim: 2 };
-        let generated = ascii.generate(&ean8.encode()[..]).unwrap();
+        let generated = ascii.generate(&ean8.encode()).unwrap();
 
         assert_eq!(generated,
 "
@@ -158,7 +159,7 @@ mod tests {
 
     #[test]
     fn code_39_as_ascii() {
-        let code39 = Code39::new("TEST8052").unwrap();
+        let code39 = Code39::new(b"TEST8052").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&code39.encode()[..]).unwrap();
 
@@ -179,7 +180,7 @@ mod tests {
 
     #[test]
     fn code_39_as_ascii_small_height_double_weight() {
-        let code39 = Code39::new("1234").unwrap();
+        let code39 = Code39::new(b"1234").unwrap();
         let ascii = ASCII { height: 7, xdim: 2 };
         let generated = ascii.generate(&code39.encode()[..]).unwrap();
 
@@ -197,7 +198,7 @@ mod tests {
 
     #[test]
     fn codabar_as_ascii() {
-        let codabar = Codabar::new("A98B").unwrap();
+        let codabar = Codabar::new(b"A98B").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&codabar.encode()[..]).unwrap();
 
@@ -221,7 +222,7 @@ mod tests {
 
     #[test]
     fn codabar_as_ascii_small_height_double_weight() {
-        let codabar = Codabar::new("A40156B").unwrap();
+        let codabar = Codabar::new(b"A40156B").unwrap();
         let ascii = ASCII { height: 7, xdim: 2 };
         let generated = ascii.generate(&codabar.encode()[..]).unwrap();
 
@@ -239,7 +240,7 @@ mod tests {
 
     #[test]
     fn code_128_as_ascii() {
-        let code128 = Code128::new("ÀHELLO").unwrap();
+        let code128 = Code128::new("ÀHELLO".as_bytes()).unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&code128.encode()[..]).unwrap();
 
@@ -263,7 +264,7 @@ mod tests {
 
     #[test]
     fn code_128_as_ascii_small_height_double_weight() {
-        let code128 = Code128::new("ÀHELLO").unwrap();
+        let code128 = Code128::new("ÀHELLO".as_bytes()).unwrap();
         let ascii = ASCII { height: 7, xdim: 2 };
         let generated = ascii.generate(&code128.encode()[..]).unwrap();
 
@@ -281,7 +282,7 @@ mod tests {
 
     #[test]
     fn ean2_as_ascii() {
-        let ean2 = EANSUPP::new("34").unwrap();
+        let ean2 = EAN2::new(b"34").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&ean2.encode()[..]).unwrap();
 
@@ -305,7 +306,7 @@ mod tests {
 
     #[test]
     fn ean5_as_ascii() {
-        let ean5 = EANSUPP::new("50799").unwrap();
+        let ean5 = EAN5::new(b"50799").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&ean5.encode()[..]).unwrap();
 
@@ -329,7 +330,7 @@ mod tests {
 
     #[test]
     fn itf_as_ascii() {
-        let itf = TF::interleaved("12345").unwrap();
+        let itf = ToF::interleaved(b"12345").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&itf.encode()[..]).unwrap();
 
@@ -353,7 +354,7 @@ mod tests {
 
     #[test]
     fn code_93_as_ascii() {
-        let code93 = Code93::new("TEST93").unwrap();
+        let code93 = Code93::new(b"TEST93").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&code93.encode()[..]).unwrap();
 
@@ -377,7 +378,7 @@ mod tests {
 
     #[test]
     fn code_93_as_ascii_small_height_double_weight() {
-        let code93 = Code93::new("TEST93").unwrap();
+        let code93 = Code93::new(b"TEST93").unwrap();
         let ascii = ASCII { height: 7, xdim: 2 };
         let generated = ascii.generate(&code93.encode()[..]).unwrap();
 
@@ -395,7 +396,7 @@ mod tests {
 
     #[test]
     fn code_11_as_ascii() {
-        let code11 = Code11::new("12-9").unwrap();
+        let code11 = Code11::new(b"12-9").unwrap();
         let ascii = ASCII::new();
         let generated = ascii.generate(&code11.encode()[..]).unwrap();
 
