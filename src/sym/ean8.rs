@@ -79,13 +79,13 @@ impl EAN8 {
 impl<'a> Barcode<'a> for EAN8 {
     fn new(data: &'a [u8]) -> Result<Self> {
         if data.len() != 7 && data.len() != 8 {
-            return Err(error::Error::Length);
+            return Err(Error::Length);
         }
         let mut digits = [0; 7];
         for i in 0..7 {
             let byte = data[i];
             if byte < b'0' || byte > b'9' {
-                return Err(error::Error::Character);
+                return Err(Error::Character);
             }
             digits[i] = byte - b'0';
         }
@@ -94,7 +94,7 @@ impl<'a> Barcode<'a> for EAN8 {
         // If checksum digit is provided, check the checksum.
         if data.len() == 8 {
             if this.checksum() != data[7] - b'0' {
-                return Err(error::Error::Checksum);
+                return Err(Error::Checksum);
             }
         }
 
@@ -119,7 +119,7 @@ impl<'a> Barcode<'a> for EAN8 {
 
 #[cfg(test)]
 mod tests {
-    use crate::error::Error;
+    use crate::Error;
     use crate::sym::ean8::*;
     #[cfg(not(feature = "std"))]
     use alloc::string::String;

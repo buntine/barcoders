@@ -186,13 +186,13 @@ impl EAN13 {
 impl<'a> Barcode<'a> for EAN13 {
     fn new(data: &'a [u8]) -> Result<Self> {
         if data.len() != 12 && data.len() != 13 {
-            return Err(error::Error::Length);
+            return Err(Error::Length);
         }
         let mut digits = [0; 12];
         for i in 0..12 {
             let byte = data[i];
             if byte < b'0' || byte > b'9' {
-                return Err(error::Error::Character);
+                return Err(Error::Character);
             }
             digits[i] = byte - b'0';
         }
@@ -201,7 +201,7 @@ impl<'a> Barcode<'a> for EAN13 {
         // If checksum digit is provided, check the checksum.
         if data.len() == 13 {
             if this.checksum() != data[12] - b'0' {
-                return Err(error::Error::Checksum);
+                return Err(Error::Checksum);
             }
         }
 
@@ -263,21 +263,21 @@ mod tests {
     fn invalid_data_ean13() {
         let ean13 = EAN13::new(b"1234er123412");
 
-        assert_eq!(ean13.err().unwrap(), error::Error::Character)
+        assert_eq!(ean13.err().unwrap(), Error::Character)
     }
 
     #[test]
     fn invalid_len_ean13() {
         let ean13 = EAN13::new(b"1111112222222333333");
 
-        assert_eq!(ean13.err().unwrap(), error::Error::Length)
+        assert_eq!(ean13.err().unwrap(), Error::Length)
     }
 
     #[test]
     fn invalid_checksum_ean13() {
         let ean13 = EAN13::new(b"8801051294881");
 
-        assert_eq!(ean13.err().unwrap(), error::Error::Checksum)
+        assert_eq!(ean13.err().unwrap(), Error::Checksum)
     }
 
     #[test]

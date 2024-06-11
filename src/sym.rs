@@ -2,9 +2,10 @@ use crate::*;
 
 pub mod codabar;
 pub mod code11;
-// pub mod code128;
 pub mod code39;
 pub mod code93;
+#[cfg(feature = "alloc")]
+pub mod code128;
 pub mod ean13;
 pub mod ean8;
 pub mod ean_supp;
@@ -14,23 +15,23 @@ pub mod tf;
 /// 
 /// This trait provides a default implementation for the `validate` method
 /// commonly used in the `new` method of barcode symbologies.
-pub trait BarcodeDevExt<'a, SegmentSize: 'static + PartialEq = u8> {
+pub trait BarcodeDevExt<'a> {
     /// The valid data length for the barcode.
     const SIZE: Range<u16>;
     /// The valid data values for the barcode.
-    const CHARS: &'static [SegmentSize];
+    const CHARS: &'static [u8];
     /// Performs validation on the data.
     /// 
     /// Users of the library should not need to call this method directly.
     /// This method is provided for potential implementors of new barcode symbologies.
-    fn validate(data: &'a [SegmentSize]) -> Result<&'a [SegmentSize]> {
+    fn validate(data: &'a [u8]) -> Result<&'a [u8]> {
         let len = data.len() as u16;
         if len < Self::SIZE.start || len > Self::SIZE.end {
-            return Err(error::Error::Length);
+            return Err(Error::Length);
         }
         for byte in data {
             if !Self::CHARS.contains(byte) {
-                return Err(error::Error::Character);
+                return Err(Error::Character);
             }
         }
         Ok(data)

@@ -208,14 +208,14 @@ mod tests {
     fn invalid_data_code39() {
         let code39 = Code39::new(b"1212s");
 
-        assert_eq!(code39.err().unwrap(), error::Error::Character);
+        assert_eq!(code39.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_code39() {
         let code39 = Code39::new(b"");
 
-        assert_eq!(code39.err().unwrap(), error::Error::Length);
+        assert_eq!(code39.err().unwrap(), Error::Length);
     }
 
     #[test]

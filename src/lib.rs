@@ -75,7 +75,7 @@ use __alloc::{
 };
 
 use core::ops::Range;
-use error::Result;
+use error::{Error, Result};
 
 /// The Barcode trait.
 /// 
@@ -109,3 +109,7 @@ pub use sym::{
     ean13::EAN13,
     tf::ToF,
 };
+
+#[doc(inline)]
+#[cfg(feature = "alloc")]
+pub use sym::code128::Code128;

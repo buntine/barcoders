@@ -106,14 +106,14 @@ mod tests {
     fn invalid_length_codabar() {
         let codabar = Codabar::new(b"");
 
-        assert_eq!(codabar.err().unwrap(), error::Error::Length);
+        assert_eq!(codabar.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_codabar() {
         let codabar = Codabar::new(b"A12345G");
 
-        assert_eq!(codabar.err().unwrap(), error::Error::Character);
+        assert_eq!(codabar.err().unwrap(), Error::Character);
     }
 
     #[test]

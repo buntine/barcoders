@@ -84,19 +84,19 @@ impl EAN2 {
 impl<'a> Barcode<'a> for EAN2 {
     fn new(data: &'a [u8]) -> Result<Self> where Self: Sized {
         if data.len() != 2 {
-            return Err(error::Error::Length);
+            return Err(Error::Length);
         }
 
         let mut bit1 = data[0];
         let mut bit2 = data[1];
         if bit1 < b'0' || bit2 < b'0' {
-            return Err(error::Error::Character);
+            return Err(Error::Character);
         }
         bit1 = data[0] - b'0';
         bit2 = data[1] - b'0';
 
         if bit1 > 9 || bit2 > 9 {
-            return Err(error::Error::Character);
+            return Err(Error::Character);
         }
 
         Ok(Self([bit1, bit2]))
@@ -149,13 +149,13 @@ impl EAN5 {
 impl<'a> Barcode<'a> for EAN5 {
     fn new(data: &'a [u8]) -> Result<Self> where Self: Sized {
         if data.len() != 5 {
-            return Err(error::Error::Length);
+            return Err(Error::Length);
         }
 
         let mut bits = [0; 5];
         for (i, &bit) in data.iter().enumerate() {
             if bit < b'0' {
-                return Err(error::Error::Character);
+                return Err(Error::Character);
             }
             bits[i] = bit - b'0';
         }
@@ -206,14 +206,14 @@ mod tests {
     fn invalid_data_ean2() {
         let ean2 = EAN2::new(b"AT");
 
-        assert_eq!(ean2.err().unwrap(), error::Error::Character);
+        assert_eq!(ean2.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_len_ean2() {
         let ean2 = EAN2::new(b"123");
 
-        assert_eq!(ean2.err().unwrap(), error::Error::Length);
+        assert_eq!(ean2.err().unwrap(), Error::Length);
     }
 
     #[test]

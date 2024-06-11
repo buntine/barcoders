@@ -224,14 +224,14 @@ mod tests {
     fn invalid_length_code11() {
         let code11 = Code11::new(b"");
 
-        assert_eq!(code11.err().unwrap(), error::Error::Length);
+        assert_eq!(code11.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code11() {
         let code11 = Code11::new(b"NOTDIGITS");
 
-        assert_eq!(code11.err().unwrap(), error::Error::Character);
+        assert_eq!(code11.err().unwrap(), Error::Character);
     }
 
     #[test]

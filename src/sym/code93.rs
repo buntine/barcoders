@@ -225,14 +225,14 @@ mod tests {
     fn invalid_length_code93() {
         let code93 = Code93::new(b"");
 
-        assert_eq!(code93.err().unwrap(), error::Error::Length);
+        assert_eq!(code93.err().unwrap(), Error::Length);
     }
 
     #[test]
     fn invalid_data_code93() {
         let code93 = Code93::new(b"lowerCASE");
 
-        assert_eq!(code93.err().unwrap(), error::Error::Character);
+        assert_eq!(code93.err().unwrap(), Error::Character);
     }
 
     #[test]

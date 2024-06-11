@@ -244,14 +244,14 @@ mod tests {
     fn invalid_data_itf() {
         let itf = ToF::interleaved(b"1234er123412");
 
-        assert_eq!(itf.err().unwrap(), error::Error::Character);
+        assert_eq!(itf.err().unwrap(), Error::Character);
     }
 
     #[test]
     fn invalid_data() {
         let tof = ToF::new(b"WORDUP");
 
-        assert_eq!(tof.err().unwrap(), error::Error::Character);
+        assert_eq!(tof.err().unwrap(), Error::Character);
     }
 
     #[test]
