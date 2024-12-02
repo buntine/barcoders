@@ -21,6 +21,7 @@ pub mod code93;
 pub mod ean13;
 pub mod ean8;
 pub mod ean_supp;
+pub mod upca;
 mod helpers;
 pub mod tf;
 #[cfg(not(feature = "std"))]

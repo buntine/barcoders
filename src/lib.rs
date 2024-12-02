@@ -10,9 +10,9 @@
 //! ### Symbologies
 //!
 //! * EAN-13
-//!   * UPC-A
 //!   * JAN
 //!   * Bookland
+//! * UPC-A
 //! * EAN-8
 //! * EAN Supplementals
 //!   * EAN-2
