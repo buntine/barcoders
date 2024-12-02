@@ -1,12 +1,9 @@
-//! Encoder for EAN barcodes.
+//! Encoder for UPCA barcodes.
 //!
-//! EAN13 barcodes are very common in retail. 90% of the products you purchase from a supermarket
-//! will use EAN13.
+//! UPCA barcodes are common in retail in the US.
 //!
 //! This module defines types for:
-//!   * EAN-13
-//!   * Bookland
-//!   * JAN
+//!   * UPC-A
 
 use crate::error::{Error, Result};
 use crate::sym::{helpers, Parse};
@@ -14,14 +11,13 @@ use core::char;
 use core::ops::Range;
 use helpers::Vec;
 
-/// Encoding mappings for EAN barcodes.
+/// Encoding mappings for UPC barcodes.
 /// 1 = bar, 0 = no bar.
 ///
-/// The three indices are:
-/// * Left side A (odd parity).
-/// * Left side B (even parity).
+/// The two indices are:
+/// * Left side encodings.
 /// * Right side encodings.
-pub const ENCODINGS: [[[u8; 7]; 10]; 3] = [
+pub const ENCODINGS: [[[u8; 7]; 10]; 2] = [
     [
         [0, 0, 0, 1, 1, 0, 1],
         [0, 0, 1, 1, 0, 0, 1],
@@ -33,18 +29,6 @@ pub const ENCODINGS: [[[u8; 7]; 10]; 3] = [
         [0, 1, 1, 1, 0, 1, 1],
         [0, 1, 1, 0, 1, 1, 1],
         [0, 0, 0, 1, 0, 1, 1],
-    ],
-    [
-        [0, 1, 0, 0, 1, 1, 1],
-        [0, 1, 1, 0, 0, 1, 1],
-        [0, 0, 1, 1, 0, 1, 1],
-        [0, 1, 0, 0, 0, 0, 1],
-        [0, 0, 1, 1, 1, 0, 1],
-        [0, 1, 1, 1, 0, 0, 1],
-        [0, 0, 0, 0, 1, 0, 1],
-        [0, 0, 1, 0, 0, 0, 1],
-        [0, 0, 0, 1, 0, 0, 1],
-        [0, 0, 1, 0, 1, 1, 1],
     ],
     [
         [1, 1, 1, 0, 0, 1, 0],
@@ -82,53 +66,37 @@ pub const MIDDLE_GUARD: [u8; 5] = [0, 1, 0, 1, 0];
 /// The right-hand guard pattern.
 pub const RIGHT_GUARD: [u8; 3] = [1, 0, 1];
 
-/// The EAN-13 barcode type.
+/// The UPCA barcode type.
 #[derive(Debug)]
-pub struct EAN13(Vec<u8>);
+pub struct UPCA(Vec<u8>);
 
-/// The Bookland barcode type.
-/// Bookland are EAN-13 that use number system 978.
-pub type Bookland = EAN13;
-
-/// The JAN barcode type.
-/// JAN are EAN-13 that use number system 49.
-pub type JAN = EAN13;
-
-impl EAN13 {
+impl UPCA {
     /// Creates a new barcode.
-    /// Returns Result<EAN13, Error> indicating parse success.
-    pub fn new<T: AsRef<str>>(data: T) -> Result<EAN13> {
-        let d = EAN13::parse(data.as_ref())?;
+    /// Returns Result<UPCA, Error> indicating parse success.
+    pub fn new<T: AsRef<str>>(data: T) -> Result<UPCA> {
+        let d = UPCA::parse(data.as_ref())?;
         let digits: Vec<u8> = d
             .chars()
             .map(|c| c.to_digit(10).expect("Unknown character") as u8)
             .collect();
 
-        let ean13 = EAN13(digits[0..12].to_vec());
+        let upca = UPCA(digits[0..11].to_vec());
 
         // If checksum digit is provided, check the checksum.
-        if digits.len() == 13 && ean13.checksum_digit() != digits[12] {
+        if digits.len() == 12 && upca.checksum_digit() != digits[11] {
             return Err(Error::Checksum);
         }
 
-        Ok(ean13)
+        Ok(upca)
     }
 
     /// Calculates the checksum digit using a modulo-10 weighting algorithm.
     fn checksum_digit(&self) -> u8 {
-        helpers::modulo_10_checksum(&self.0[..], true)
-    }
-
-    fn number_system_digit(&self) -> u8 {
-        self.0[1]
-    }
-
-    fn number_system_encoding(&self) -> [u8; 7] {
-        self.char_encoding(0, self.number_system_digit())
+        helpers::modulo_10_checksum(&self.0[..], false)
     }
 
     fn checksum_encoding(&self) -> [u8; 7] {
-        self.char_encoding(2, self.checksum_digit())
+        self.char_encoding(1, self.checksum_digit())
     }
 
     fn char_encoding(&self, side: usize, d: u8) -> [u8; 7] {
@@ -136,23 +104,18 @@ impl EAN13 {
     }
 
     fn left_digits(&self) -> &[u8] {
-        &self.0[2..7]
+        &self.0[0..6]
     }
 
     fn right_digits(&self) -> &[u8] {
-        &self.0[7..]
-    }
-
-    fn parity_mapping(&self) -> [usize; 5] {
-        PARITY[self.0[0] as usize]
+        &self.0[6..]
     }
 
     fn left_payload(&self) -> Vec<u8> {
         let slices: Vec<[u8; 7]> = self
             .left_digits()
             .iter()
-            .zip(self.parity_mapping().iter())
-            .map(|(d, s)| self.char_encoding(*s, *d))
+            .map(|d| self.char_encoding(0, *d))
             .collect();
 
         helpers::join_iters(slices.iter())
@@ -162,7 +125,7 @@ impl EAN13 {
         let slices: Vec<[u8; 7]> = self
             .right_digits()
             .iter()
-            .map(|d| self.char_encoding(2, *d))
+            .map(|d| self.char_encoding(1, *d))
             .collect();
 
         helpers::join_iters(slices.iter())
@@ -174,7 +137,6 @@ impl EAN13 {
         helpers::join_slices(
             &[
                 &LEFT_GUARD[..],
-                &self.number_system_encoding()[..],
                 &self.left_payload()[..],
                 &MIDDLE_GUARD[..],
                 &self.right_payload()[..],
@@ -185,10 +147,10 @@ impl EAN13 {
     }
 }
 
-impl Parse for EAN13 {
+impl Parse for UPCA {
     /// Returns the valid length of data acceptable in this type of barcode.
     fn valid_len() -> Range<u32> {
-        12..13
+        11..12
     }
 
     /// Returns the set of valid characters allowed in this type of barcode.
@@ -200,7 +162,7 @@ impl Parse for EAN13 {
 #[cfg(test)]
 mod tests {
     use crate::error::Error;
-    use crate::sym::ean13::*;
+    use crate::sym::upca::*;
     #[cfg(not(feature = "std"))]
     use alloc::string::String;
     use core::char;
@@ -211,55 +173,49 @@ mod tests {
     }
 
     #[test]
-    fn new_ean13() {
-        let ean13 = EAN13::new("123456123456");
+    fn new_upca() {
+        let upca = UPCA::new("72527273070");
 
-        assert!(ean13.is_ok());
+        assert!(upca.is_ok());
     }
 
     #[test]
-    fn new_bookland() {
-        let bookland = Bookland::new("978456123456");
+    fn invalid_data_upca() {
+        let upca = UPCA::new("012345612a45");
 
-        assert!(bookland.is_ok());
+        assert_eq!(upca.err().unwrap(), Error::Character)
     }
 
     #[test]
-    fn invalid_data_ean13() {
-        let ean13 = EAN13::new("1234er123412");
+    fn invalid_len_upca() {
+        let upca = UPCA::new("1234561234589");
 
-        assert_eq!(ean13.err().unwrap(), Error::Character)
+        assert_eq!(upca.err().unwrap(), Error::Length)
     }
 
     #[test]
-    fn invalid_len_ean13() {
-        let ean13 = EAN13::new("1111112222222333333");
+    fn invalid_checksum_upca() {
+        let upca = UPCA::new("725272730705");
 
-        assert_eq!(ean13.err().unwrap(), Error::Length)
+        assert_eq!(upca.err().unwrap(), Error::Checksum)
+    }
+    
+    #[test]
+    fn valid_checksum_upca() {
+        let upca = UPCA::new("725272730706");
+
+        assert!(upca.is_ok());
     }
 
     #[test]
-    fn invalid_checksum_ean13() {
-        let ean13 = EAN13::new("8801051294881");
+    fn upce_encode() {
+        let upca1 = UPCA::new("72527273070").unwrap();
+        let upca2 = UPCA::new("738312014094").unwrap();
+        let upca3 = UPCA::new("095421076611").unwrap();
 
-        assert_eq!(ean13.err().unwrap(), Error::Checksum)
+        assert_eq!(collapse_vec(upca1.encode()), "10101110110010011011000100100110111011001001101010100010010000101110010100010011100101010000101");
+        assert_eq!(collapse_vec(upca2.encode()), "10101110110111101011011101111010011001001001101010111001011001101011100111001011101001011100101");
+        assert_eq!(collapse_vec(upca3.encode()), "10100011010001011011000101000110010011001100101010111001010001001010000101000011001101100110101");
     }
 
-    #[test]
-    fn ean13_encode_as_bookland() {
-        let bookland1 = Bookland::new("978345612345").unwrap(); // Check digit: 5
-        let bookland2 = Bookland::new("978118999561").unwrap(); // Check digit: 5
-
-        assert_eq!(collapse_vec(bookland1.encode()), "10101110110001001010000101000110111001010111101010110011011011001000010101110010011101001110101");
-        assert_eq!(collapse_vec(bookland2.encode()), "10101110110001001011001100110010001001000101101010111010011101001001110101000011001101001110101");
-    }
-
-    #[test]
-    fn ean13_encode() {
-        let ean131 = EAN13::new("750103131130").unwrap(); // Check digit: 5
-        let ean132 = EAN13::new("983465123499").unwrap(); // Check digit: 5
-
-        assert_eq!(collapse_vec(ean131.encode()), "10101100010100111001100101001110111101011001101010100001011001101100110100001011100101110100101");
-        assert_eq!(collapse_vec(ean132.encode()), "10101101110100001001110101011110111001001100101010110110010000101011100111010011101001000010101");
-    }
 }
