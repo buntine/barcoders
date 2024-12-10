@@ -28,3 +28,6 @@ version = "0.25"
 optional = true
 default-features = false
 features = ["gif", "png", "webp"]
+
+[package.metadata.docs.rs]
+all-features = true
